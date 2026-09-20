@@ -1,0 +1,16 @@
+{
+  "name": "it_from_bit",
+  "version": "1.0.0",
+  "description": "Created 20 Sep 2026 as a **basic version of the project to re-evaluate it**: the construction and the\r measurements of the rule set, the simulator that produces them (CPU build, with the GUI), and nothing\r else. No experiment tree, no harnesses, no attic, no retired material.",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

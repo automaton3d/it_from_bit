@@ -1,0 +1,649 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{none/global//global/global/global}
+    \entry{wheeler}{incollection}{}{}
+      \name{author}{1}{}{%
+        {{hash=bfe4c9173d526c3ddf3af872befcb5d0}{%
+           family={Wheeler},
+           familyi={W\bibinitperiod},
+           given={J.\bibnamedelimi A.},
+           giveni={J\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
+      }
+      \name{editor}{1}{}{%
+        {{hash=d73f2d3a12e916d7f9528bdcf04b78f8}{%
+           family={Zurek},
+           familyi={Z\bibinitperiod},
+           given={W.},
+           giveni={W\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Reading, MA}%
+      }
+      \list{publisher}{1}{%
+        {Addison-Wesley}%
+      }
+      \strng{namehash}{bfe4c9173d526c3ddf3af872befcb5d0}
+      \strng{fullhash}{bfe4c9173d526c3ddf3af872befcb5d0}
+      \strng{fullhashraw}{bfe4c9173d526c3ddf3af872befcb5d0}
+      \strng{bibnamehash}{bfe4c9173d526c3ddf3af872befcb5d0}
+      \strng{authorbibnamehash}{bfe4c9173d526c3ddf3af872befcb5d0}
+      \strng{authornamehash}{bfe4c9173d526c3ddf3af872befcb5d0}
+      \strng{authorfullhash}{bfe4c9173d526c3ddf3af872befcb5d0}
+      \strng{authorfullhashraw}{bfe4c9173d526c3ddf3af872befcb5d0}
+      \strng{editorbibnamehash}{d73f2d3a12e916d7f9528bdcf04b78f8}
+      \strng{editornamehash}{d73f2d3a12e916d7f9528bdcf04b78f8}
+      \strng{editorfullhash}{d73f2d3a12e916d7f9528bdcf04b78f8}
+      \strng{editorfullhashraw}{d73f2d3a12e916d7f9528bdcf04b78f8}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Complexity, Entropy and the Physics of Information}
+      \field{title}{{Information, physics, quantum: the search for links}}
+      \field{year}{1990}
+    \endentry
+    \entry{wolfram}{book}{}{}
+      \name{author}{1}{}{%
+        {{hash=8ea507c3b48972c396b73f0701b75ca4}{%
+           family={Wolfram},
+           familyi={W\bibinitperiod},
+           given={S.},
+           giveni={S\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Wolfram Media}%
+      }
+      \strng{namehash}{8ea507c3b48972c396b73f0701b75ca4}
+      \strng{fullhash}{8ea507c3b48972c396b73f0701b75ca4}
+      \strng{fullhashraw}{8ea507c3b48972c396b73f0701b75ca4}
+      \strng{bibnamehash}{8ea507c3b48972c396b73f0701b75ca4}
+      \strng{authorbibnamehash}{8ea507c3b48972c396b73f0701b75ca4}
+      \strng{authornamehash}{8ea507c3b48972c396b73f0701b75ca4}
+      \strng{authorfullhash}{8ea507c3b48972c396b73f0701b75ca4}
+      \strng{authorfullhashraw}{8ea507c3b48972c396b73f0701b75ca4}
+      \field{extraname}{1}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{pp. 23--60, 112, 865--866}
+      \field{title}{{A New Kind of Science}}
+      \field{year}{2002}
+    \endentry
+    \entry{zuse}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=01b5ec44a1380b8ea21141bbf79d8c18}{%
+           family={Zuse},
+           familyi={Z\bibinitperiod},
+           given={K.},
+           giveni={K\bibinitperiod}}}%
+      }
+      \strng{namehash}{01b5ec44a1380b8ea21141bbf79d8c18}
+      \strng{fullhash}{01b5ec44a1380b8ea21141bbf79d8c18}
+      \strng{fullhashraw}{01b5ec44a1380b8ea21141bbf79d8c18}
+      \strng{bibnamehash}{01b5ec44a1380b8ea21141bbf79d8c18}
+      \strng{authorbibnamehash}{01b5ec44a1380b8ea21141bbf79d8c18}
+      \strng{authornamehash}{01b5ec44a1380b8ea21141bbf79d8c18}
+      \strng{authorfullhash}{01b5ec44a1380b8ea21141bbf79d8c18}
+      \strng{authorfullhashraw}{01b5ec44a1380b8ea21141bbf79d8c18}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Elektronische Datenverarbeitung}
+      \field{title}{{Rechnender Raum}}
+      \field{volume}{8}
+      \field{year}{1967}
+      \field{pages}{336\bibrangedash 344}
+      \range{pages}{9}
+    \endentry
+    \entry{fredkin}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=4f4dea30833f97c09f41a84450f2aaf1}{%
+           family={Fredkin},
+           familyi={F\bibinitperiod},
+           given={E.},
+           giveni={E\bibinitperiod}}}%
+      }
+      \strng{namehash}{4f4dea30833f97c09f41a84450f2aaf1}
+      \strng{fullhash}{4f4dea30833f97c09f41a84450f2aaf1}
+      \strng{fullhashraw}{4f4dea30833f97c09f41a84450f2aaf1}
+      \strng{bibnamehash}{4f4dea30833f97c09f41a84450f2aaf1}
+      \strng{authorbibnamehash}{4f4dea30833f97c09f41a84450f2aaf1}
+      \strng{authornamehash}{4f4dea30833f97c09f41a84450f2aaf1}
+      \strng{authorfullhash}{4f4dea30833f97c09f41a84450f2aaf1}
+      \strng{authorfullhashraw}{4f4dea30833f97c09f41a84450f2aaf1}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{International Journal of Theoretical Physics}
+      \field{number}{2}
+      \field{title}{{An Introduction to Digital Philosophy}}
+      \field{volume}{42}
+      \field{year}{2003}
+      \field{pages}{189\bibrangedash 247}
+      \range{pages}{59}
+    \endentry
+    \entry{margolus}{incollection}{}{}
+      \name{author}{1}{}{%
+        {{hash=2fe212331ac8bbc2fbce21fdfcd6f0a4}{%
+           family={Margolus},
+           familyi={M\bibinitperiod},
+           given={N.},
+           giveni={N\bibinitperiod}}}%
+      }
+      \name{editor}{1}{}{%
+        {{hash=0d46b147db6261de98fac21e9aee13f7}{%
+           family={Adamatzky},
+           familyi={A\bibinitperiod},
+           given={A.},
+           giveni={A\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {London}%
+      }
+      \list{publisher}{1}{%
+        {Springer}%
+      }
+      \strng{namehash}{2fe212331ac8bbc2fbce21fdfcd6f0a4}
+      \strng{fullhash}{2fe212331ac8bbc2fbce21fdfcd6f0a4}
+      \strng{fullhashraw}{2fe212331ac8bbc2fbce21fdfcd6f0a4}
+      \strng{bibnamehash}{2fe212331ac8bbc2fbce21fdfcd6f0a4}
+      \strng{authorbibnamehash}{2fe212331ac8bbc2fbce21fdfcd6f0a4}
+      \strng{authornamehash}{2fe212331ac8bbc2fbce21fdfcd6f0a4}
+      \strng{authorfullhash}{2fe212331ac8bbc2fbce21fdfcd6f0a4}
+      \strng{authorfullhashraw}{2fe212331ac8bbc2fbce21fdfcd6f0a4}
+      \strng{editorbibnamehash}{0d46b147db6261de98fac21e9aee13f7}
+      \strng{editornamehash}{0d46b147db6261de98fac21e9aee13f7}
+      \strng{editorfullhash}{0d46b147db6261de98fac21e9aee13f7}
+      \strng{editorfullhashraw}{0d46b147db6261de98fac21e9aee13f7}
+      \field{sortinit}{8}
+      \field{sortinithash}{a231b008ebf0ecbe0b4d96dcc159445f}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Collision-Based Computing}
+      \field{title}{{Universal Cellular Automata Based on the Collisions of Soft Spheres}}
+      \field{year}{2002}
+    \endentry
+    \entry{thooft}{book}{}{}
+      \name{author}{1}{}{%
+        {{hash=e27bbfa1b897028133ce1cfe1e6d9d13}{%
+           family={Hooft},
+           familyi={H\bibinitperiod},
+           given={G.\bibnamedelimi 't},
+           giveni={G\bibinitperiod\bibinitdelim '\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Berlin}%
+      }
+      \list{publisher}{1}{%
+        {Springer}%
+      }
+      \strng{namehash}{e27bbfa1b897028133ce1cfe1e6d9d13}
+      \strng{fullhash}{e27bbfa1b897028133ce1cfe1e6d9d13}
+      \strng{fullhashraw}{e27bbfa1b897028133ce1cfe1e6d9d13}
+      \strng{bibnamehash}{e27bbfa1b897028133ce1cfe1e6d9d13}
+      \strng{authorbibnamehash}{e27bbfa1b897028133ce1cfe1e6d9d13}
+      \strng{authornamehash}{e27bbfa1b897028133ce1cfe1e6d9d13}
+      \strng{authorfullhash}{e27bbfa1b897028133ce1cfe1e6d9d13}
+      \strng{authorfullhashraw}{e27bbfa1b897028133ce1cfe1e6d9d13}
+      \field{sortinit}{9}
+      \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{Series edited by H. van Beijeren et al.}
+      \field{series}{Fundamental Theories of Physics}
+      \field{title}{{The Cellular Automaton Interpretation of Quantum Mechanics}}
+      \field{year}{2016}
+    \endentry
+    \entry{wolfram2020physics}{online}{}{}
+      \name{author}{1}{}{%
+        {{hash=fc7f119c141fbcc7810a4b3a86f599db}{%
+           family={Wolfram},
+           familyi={W\bibinitperiod},
+           given={Stephen},
+           giveni={S\bibinitperiod}}}%
+      }
+      \strng{namehash}{fc7f119c141fbcc7810a4b3a86f599db}
+      \strng{fullhash}{fc7f119c141fbcc7810a4b3a86f599db}
+      \strng{fullhashraw}{fc7f119c141fbcc7810a4b3a86f599db}
+      \strng{bibnamehash}{fc7f119c141fbcc7810a4b3a86f599db}
+      \strng{authorbibnamehash}{fc7f119c141fbcc7810a4b3a86f599db}
+      \strng{authornamehash}{fc7f119c141fbcc7810a4b3a86f599db}
+      \strng{authorfullhash}{fc7f119c141fbcc7810a4b3a86f599db}
+      \strng{authorfullhashraw}{fc7f119c141fbcc7810a4b3a86f599db}
+      \field{extraname}{2}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{{The Wolfram Physics Project}}
+      \field{urlday}{5}
+      \field{urlmonth}{4}
+      \field{urlyear}{2025}
+      \field{year}{2020}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://www.wolframphysics.org
+      \endverb
+      \verb{url}
+      \verb https://www.wolframphysics.org
+      \endverb
+    \endentry
+    \entry{hardy1976}{article}{}{}
+      \name{author}{3}{}{%
+        {{hash=b4b641805b23c4420433a7ea4f4a22a0}{%
+           family={Hardy},
+           familyi={H\bibinitperiod},
+           given={J.},
+           giveni={J\bibinitperiod}}}%
+        {{hash=1a06ee068773799095293ca3d2274956}{%
+           family={Pomeau},
+           familyi={P\bibinitperiod},
+           given={Y.},
+           giveni={Y\bibinitperiod}}}%
+        {{hash=93fac04e89d8ac5877b77c1c663b8d7a}{%
+           family={Pazzis},
+           familyi={P\bibinitperiod},
+           given={O.},
+           giveni={O\bibinitperiod},
+           prefix={de},
+           prefixi={d\bibinitperiod}}}%
+      }
+      \strng{namehash}{c308054d269acea6f0e9141548fcd64a}
+      \strng{fullhash}{c308054d269acea6f0e9141548fcd64a}
+      \strng{fullhashraw}{c308054d269acea6f0e9141548fcd64a}
+      \strng{bibnamehash}{c308054d269acea6f0e9141548fcd64a}
+      \strng{authorbibnamehash}{c308054d269acea6f0e9141548fcd64a}
+      \strng{authornamehash}{c308054d269acea6f0e9141548fcd64a}
+      \strng{authorfullhash}{c308054d269acea6f0e9141548fcd64a}
+      \strng{authorfullhashraw}{c308054d269acea6f0e9141548fcd64a}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Journal of Mathematical Physics}
+      \field{number}{12}
+      \field{title}{{Time Evolution of a Two-Dimensional Model System. I. Invariant States and Time Correlation Functions}}
+      \field{volume}{14}
+      \field{year}{1973}
+      \field{pages}{1746\bibrangedash 1759}
+      \range{pages}{14}
+    \endentry
+    \entry{frisch1986}{article}{}{}
+      \name{author}{3}{}{%
+        {{hash=4d7db2d5559b070c0834d43f00d4d528}{%
+           family={Frisch},
+           familyi={F\bibinitperiod},
+           given={U.},
+           giveni={U\bibinitperiod}}}%
+        {{hash=20994964f84a3c5022d7ba6dfa25c1f9}{%
+           family={Hasslacher},
+           familyi={H\bibinitperiod},
+           given={B.},
+           giveni={B\bibinitperiod}}}%
+        {{hash=1a06ee068773799095293ca3d2274956}{%
+           family={Pomeau},
+           familyi={P\bibinitperiod},
+           given={Y.},
+           giveni={Y\bibinitperiod}}}%
+      }
+      \strng{namehash}{598d26064968481a293fd877c4d868b0}
+      \strng{fullhash}{598d26064968481a293fd877c4d868b0}
+      \strng{fullhashraw}{598d26064968481a293fd877c4d868b0}
+      \strng{bibnamehash}{598d26064968481a293fd877c4d868b0}
+      \strng{authorbibnamehash}{598d26064968481a293fd877c4d868b0}
+      \strng{authornamehash}{598d26064968481a293fd877c4d868b0}
+      \strng{authorfullhash}{598d26064968481a293fd877c4d868b0}
+      \strng{authorfullhashraw}{598d26064968481a293fd877c4d868b0}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Physical Review Letters}
+      \field{number}{14}
+      \field{title}{{Lattice-Gas Automata for the Navier--Stokes Equation}}
+      \field{volume}{56}
+      \field{year}{1986}
+      \field{pages}{1505\bibrangedash 1508}
+      \range{pages}{4}
+    \endentry
+    \entry{af_neto}{online}{}{}
+      \name{author}{1}{}{%
+        {{hash=7a8081f9c22383c9dc459917b72db03c}{%
+           family={Neto},
+           familyi={N\bibinitperiod},
+           given={A.\bibnamedelimi Furtado},
+           giveni={A\bibinitperiod\bibinitdelim F\bibinitperiod}}}%
+      }
+      \strng{namehash}{7a8081f9c22383c9dc459917b72db03c}
+      \strng{fullhash}{7a8081f9c22383c9dc459917b72db03c}
+      \strng{fullhashraw}{7a8081f9c22383c9dc459917b72db03c}
+      \strng{bibnamehash}{7a8081f9c22383c9dc459917b72db03c}
+      \strng{authorbibnamehash}{7a8081f9c22383c9dc459917b72db03c}
+      \strng{authornamehash}{7a8081f9c22383c9dc459917b72db03c}
+      \strng{authorfullhash}{7a8081f9c22383c9dc459917b72db03c}
+      \strng{authorfullhashraw}{7a8081f9c22383c9dc459917b72db03c}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{howpublished}{GitHub repository}
+      \field{title}{{It from Bit -- a Concrete Attempt}}
+      \field{year}{2024}
+      \verb{urlraw}
+      \verb https://github.com/automaton3d/automaton
+      \endverb
+      \verb{url}
+      \verb https://github.com/automaton3d/automaton
+      \endverb
+    \endentry
+    \entry{feynman-2}{book}{}{}
+      \name{author}{3}{}{%
+        {{hash=bc0435d3e01ddd86761bcf1fc818ecf1}{%
+           family={Feynman},
+           familyi={F\bibinitperiod},
+           given={R.\bibnamedelimi P.},
+           giveni={R\bibinitperiod\bibinitdelim P\bibinitperiod}}}%
+        {{hash=d7908323c46bf05ea5d9fec77577e5af}{%
+           family={Leighton},
+           familyi={L\bibinitperiod},
+           given={R.\bibnamedelimi B.},
+           giveni={R\bibinitperiod\bibinitdelim B\bibinitperiod}}}%
+        {{hash=e460509ceb1a613ef51669db8232da8a}{%
+           family={Sands},
+           familyi={S\bibinitperiod},
+           given={M.},
+           giveni={M\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Addison-Wesley}%
+      }
+      \strng{namehash}{2108cf7ce1fb2e8f9df77fa24e8e3b2a}
+      \strng{fullhash}{2108cf7ce1fb2e8f9df77fa24e8e3b2a}
+      \strng{fullhashraw}{2108cf7ce1fb2e8f9df77fa24e8e3b2a}
+      \strng{bibnamehash}{2108cf7ce1fb2e8f9df77fa24e8e3b2a}
+      \strng{authorbibnamehash}{2108cf7ce1fb2e8f9df77fa24e8e3b2a}
+      \strng{authornamehash}{2108cf7ce1fb2e8f9df77fa24e8e3b2a}
+      \strng{authorfullhash}{2108cf7ce1fb2e8f9df77fa24e8e3b2a}
+      \strng{authorfullhashraw}{2108cf7ce1fb2e8f9df77fa24e8e3b2a}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{See discussion on double-slit experiment in Chapter 1}
+      \field{title}{{The Feynman Lectures on Physics, Volume 3: Quantum Mechanics}}
+      \field{year}{1965}
+    \endentry
+    \entry{wolfram1983}{book}{}{}
+      \name{author}{1}{}{%
+        {{hash=fc7f119c141fbcc7810a4b3a86f599db}{%
+           family={Wolfram},
+           familyi={W\bibinitperiod},
+           given={Stephen},
+           giveni={S\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Singapore}%
+      }
+      \list{publisher}{1}{%
+        {World Scientific Publishing}%
+      }
+      \strng{namehash}{fc7f119c141fbcc7810a4b3a86f599db}
+      \strng{fullhash}{fc7f119c141fbcc7810a4b3a86f599db}
+      \strng{fullhashraw}{fc7f119c141fbcc7810a4b3a86f599db}
+      \strng{bibnamehash}{fc7f119c141fbcc7810a4b3a86f599db}
+      \strng{authorbibnamehash}{fc7f119c141fbcc7810a4b3a86f599db}
+      \strng{authornamehash}{fc7f119c141fbcc7810a4b3a86f599db}
+      \strng{authorfullhash}{fc7f119c141fbcc7810a4b3a86f599db}
+      \strng{authorfullhashraw}{fc7f119c141fbcc7810a4b3a86f599db}
+      \field{extraname}{3}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{{Theory and Applications of Cellular Automata}}
+      \field{year}{1983}
+    \endentry
+    \entry{gacs1979}{article}{}{}
+      \name{author}{3}{}{%
+        {{hash=72d9e44b812688e9e12e331cf49e1c8f}{%
+           family={Gäcs},
+           familyi={G\bibinitperiod},
+           given={P.},
+           giveni={P\bibinitperiod}}}%
+        {{hash=794d31d5a209009e0f7aa7e546ca4bc6}{%
+           family={Lovász},
+           familyi={L\bibinitperiod},
+           given={L.},
+           giveni={L\bibinitperiod}}}%
+        {{hash=0f32eee4a1c58cffba2efea5d8f3d16c}{%
+           family={Simonovits},
+           familyi={S\bibinitperiod},
+           given={M.},
+           giveni={M\bibinitperiod}}}%
+      }
+      \strng{namehash}{fe86a2d6d7ffa60144064de479d55887}
+      \strng{fullhash}{fe86a2d6d7ffa60144064de479d55887}
+      \strng{fullhashraw}{fe86a2d6d7ffa60144064de479d55887}
+      \strng{bibnamehash}{fe86a2d6d7ffa60144064de479d55887}
+      \strng{authorbibnamehash}{fe86a2d6d7ffa60144064de479d55887}
+      \strng{authornamehash}{fe86a2d6d7ffa60144064de479d55887}
+      \strng{authorfullhash}{fe86a2d6d7ffa60144064de479d55887}
+      \strng{authorfullhashraw}{fe86a2d6d7ffa60144064de479d55887}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Acta Informatica}
+      \field{number}{2}
+      \field{title}{{On the Computation of the Evolution of Cellular Automata}}
+      \field{volume}{11}
+      \field{year}{1979}
+      \field{pages}{149\bibrangedash 159}
+      \range{pages}{11}
+    \endentry
+    \entry{bernstein2007}{book}{}{}
+      \name{author}{1}{}{%
+        {{hash=40f5f91c106b669e744d73616fb10472}{%
+           family={Bernstein},
+           familyi={B\bibinitperiod},
+           given={J.},
+           giveni={J\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Princeton, NJ}%
+      }
+      \list{publisher}{1}{%
+        {Princeton University Press}%
+      }
+      \strng{namehash}{40f5f91c106b669e744d73616fb10472}
+      \strng{fullhash}{40f5f91c106b669e744d73616fb10472}
+      \strng{fullhashraw}{40f5f91c106b669e744d73616fb10472}
+      \strng{bibnamehash}{40f5f91c106b669e744d73616fb10472}
+      \strng{authorbibnamehash}{40f5f91c106b669e744d73616fb10472}
+      \strng{authornamehash}{40f5f91c106b669e744d73616fb10472}
+      \strng{authorfullhash}{40f5f91c106b669e744d73616fb10472}
+      \strng{authorfullhashraw}{40f5f91c106b669e744d73616fb10472}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{{The Pigeonhole Principle: A Problem Book in Mathematics}}
+      \field{year}{2007}
+    \endentry
+    \entry{toffoli1980}{article}{}{}
+      \name{author}{2}{}{%
+        {{hash=e416fc8250ae2a011582e215479f4fb6}{%
+           family={Toffoli},
+           familyi={T\bibinitperiod},
+           given={T.},
+           giveni={T\bibinitperiod}}}%
+        {{hash=2fe212331ac8bbc2fbce21fdfcd6f0a4}{%
+           family={Margolus},
+           familyi={M\bibinitperiod},
+           given={N.},
+           giveni={N\bibinitperiod}}}%
+      }
+      \strng{namehash}{7011d59505557f5c59165f5a9f9f0c4a}
+      \strng{fullhash}{7011d59505557f5c59165f5a9f9f0c4a}
+      \strng{fullhashraw}{7011d59505557f5c59165f5a9f9f0c4a}
+      \strng{bibnamehash}{7011d59505557f5c59165f5a9f9f0c4a}
+      \strng{authorbibnamehash}{7011d59505557f5c59165f5a9f9f0c4a}
+      \strng{authornamehash}{7011d59505557f5c59165f5a9f9f0c4a}
+      \strng{authorfullhash}{7011d59505557f5c59165f5a9f9f0c4a}
+      \strng{authorfullhashraw}{7011d59505557f5c59165f5a9f9f0c4a}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Nature}
+      \field{number}{6259}
+      \field{title}{{Cellular Automata Machines: A New Environment for Modeling}}
+      \field{volume}{343}
+      \field{year}{1980}
+      \field{pages}{87\bibrangedash 93}
+      \range{pages}{7}
+      \verb{doi}
+      \verb 10.1038/343087a0
+      \endverb
+    \endentry
+    \entry{everett1957}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=a08237088c1444ccebe31f2b682a16b6}{%
+           family={Everett},
+           familyi={E\bibinitperiod},
+           given={Hugh},
+           giveni={H\bibinitperiod}}}%
+      }
+      \strng{namehash}{a08237088c1444ccebe31f2b682a16b6}
+      \strng{fullhash}{a08237088c1444ccebe31f2b682a16b6}
+      \strng{fullhashraw}{a08237088c1444ccebe31f2b682a16b6}
+      \strng{bibnamehash}{a08237088c1444ccebe31f2b682a16b6}
+      \strng{authorbibnamehash}{a08237088c1444ccebe31f2b682a16b6}
+      \strng{authornamehash}{a08237088c1444ccebe31f2b682a16b6}
+      \strng{authorfullhash}{a08237088c1444ccebe31f2b682a16b6}
+      \strng{authorfullhashraw}{a08237088c1444ccebe31f2b682a16b6}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Reviews of Modern Physics}
+      \field{number}{3}
+      \field{title}{{``Relative State'' Formulation of Quantum Mechanics}}
+      \field{volume}{29}
+      \field{year}{1957}
+      \field{pages}{454\bibrangedash 462}
+      \range{pages}{9}
+      \verb{doi}
+      \verb 10.1103/RevModPhys.29.454
+      \endverb
+      \verb{urlraw}
+      \verb https://doi.org/10.1103/RevModPhys.29.454
+      \endverb
+      \verb{url}
+      \verb https://doi.org/10.1103/RevModPhys.29.454
+      \endverb
+    \endentry
+    \entry{halpbern}{article}{}{}
+      \name{author}{2}{}{%
+        {{hash=82213279a8153cb38bd749c006c24afc}{%
+           family={Halpern},
+           familyi={H\bibinitperiod},
+           given={P.},
+           giveni={P\bibinitperiod}}}%
+        {{hash=ab9d4705fa862da1095bc75754d87f9b}{%
+           family={Tomasello},
+           familyi={T\bibinitperiod},
+           given={N.},
+           giveni={N\bibinitperiod}}}%
+      }
+      \strng{namehash}{24e19fcb486304b5f3ae073e97fecfd6}
+      \strng{fullhash}{24e19fcb486304b5f3ae073e97fecfd6}
+      \strng{fullhashraw}{24e19fcb486304b5f3ae073e97fecfd6}
+      \strng{bibnamehash}{24e19fcb486304b5f3ae073e97fecfd6}
+      \strng{authorbibnamehash}{24e19fcb486304b5f3ae073e97fecfd6}
+      \strng{authornamehash}{24e19fcb486304b5f3ae073e97fecfd6}
+      \strng{authorfullhash}{24e19fcb486304b5f3ae073e97fecfd6}
+      \strng{authorfullhashraw}{24e19fcb486304b5f3ae073e97fecfd6}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Advances in Astrophysics}
+      \field{month}{11}
+      \field{number}{3}
+      \field{title}{{Size of the Observable Universe}}
+      \field{volume}{1}
+      \field{year}{2016}
+    \endentry
+    \entry{archeops}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=9c290c6799d004e8e0a0f3d290e65bb1}{%
+           family={{The ARCHEOPS Collaboration}},
+           familyi={T\bibinitperiod}}}%
+      }
+      \strng{namehash}{9c290c6799d004e8e0a0f3d290e65bb1}
+      \strng{fullhash}{9c290c6799d004e8e0a0f3d290e65bb1}
+      \strng{fullhashraw}{9c290c6799d004e8e0a0f3d290e65bb1}
+      \strng{bibnamehash}{9c290c6799d004e8e0a0f3d290e65bb1}
+      \strng{authorbibnamehash}{9c290c6799d004e8e0a0f3d290e65bb1}
+      \strng{authornamehash}{9c290c6799d004e8e0a0f3d290e65bb1}
+      \strng{authorfullhash}{9c290c6799d004e8e0a0f3d290e65bb1}
+      \strng{authorfullhashraw}{9c290c6799d004e8e0a0f3d290e65bb1}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Astronomy and Astrophysics}
+      \field{title}{{The Cosmic Microwave Background Spectrum from the Full Focal Plane Observation of ARCHEOPS}}
+      \field{volume}{399}
+      \field{year}{2003}
+      \field{pages}{L19\bibrangedash L23}
+      \range{pages}{-1}
+    \endentry
+    \entry{codata}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=804e3d2f6a5e63897a4ca68d7996e823}{%
+           family={{CODATA}},
+           familyi={C\bibinitperiod}}}%
+      }
+      \strng{namehash}{804e3d2f6a5e63897a4ca68d7996e823}
+      \strng{fullhash}{804e3d2f6a5e63897a4ca68d7996e823}
+      \strng{fullhashraw}{804e3d2f6a5e63897a4ca68d7996e823}
+      \strng{bibnamehash}{804e3d2f6a5e63897a4ca68d7996e823}
+      \strng{authorbibnamehash}{804e3d2f6a5e63897a4ca68d7996e823}
+      \strng{authornamehash}{804e3d2f6a5e63897a4ca68d7996e823}
+      \strng{authorfullhash}{804e3d2f6a5e63897a4ca68d7996e823}
+      \strng{authorfullhashraw}{804e3d2f6a5e63897a4ca68d7996e823}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{howpublished}{The NIST Reference on Constants, Units, and Uncertainty}
+      \field{title}{{Value: Electron Mass}}
+      \field{year}{2018}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

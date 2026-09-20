@@ -1,0 +1,47 @@
+# =============================================
+# Makefile para compilar Project Alpha com CUDA 13.2
+# =============================================
+
+# Diretório do CUDA 13.2
+CUDA_PATH = E:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.2
+NVCC = "$(CUDA_PATH)\bin\nvcc.exe"
+
+# Diretórios de inclusão e bibliotecas
+INCLUDES = -I"$(CUDA_PATH)\include" -I"e:\alpha\src\include"
+LIBPATH = -L"$(CUDA_PATH)\lib\x64"
+LIBS = -lcudart -lcuda_rt
+
+# Compilador e flags
+CXX = cl.exe
+CXXFLAGS = /EHsc /std:c++17 /D_USE_CUDA /I"$(CUDA_PATH)\include" /I"e:\alpha\src\include"
+LDFLAGS = /link /SUBSYSTEM:CONSOLE /OUT:automaton.exe
+
+# Arquivos fonte
+SRC = automaton.obj bridge_cuda.obj bridge.obj
+OBJ_DIR = obj\
+
+# Alvo principal
+all: automaton.exe
+
+# Compilar arquivos .cu com nvcc
+$(OBJ_DIR)automaton.obj: automaton.cu
+	$(NVCC) $(INCLUDES) -c -o $@ $<
+
+$(OBJ_DIR)bridge_cuda.obj: bridge_cuda.cu
+	$(NVCC) $(INCLUDES) -c -o $@ $<
+
+# Compilar arquivos .cpp com cl.exe
+$(OBJ_DIR)bridge.obj: bridge.cpp
+	$(CXX) $(CXXFLAGS) /c $< -o $@
+
+# Linkar o executável
+automaton.exe: $(OBJ_DIR)automaton.obj $(OBJ_DIR)bridge_cuda.obj $(OBJ_DIR)bridge.obj
+	$(CXX) $(LDFLAGS) $(OBJ_DIR)automaton.obj $(OBJ_DIR)bridge_cuda.obj $(OBJ_DIR)bridge.obj $(LIBS) /LIBPATH:"$(CUDA_PATH)\lib\x64"
+
+# Limpar arquivos de objeto e executável
+clean:
+	del automaton.exe $(OBJ_DIR)*.obj
+	rmdir /s /q $(OBJ_DIR)
+
+# Limpar e compilar
+rebuild: clean all
