@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # `it_from_bit` -- standalone build of the paper **and** the simulator
 
 Created 20 Sep 2026 as a **basic version of the project to re-evaluate it**: the construction and the
@@ -69,3 +70,7 @@ back over them. Two workable habits:
 `build_odr.log` and `build_gui.log` are the logs of the last build (kept as evidence, regenerated on
 every run); `obj\` and `build\` are build outputs and can be deleted at any time.
 
+=======
+# it_from_bit
+Physics emerging from a cellular automaton
+>>>>>>> cc534895581c4806553829f43773a1643f288480
