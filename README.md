@@ -47,6 +47,27 @@ build_gui.bat
 
 Then run `build\automaton.exe` (the working directory must be `build\`, where the assets and DLLs are).
 
+**Setup screen (splash):** the lattice side `L` and the winding layers `W` are picked in the splash
+window before any mode starts.  The three buttons (`Simulation`, `Statistics`, `Replay`) and the
+`Enter` shortcut read the *same* selection; `Start Paused` is honoured by `Simulation` and `Replay`
+(`Statistics` has its own pause flag, which its `start()` resets).
+
+The values actually used are written back into `automaton.cfg` (`simulation.scenario`,
+`simulation.lattice`, `simulation.layers`) and are what the splash opens with on the next run; the
+other keys and the comments of the file are left untouched, and a value the UI cannot represent
+(`lattice = 88`, `layers = 5000`) snaps to the closest offered one (`89`, `4096`).
+
+A combination that cannot fit in memory is refused before the allocator is touched: the lattice
+needs `3 x L^3 x W x 160` bytes, so the default 21/10 takes ~42 MB while the largest pair the
+dropdowns offer (89/364) would need ~117 GB.  The screen shows that estimate live (cells, RAM,
+`RMAX`, island topology, light-frame length) next to the presets and the labels of the three
+controls, and the layout is recomputed from the window size, so resizing the window does not
+scatter the widgets.
+
+Keyboard: `Enter` starts the mode the focus ring is on (Simulation by default), `Tab` / `Up` /
+`Down` move the ring, `Left` / `Right` change the focused value (or toggle `Start Paused`), and
+`Esc` quits from the setup screen.  Clicking a control moves the ring to it as well.
+
 **External dependency, not vendored:** the Visual Studio toolchain (`cl`, `nmake`) and vcpkg at
 `E:\vcpkg\installed\x64-windows` for `freetype`, `brotli`, `bz2`, `zlib`, `glfw3` headers and libraries.
 `build_gui.bat` sets `VCPKG_ROOT` to that path explicitly, because the environment may define it as the

@@ -6,8 +6,13 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <vector>
 
 Config gConfig;
+
+// Set by loadConfig(); used by the splash screen as the write target of
+// saveConfig() so the persisted selection lands in the file that was read.
+std::string gConfigPath;
 
 using namespace automaton;
 
@@ -40,6 +45,23 @@ static void stripComment(std::string& s)
     }
 }
 
+// The splash screen offers odd sides only (5, 7, ..., 89).  Snap to that grid
+// instead of silently running with a value the setup screen cannot display.
+static int clampLattice(int L)
+{
+    if (L < 5)  L = 5;
+    if (L > 89) L = 89;
+    if ((L & 1) == 0) ++L;   // nearest odd above; 89 is already odd
+    return L;
+}
+
+static int clampLayers(int W)
+{
+    if (W < 2)    W = 2;
+    if (W > 4096) W = 4096;
+    return W;
+}
+
 bool loadConfig(const std::string& path)
 {
     std::ifstream file(path);
@@ -62,6 +84,7 @@ bool loadConfig(const std::string& path)
     }
 
     std::cout << "[Config] Loading: " << actualPath << std::endl;
+    gConfigPath = actualPath;
 
     // Reset to defaults before loading
     gConfig = Config{};
@@ -217,6 +240,17 @@ bool loadConfig(const std::string& path)
             gConfig.simulation.mm_seed = (unsigned)std::stoul(value);
         }
 
+        // Lattice of the last run started from the splash screen.
+        else if (key == "simulation.lattice" || key == "lattice")
+        {
+            gConfig.simulation.lattice = clampLattice(std::stoi(value));
+        }
+
+        else if (key == "simulation.layers" || key == "layers")
+        {
+            gConfig.simulation.layers = clampLayers(std::stoi(value));
+        }
+
         // =========================
         // tomography
         // =========================
@@ -257,7 +291,91 @@ bool loadConfig(const std::string& path)
 
     std::cout << "[Config] scenario = "
               << gConfig.simulation.scenario
+              << ", lattice L = " << gConfig.simulation.lattice
+              << ", layers W = " << gConfig.simulation.layers
               << std::endl;
+
+    return true;
+}
+
+bool saveConfig(const std::string& path)
+{
+    std::ifstream in(path);
+    if (!in)
+    {
+        std::cerr << "[Config] Cannot write (unreadable): " << path << std::endl;
+        return false;
+    }
+
+    // The three keys the setup screen owns.  Everything else in the file is
+    // left byte-for-byte as it was, comments included.
+    struct ManagedKey
+    {
+        const char* key;
+        std::string value;
+    };
+
+    std::vector<ManagedKey> managed = {
+        { "simulation.scenario", std::to_string(gConfig.simulation.scenario) },
+        { "simulation.lattice",  std::to_string(gConfig.simulation.lattice)  },
+        { "simulation.layers",   std::to_string(gConfig.simulation.layers)   }
+    };
+
+    std::vector<bool>        replaced(managed.size(), false);
+    std::vector<std::string> lines;
+
+    std::string line;
+    while (std::getline(in, line))
+    {
+        std::string probe = line;
+        trim(probe);
+
+        if (!probe.empty() && probe[0] != '#' && probe[0] != '/')
+        {
+            size_t pos = probe.find('=');
+            if (pos != std::string::npos)
+            {
+                std::string key = probe.substr(0, pos);
+                trim(key);
+
+                for (size_t i = 0; i < managed.size(); ++i)
+                {
+                    if (!replaced[i] && key == managed[i].key)
+                    {
+                        line = std::string(managed[i].key) + " = " + managed[i].value;
+                        replaced[i] = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        lines.push_back(line);
+    }
+    in.close();
+
+    // Keys the file did not carry yet are appended at the end.
+    for (size_t i = 0; i < managed.size(); ++i)
+    {
+        if (!replaced[i])
+            lines.push_back(std::string(managed[i].key) + " = " + managed[i].value);
+    }
+
+    std::ofstream out(path, std::ios::trunc);
+    if (!out)
+    {
+        std::cerr << "[Config] Cannot write: " << path << std::endl;
+        return false;
+    }
+
+    for (const std::string& l : lines)
+        out << l << "\n";
+
+    std::cout << "[Config] Saved: " << path
+              << " (scenario=" << gConfig.simulation.scenario
+              << ", lattice=" << gConfig.simulation.lattice
+              << ", layers="  << gConfig.simulation.layers
+              << ")" << std::endl;
 
     return true;
 }

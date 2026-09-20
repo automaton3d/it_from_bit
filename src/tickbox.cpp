@@ -44,7 +44,9 @@ void Tickbox::draw(TextRenderer& renderer) const {
     };
     drawLineLoop2D(border, borderColor_, P, 2.0f);
 
-    // Check mark (bold white)
+    // Check mark (bold white).  drawLineStrip2D, not drawLineLoop2D: the loop
+    // closes the three points back into a triangle, which is why the tick used
+    // to render as a small white triangle.
     if (state_) {
         float m = 4.0f;
         std::vector<glm::vec2> check = {
@@ -52,7 +54,7 @@ void Tickbox::draw(TextRenderer& renderer) const {
             {x_ + BOX_SIZE * 0.5f, boxY + BOX_SIZE - m},
             {x_ + BOX_SIZE - m, boxY + m}
         };
-        drawLineLoop2D(check, glm::vec3(0.98f, 0.98f, 1.0f), P, 4.0f);   // ← 4.0f em vez de 3.5f
+        drawLineStrip2D(check, glm::vec3(0.98f, 0.98f, 1.0f), P, 4.0f);
     }
 
     // Texto

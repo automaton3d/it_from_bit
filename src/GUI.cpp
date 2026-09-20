@@ -14,7 +14,6 @@
 #include "progress.h"
 #include "logo.h"
 #include "text_renderer.h"
-#include "dropdown.h"
 #include "projection.h"
 #include "projection_manager.h"
 #include "radio.h"

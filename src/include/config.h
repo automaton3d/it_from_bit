@@ -61,6 +61,14 @@ struct {
         double   mm_eps   = 0.0;  // C-violating bias; 0 disables the hook
         double   mm_pbase = 1.0;  // base conjugation probability per turnaround
         unsigned mm_seed  = 1;    // xorshift32 seed (deterministic runs)
+
+        // Lattice selection shown by the splash screen.  Persisted so the setup
+        // screen opens on the run chosen last time (keys simulation.lattice /
+        // simulation.layers).  Appended AFTER the existing members on purpose:
+        // the note at the end of this struct explains why appending cannot
+        // shift the offsets that already-compiled objects read.
+        int lattice = 21;   // L, lattice side: odd, 5..89
+        int layers  = 10;   // W, winding layers: >= 2
     } simulation;
 
     // =========================
@@ -93,7 +101,19 @@ struct {
 // global
 extern Config gConfig;
 
+// Path that the last successful loadConfig() actually read ("" if none was
+// read).  saveConfig() writes to this path, so the values chosen in the splash
+// screen go back into the file the program is really using (running from
+// build\ updates build\automaton.cfg, not a new file next to the exe).
+extern std::string gConfigPath;
+
 // loader
 bool loadConfig(const std::string& path);
+
+// writer: updates the managed keys (simulation.scenario / simulation.lattice /
+// simulation.layers) in place, preserving the comments and the layout of the
+// rest of the file; keys the file does not have are appended at the end.
+// Returns false when the path cannot be read or written.
+bool saveConfig(const std::string& path);
 
 #endif

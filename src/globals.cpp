@@ -24,10 +24,10 @@ unsigned tomo_x = 0;
 unsigned tomo_y = 0;
 unsigned tomo_z = 0;
 
-// Splash state
-int latticeSize = -1;
-int numLayers = -1;
-bool initPaused = false;
+// Splash state: the setup screen publishes its choice through
+// splash::lattice_size / splash::numLayers (splash.h) and persists it via
+// saveConfig() (config.h).  The old write-only globals latticeSize, numLayers
+// and initPaused lived here; nothing ever read them.
 
 // Simulation state
 std::vector<unsigned int> voxels;

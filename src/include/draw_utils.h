@@ -44,6 +44,12 @@ void drawLineLoop2D(const std::vector<glm::vec2>& points,
                     const glm::mat4& proj,
                     float thickness = 1.0f);
 
+// Outlined rectangle, same conventions as drawQuad2D (origin top-left).
+// Both reuse one static VAO/VBO: no GL object is created per call.
+void drawRectOutline2D(float x1, float y1, float x2, float y2,
+                       const glm::vec3& color,
+                       float thickness = 1.0f);
+
 // Filled polygon / circle / pie
 void drawTriangleFan2D(const std::vector<glm::vec2>& points,
                        const glm::vec3& color,

@@ -7,7 +7,6 @@
 #include "color_utils.h"
 #include "layers.h"
 #include "text_renderer.h"
-#include "dropdown.h"
 #include "globals.h"
 #include "projection.h"
 #include "tomography.h"
@@ -59,6 +58,32 @@ namespace framework {
   // ---------------------------------------------------------------------
   // Helpers: shader-based primitive drawing
   // ---------------------------------------------------------------------
+  // ---------------------------------------------------------------------
+  // Shared primitive buffers
+  //
+  // drawPoints / drawLines / drawQuads all upload vec3 positions into
+  // attribute 0 of the 3D colour program, so one VAO/VBO pair serves all three.
+  // They run many times per frame (every layer centre, every lattice edge, the
+  // seed points) and each call used to create and delete its own pair.
+  // ---------------------------------------------------------------------
+  static void ensurePrimitiveBuffers(GLuint& vao, GLuint& vbo)
+  {
+    if (vao) return;
+
+    glGenVertexArrays(1, &vao);
+    glGenBuffers(1, &vbo);
+
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+  }
+
+  static GLuint gPrimVao = 0;
+  static GLuint gPrimVbo = 0;
+
   static void drawPoints(const std::vector<glm::vec3>& pts,
                          const glm::vec3& color,
                          const glm::mat4& mvp,
@@ -69,19 +94,13 @@ namespace framework {
     glUniformMatrix4fv(colorMvpLoc3D, 1, GL_FALSE, glm::value_ptr(mvp));
     glUniform3f(colorColorLoc3D, color.r, color.g, color.b);
 
-    GLuint vao=0, vbo=0;
-    glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, pts.size()*sizeof(glm::vec3), pts.data(), GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
-    glEnableVertexAttribArray(0);
+    ensurePrimitiveBuffers(gPrimVao, gPrimVbo);
+    glBindVertexArray(gPrimVao);
+    glBindBuffer(GL_ARRAY_BUFFER, gPrimVbo);
+    glBufferData(GL_ARRAY_BUFFER, pts.size()*sizeof(glm::vec3), pts.data(), GL_DYNAMIC_DRAW);
     glPointSize(size);
     glDrawArrays(GL_POINTS, 0, (GLsizei)pts.size());
     glBindVertexArray(0);
-    glDeleteBuffers(1, &vbo);
-    glDeleteVertexArrays(1, &vao);
   }
 
   static void drawLines(const std::vector<glm::vec3>& verts,
@@ -94,19 +113,13 @@ namespace framework {
     glUniformMatrix4fv(colorMvpLoc3D, 1, GL_FALSE, glm::value_ptr(mvp));
     glUniform3f(colorColorLoc3D, color.r, color.g, color.b);
 
-    GLuint vao=0, vbo=0;
-    glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, verts.size()*sizeof(glm::vec3), verts.data(), GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
-    glEnableVertexAttribArray(0);
+    ensurePrimitiveBuffers(gPrimVao, gPrimVbo);
+    glBindVertexArray(gPrimVao);
+    glBindBuffer(GL_ARRAY_BUFFER, gPrimVbo);
+    glBufferData(GL_ARRAY_BUFFER, verts.size()*sizeof(glm::vec3), verts.data(), GL_DYNAMIC_DRAW);
     glLineWidth(width);
     glDrawArrays(GL_LINES, 0, (GLsizei)verts.size());
     glBindVertexArray(0);
-    glDeleteBuffers(1, &vbo);
-    glDeleteVertexArrays(1, &vao);
   }
 
   void drawQuads(const std::vector<glm::vec3>& verts,
@@ -118,22 +131,16 @@ namespace framework {
     glUniformMatrix4fv(colorMvpLoc3D, 1, GL_FALSE, glm::value_ptr(mvp));
     glUniform3f(colorColorLoc3D, color.r, color.g, color.b);
 
-    GLuint vao=0, vbo=0;
-    glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, verts.size()*sizeof(glm::vec3), verts.data(), GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
-    glEnableVertexAttribArray(0);
+    ensurePrimitiveBuffers(gPrimVao, gPrimVbo);
+    glBindVertexArray(gPrimVao);
+    glBindBuffer(GL_ARRAY_BUFFER, gPrimVbo);
+    glBufferData(GL_ARRAY_BUFFER, verts.size()*sizeof(glm::vec3), verts.data(), GL_DYNAMIC_DRAW);
     // Each face provided as 4 vertices → draw with TRIANGLE_FAN per face
     // Here we assume verts.size() is multiple of 4 and faces are contiguous
     for (size_t i = 0; i + 3 < verts.size(); i += 4) {
       glDrawArrays(GL_TRIANGLE_FAN, (GLint)i, 4);
     }
     glBindVertexArray(0);
-    glDeleteBuffers(1, &vbo);
-    glDeleteVertexArrays(1, &vao);
   }
 
   // Locate the source-center cell of a layer by its conserved momentum m.
@@ -499,25 +506,35 @@ void renderWavefront()
       glUniformMatrix4fv(glGetUniformLocation(ctx.shader, "view"), 1, GL_FALSE, glm::value_ptr(view));
       glUniformMatrix4fv(glGetUniformLocation(ctx.shader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
-      GLuint vao, vbo;
-      glGenVertexArrays(1, &vao);
-      glGenBuffers(1, &vbo);
-      glBindVertexArray(vao);
-      glBindBuffer(GL_ARRAY_BUFFER, vbo);
-      glBufferData(GL_ARRAY_BUFFER, axisVerts.size() * sizeof(Vertex), axisVerts.data(), GL_STATIC_DRAW);
+      // Pos+colour layout, so this needs its own persistent VAO/VBO pair;
+      // renderAxes() runs every frame, and the old body created and deleted one
+      // pair per call.
+      static GLuint axisVao = 0;
+      static GLuint axisVbo = 0;
+      if (!axisVao)
+      {
+          glGenVertexArrays(1, &axisVao);
+          glGenBuffers(1, &axisVbo);
 
-      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-      glEnableVertexAttribArray(0);
-      glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
-      glEnableVertexAttribArray(1);
+          glBindVertexArray(axisVao);
+          glBindBuffer(GL_ARRAY_BUFFER, axisVbo);
+          glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+          glEnableVertexAttribArray(0);
+          glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
+          glEnableVertexAttribArray(1);
+          glBindVertexArray(0);
+          glBindBuffer(GL_ARRAY_BUFFER, 0);
+      }
+
+      glBindVertexArray(axisVao);
+      glBindBuffer(GL_ARRAY_BUFFER, axisVbo);
+      glBufferData(GL_ARRAY_BUFFER, axisVerts.size() * sizeof(Vertex), axisVerts.data(), GL_DYNAMIC_DRAW);
 
       glLineWidth(2.0f);
       glDrawArrays(GL_LINES, 0, (GLsizei)axisVerts.size());
       glLineWidth(1.0f);
 
       glBindVertexArray(0);
-      glDeleteBuffers(1, &vbo);
-      glDeleteVertexArrays(1, &vao);
 
       // === 3. RENDER AXIS LABELS ===
       hudText.RenderText("x", axisLength + labelOffset, -labelOffset, 0.7f,
@@ -854,6 +871,13 @@ void renderGizmo()
    */
   void render3DObjects()
   {
+    // Everything below draws through HUD state: the layer list and the data3D
+    // toggles are built by framework::initHUD().  A mode that forgets to set the
+    // HUD up would otherwise index an empty vector / dereference a null
+    // unique_ptr -- exactly how "Replay" from the setup screen used to die with
+    // an access violation (0xC0000005) instead of showing an empty scene.
+    if (data3D.size() < 9 || !layerList) return;
+
     glEnable(GL_DEPTH_TEST);
 
     // Draw tomo plane FIRST (before voxels) so voxels render on top.

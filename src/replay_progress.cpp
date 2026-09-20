@@ -7,6 +7,7 @@
 #include "globals.h"
 #include "projection_manager.h"
 #include "Renderer2D.h"
+#include "draw_utils.h"
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -58,54 +59,16 @@ void ReplayProgressBar::render()
 
     glm::mat4 ortho = ProjectionManager::instance().get2DOrtho();
 
-    // Lambda helper for drawing quads
+    // Thin wrappers over the shared 2D helpers: the custom bodies that used to
+    // live here created and deleted a VAO+VBO pair per call, and render() draws
+    // several of these every frame.  Signatures kept identical for the callers
+    // below.
     auto drawQuad2D = [&](float x1, float y1, float x2, float y2, const glm::vec3& color) {
-        std::vector<glm::vec2> verts = {
-            {x1, y1}, {x2, y1}, {x2, y2}, {x1, y2}
-        };
-        Renderer2D::use();
-        Renderer2D::setMVP(
-          ProjectionManager::instance().get2DOrtho()
-        );        
-        Renderer2D::setColor(color);        
-        GLuint vao, vbo;
-        glGenVertexArrays(1, &vao);
-        glGenBuffers(1, &vbo);
-        glBindVertexArray(vao);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, verts.size() * sizeof(glm::vec2), 
-                     verts.data(), GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), (void*)0);
-        glEnableVertexAttribArray(0);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-        glBindVertexArray(0);
-        glDeleteBuffers(1, &vbo);
-        glDeleteVertexArrays(1, &vao);
+        ::drawQuad2D(x1, y1, x2, y2, color, ortho);
     };
 
-    // Lambda helper for drawing line loops
     auto drawLineLoop2D = [&](const std::vector<glm::vec2>& verts, const glm::vec3& color, float lineWidth = 2.0f) {
-        Renderer2D::use();
-
-        Renderer2D::setMVP(
-          ProjectionManager::instance().get2DOrtho()
-        );
-        //glUniform3f(colorColorLoc2D, color.r, color.g, color.b);
-        
-        GLuint vao, vbo;
-        glGenVertexArrays(1, &vao);
-        glGenBuffers(1, &vbo);
-        glBindVertexArray(vao);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, verts.size() * sizeof(glm::vec2), 
-                     verts.data(), GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), (void*)0);
-        glEnableVertexAttribArray(0);
-        glLineWidth(lineWidth);
-        glDrawArrays(GL_LINE_LOOP, 0, static_cast<GLsizei>(verts.size()));
-        glBindVertexArray(0);
-        glDeleteBuffers(1, &vbo);
-        glDeleteVertexArrays(1, &vao);
+        ::drawLineLoop2D(verts, color, ortho, lineWidth);
     };
 
     // Background bar (dark gray)

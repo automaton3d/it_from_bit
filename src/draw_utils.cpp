@@ -78,13 +78,35 @@ void drawLineLoop2D(
     float thickness)
 {
     if (pts.empty()) return;
+
     init();
+
+    // Bind the 2D program, matrix and colour.  Without a program the draw call
+    // is invalid in a core profile, so every outline was silently dropped: the
+    // tick-boxes showed a filled square with no check mark and no border.  The
+    // `proj` argument is kept for compatibility; the 2D ortho is the only
+    // projection these vertices belong to.
+    (void)proj;
+    Renderer2D::use();
+    Renderer2D::setMVP(ProjectionManager::instance().get2DOrtho());
+    Renderer2D::setColor(color);
+
     glLineWidth(thickness);
-    glUseProgram(0);
     glBindVertexArray(vao);
     upload(pts);
     glDrawArrays(GL_LINE_LOOP, 0, (GLsizei)pts.size());
     glBindVertexArray(0);
+}
+
+// Outlined rectangle in the usual 2D space (origin top-left).  Reuses the
+// static VAO/VBO above, so calling it every frame is free of GL object churn.
+void drawRectOutline2D(float x1, float y1, float x2, float y2,
+                       const glm::vec3& color, float thickness)
+{
+    drawLineLoop2D({ {x1, y1}, {x2, y1}, {x2, y2}, {x1, y2} },
+                   color,
+                   ProjectionManager::instance().get2DOrtho(),
+                   thickness);
 }
 
 void drawLineStrip2D(
@@ -114,14 +136,24 @@ void drawLine2D_new(
 {
     (void)c2;
 
-    struct V {
-        glm::vec3 pos;
-    };
+    // Two vec3 positions need their own VAO/VBO: the attribute layout lives in
+    // the VAO, and the 2-float helpers above share a different one.  Created on
+    // first use and kept afterwards -- this function is called many times per
+    // frame (axes, arrows, HUD) and used to create/delete a pair per call.
+    static GLuint vao3 = 0, vbo3 = 0;
+    if (!vao3)
+    {
+        glGenVertexArrays(1, &vao3);
+        glGenBuffers(1, &vbo3);
+        glBindVertexArray(vao3);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo3);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+        glBindVertexArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
 
-    V data[2] = {
-        {{x1, y1, 0.0f}},
-        {{x2, y2, 0.0f}}
-    };
+    const float data[6] = { x1, y1, 0.0f, x2, y2, 0.0f };
 
     Renderer2D::use();
     Renderer2D::setMVP(mvp);
@@ -129,33 +161,11 @@ void drawLine2D_new(
     // uses only ONE uniform color
     Renderer2D::setColor(c1);
 
-    GLuint vao, vbo;
-
-    glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
-
-    glBindVertexArray(vao);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBindVertexArray(vao3);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo3);
     glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_DYNAMIC_DRAW);
-
-    glVertexAttribPointer(
-        0,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(V),
-        (void*)0
-    );
-
-    glEnableVertexAttribArray(0);
-
     glDrawArrays(GL_LINES, 0, 2);
-
     glBindVertexArray(0);
-
-    glDeleteBuffers(1, &vbo);
-    glDeleteVertexArrays(1, &vao);
 }
 
 // Note: x1,y1 is the top-left corner and x2,y2 the bottom-right

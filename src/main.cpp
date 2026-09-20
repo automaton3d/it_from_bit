@@ -53,12 +53,6 @@ bool modeInitialized = false;
 // Forward Declarations
 // =============================================================================
 
-// Splash functions (from splash.cpp)
-namespace splash {
-    void render();
-    void cleanup();
-}
-
 // Stats functions (from stats.cpp)
 namespace stats {
     extern void display(GLFWwindow* window);
@@ -157,10 +151,31 @@ int initializeStatistics(GLFWwindow* window)
 int initializeReplay(GLFWwindow* window)
 {
     currentMode = REPLAY;
+
+    // The replay view IS the simulation view, with the frames coming from the
+    // recorder instead of the physics, so it needs the same scene + HUD set-up.
+    // Without the HUD, the widgets this view draws through (layerList, data3D,
+    // the layer and progress bars) were never created, and entering Replay from
+    // the setup screen ended in an access violation (0xC0000005) on the first
+    // frame -- see the guard at the top of render3DObjects().
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+    unsigned int textShader = compileShader(textVertexShaderSource, textFragmentShaderSource);
+
+    if (!framework::initHUD(ctx, "fonts/arial.ttf", 24, textShader, width, height)) {
+        std::cerr << "[Mode] Warning: HUD init failed\n";
+    }
+
     initScene(ctx);
     setupInputCallbacks(window, &ctx);
     StartSimulationThread();
 
+    if (!gSimulationThreadRunning.load(std::memory_order_acquire)) {
+        std::cerr << "[Mode] Simulation thread failed to start!\n";
+        return -1;
+    }
+
+    timer = 0;
     return 0;
 }
 

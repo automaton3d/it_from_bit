@@ -30,6 +30,11 @@ public:
     // Get the selected option index
     int getSelectedIndex() const;
     void setSelectedIndex(int idx);
+
+    // Geometry.  The splash screen recomputes its layout when the window is
+    // resized, which needs to move the boxes after construction.
+    void setPosition(float newX, float newY) { x = newX; y = newY; }
+    void setSize(float newWidth, float newHeight) { width = newWidth; height = newHeight; }
     
     // Get the selected option text
     std::string getSelectedText() const; 

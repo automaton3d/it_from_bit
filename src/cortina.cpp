@@ -16,6 +16,7 @@
 #include "globals.h"
 #include "text_renderer.h"
 #include "Renderer2D.h"
+#include "draw_utils.h"
 
 // ============================================================================
 // Globals
@@ -116,68 +117,13 @@ void Cortina::drawRect(
     float rheight,
     const glm::vec3& color)
 {
-    glm::mat4 ortho_projection =
-        glm::ortho(
-            0.0f,
-            (float)gViewport[2],
-            (float)gViewport[3],
-            0.0f
-        );
-
-    Renderer2D::use();
-    Renderer2D::setMVP(ortho_projection);
-    Renderer2D::setColor(color);
-
-    GLfloat vertices[] =
-    {
-        // Triangle 1
-        rx,          ry + rheight,
-        rx,          ry,
-        rx + rwidth, ry,
-
-        // Triangle 2
-        rx,          ry + rheight,
-        rx + rwidth, ry,
-        rx + rwidth, ry + rheight
-    };
-
-    GLuint vao = 0;
-    GLuint vbo = 0;
-
-    glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
-
-    glBindVertexArray(vao);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
-    glBufferData(
-        GL_ARRAY_BUFFER,
-        sizeof(vertices),
-        vertices,
-        GL_DYNAMIC_DRAW
-    );
-
-    glVertexAttribPointer(
-        0,
-        2,
-        GL_FLOAT,
-        GL_FALSE,
-        2 * sizeof(GLfloat),
-        (void*)0
-    );
-
-    glEnableVertexAttribArray(0);
-
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-
-    glDisableVertexAttribArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-
-    glDeleteBuffers(1, &vbo);
-    glDeleteVertexArrays(1, &vao);
+    // drawQuad2D keeps ONE static VAO/VBO for every 2D quad in the process.
+    // The previous body created and deleted a VAO+VBO pair per rectangle, and an
+    // open dropdown draws a dozen rectangles per frame.  Same coordinate space
+    // as before (origin top-left, ProjectionManager's 2D ortho), so nothing moves
+    // on screen.
+    drawQuad2D(rx, ry, rx + rwidth, ry + rheight, color,
+               ProjectionManager::instance().get2DOrtho());
 }
 
 // ============================================================================

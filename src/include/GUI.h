@@ -29,7 +29,6 @@
 #include <atomic>
 
 #include "button.h"
-#include "dropdown.h"
 
 #define GLM_FORCE_RADIANS
 
@@ -79,8 +78,9 @@ namespace framework
   void init();
   void resize(int width, int height);
   void clearVoxels();
-  void initMenuDropdowns();
-  void handleMenuSelection();
+  // initMenuDropdowns() and handleMenuSelection() were declared here but never
+  // defined and never called; the first one went away with the Dropdown widget
+  // (Cortina is the only combo box in the project now).
 
   // Internal rendering methods
   void renderAxes();

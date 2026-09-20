@@ -27,7 +27,6 @@ OBJ_COMMON = \
 	$(OBJ_DIR)\core.obj \
 	$(OBJ_DIR)\cortina.obj \
 	$(OBJ_DIR)\draw_utils.obj \
-	$(OBJ_DIR)\dropdown.obj \
 	$(OBJ_DIR)\globals.obj \
 	$(OBJ_DIR)\GUI.obj \
 	$(OBJ_DIR)\GUI_2D.obj \
@@ -224,8 +223,8 @@ $(OBJ_DIR)\cortina.obj: src\cortina.cpp src\include\cortina.h
 $(OBJ_DIR)\draw_utils.obj: src\draw_utils.cpp src\include\draw_utils.h
 	$(CC) $(CFLAGS) /c src\draw_utils.cpp /Fo$(OBJ_DIR)\draw_utils.obj
 
-$(OBJ_DIR)\dropdown.obj: src\dropdown.cpp src\include\dropdown.h
-	$(CC) $(CFLAGS) /c src\dropdown.cpp /Fo$(OBJ_DIR)\dropdown.obj
+# (the old Dropdown widget was removed: the setup screen uses Cortina only,
+#  which is now the single combo box in the project)
 
 $(OBJ_DIR)\globals.obj: src\globals.cpp src\include\globals.h
 	$(CC) $(CFLAGS) /c src\globals.cpp /Fo$(OBJ_DIR)\globals.obj
@@ -405,7 +404,6 @@ ALL_HEADERS = \
 	src\include\core.h \
 	src\include\cortina.h \
 	src\include\draw_utils.h \
-	src\include\dropdown.h \
 	src\include\glm_config.h \
 	src\include\globals.h \
 	src\include\GUI.h \

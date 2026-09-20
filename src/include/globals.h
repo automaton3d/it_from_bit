@@ -54,9 +54,6 @@ extern int gViewport[4];
 
 // Application state
 extern unsigned long long timer;
-extern int latticeSize;
-extern int numLayers;
-extern bool initPaused;
 
 // Control flags
 extern std::atomic<bool> gSimulationThreadRunning;
