@@ -88,6 +88,7 @@ namespace framework
   void renderCenter();
   void renderClear();
   void renderCavity();
+  void renderLattice();
   void renderGrid();
   void render3DObjects();
   void renderWavefront();

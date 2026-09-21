@@ -654,6 +654,102 @@ void renderCavity()
 }
 
   /**
+   * The lattice itself: the box the simulation lives in, drawn the way the region
+   * overlay (subregion_modal.cpp) draws it -- the twelve edges plus the grid of
+   * the faces turned towards the camera, so the box reads as a lattice instead of
+   * the interior becoming a thicket of lines.  Called by the "Lattice" tickbox.
+   *
+   * Cell size and placement follow the rest of the scene: one cell is 0.5 / EL
+   * world units and the lattice is centred on the origin (see renderGrid() and
+   * enhanceVoxel()).  The per-axis edges are used, so a run on an anisotropic
+   * region shows the box it actually has.
+   */
+  void renderLattice()
+  {
+    const float GRID_SIZE = 0.5f / (float)EL;
+    const float half[3] = {
+      0.5f * (float)ELX * GRID_SIZE,
+      0.5f * (float)ELY * GRID_SIZE,
+      0.5f * (float)ELZ * GRID_SIZE
+    };
+    const int   cells[3] = { (int)ELX, (int)ELY, (int)ELZ };
+    const float lo[3] = { -half[0], -half[1], -half[2] };
+    const float hi[3] = {  half[0],  half[1],  half[2] };
+
+    // The twelve edges: four per axis.
+    std::vector<glm::vec3> edges;
+    edges.reserve(24);
+    for (int a = 0; a < 3; ++a)
+    {
+      const int b = (a + 1) % 3;
+      const int c = (a + 2) % 3;
+
+      for (int i = 0; i < 4; ++i)
+      {
+        glm::vec3 p(0.0f);
+        p[a] = lo[a];
+        p[b] = (i & 1) ? hi[b] : lo[b];
+        p[c] = (i & 2) ? hi[c] : lo[c];
+        edges.push_back(p);
+
+        p[a] = hi[a];
+        edges.push_back(p);
+      }
+    }
+
+    // The interior grid of each of the six faces, kept apart per axis and side so
+    // that only the faces pointing at the camera are drawn.
+    std::vector<glm::vec3> faceGrid[3][2];
+    for (int a = 0; a < 3; ++a)
+    {
+      const int b = (a + 1) % 3;
+      const int c = (a + 2) % 3;
+
+      for (int side = 0; side < 2; ++side)
+      {
+        const float fixed = side ? hi[a] : lo[a];
+
+        for (int i = 1; i < cells[c]; ++i)      // lines parallel to b
+        {
+          glm::vec3 p(0.0f);
+          p[a] = fixed;
+          p[b] = lo[b];
+          p[c] = lo[c] + i * GRID_SIZE;
+
+          glm::vec3 q = p;
+          q[b] = hi[b];
+          faceGrid[a][side].push_back(p);
+          faceGrid[a][side].push_back(q);
+        }
+
+        for (int i = 1; i < cells[b]; ++i)      // lines parallel to c
+        {
+          glm::vec3 p(0.0f);
+          p[a] = fixed;
+          p[b] = lo[b] + i * GRID_SIZE;
+          p[c] = lo[c];
+
+          glm::vec3 q = p;
+          q[c] = hi[c];
+          faceGrid[a][side].push_back(p);
+          faceGrid[a][side].push_back(q);
+        }
+      }
+    }
+
+    glm::mat4 mvp = framework::mProjection_ * ctx.camera.GetViewMatrix() * glm::mat4(1.0f);
+    const glm::vec3 eye = ctx.camera.getPosition();
+
+    // Same palette as the region overlay: dim grid, bright edges.
+    for (int a = 0; a < 3; ++a)
+    {
+      const int side = (eye[a] > 0.0f) ? 1 : 0;
+      drawLines(faceGrid[a][side], glm::vec3(0.40f, 0.44f, 0.55f), mvp, 1.0f);
+    }
+    drawLines(edges, glm::vec3(0.16f, 0.58f, 1.00f), mvp, 2.0f);
+  }
+
+  /**
    * Horizontal reference grid.
    */
   void renderGrid()
@@ -944,6 +1040,9 @@ void renderGizmo()
     }
     if (data3D[7].getState()) renderAxes();
     if (data3D[8].getState()) renderGrid();
+    // The tenth tickbox ("Lattice") lives in its own flag, not in the array: the
+    // array is mirrored by Config::data3D[9] and growing it would move members.
+    if (data3D.size() > 9 && data3D[9].getState()) renderLattice();
   }
 
 } // namespace framework

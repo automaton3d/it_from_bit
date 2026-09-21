@@ -183,12 +183,15 @@ bool loadConfig(const std::string& path)
         else if (key == "data3D.centers")
             gConfig.data3D[5] = parseBool(value);
 
-        // The tickbox is called "Cavity" (it draws the bubble's spherical cavity:
-        // the Fibonacci sphere inscribed in the unit cube).  `data3D.lattice` is
-        // the old name of the same switch and is still read, so a configuration
-        // written before the rename keeps working.
-        else if (key == "data3D.cavity" || key == "data3D.lattice")
+        // The "Cavity" tickbox (the Fibonacci sphere inscribed in the unit cube).
+        else if (key == "data3D.cavity")
             gConfig.data3D[6] = parseBool(value);
+
+        // The "Lattice" tickbox: the lattice box itself.  This key used to mean the
+        // cavity, before the two were separated; a file written back then should use
+        // data3D.cavity for it (see README, "Rename the Lattice tickbox").
+        else if (key == "data3D.lattice")
+            gConfig.data3DLattice = parseBool(value);
 
         else if (key == "data3D.axes")
             gConfig.data3D[7] = parseBool(value);

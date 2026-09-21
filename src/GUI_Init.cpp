@@ -109,7 +109,11 @@ namespace framework
             Tickbox(50, d3Dpos + 5*RAD_SEP, "Centers"),
             Tickbox(50, d3Dpos + 6*RAD_SEP, "Cavity"),
             Tickbox(50, d3Dpos + 7*RAD_SEP, "Axes"),
-            Tickbox(50, d3Dpos + 8*RAD_SEP, "Plane")
+            Tickbox(50, d3Dpos + 8*RAD_SEP, "Plane"),
+            // Tenth entry, and the only one that draws the lattice box itself
+            // (renderLattice()).  Its flag is Config::data3DLattice, not
+            // data3D[9]: see the note in config.h.
+            Tickbox(50, d3Dpos + 9*RAD_SEP, "Lattice")
         };
         /*
         data3D[0].setState(true);
@@ -122,6 +126,13 @@ namespace framework
             data3D[i].onToggle = [i](bool state) { gConfig.data3D[i] = state; };
             data3D[i].setState(gConfig.data3D[i]);
         }
+
+        // The "Lattice" tickbox (tenth entry, index 9) draws the lattice box.  Its
+        // state lives in Config::data3DLattice instead of data3D[9], because the
+        // Config array is fixed at nine entries: growing it would move the members
+        // after it, in a header every translation unit includes (see config.h).
+        data3D[9].onToggle = [](bool state) { gConfig.data3DLattice = state; };
+        data3D[9].setState(gConfig.data3DLattice);
 
         // ------------------------------------------------------------
         // "Visited" toggle (bottom-right corner of the 3-D scene).

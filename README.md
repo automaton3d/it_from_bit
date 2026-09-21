@@ -298,6 +298,24 @@ used an em dash, and the presets caption a middle dot) were silently dropped -- 
 gap where the dash was.  They are ASCII now.  Worth remembering when labelling a widget: anything above
 0x7F disappears without a word.
 
+**Lattice tickbox (20 Sep 2026):** the 3-D view's tickbox list grew a tenth entry, `Lattice`, which
+draws the box the simulation lives in -- the same way the region overlay does it: the twelve edges
+plus the grid of the only three faces turned towards the camera, so the box reads as a lattice
+instead of its interior becoming a thicket of lines (`renderLattice()`, GUI_3D.cpp; cell size
+`0.5 / EL` and the lattice centred on the origin, exactly like `renderGrid()` and `enhanceVoxel()`;
+the per-axis edges `ELX/ELY/ELZ` are used, so a run on an anisotropic region shows the box it has).
+
+Its state is `Config::data3DLattice`, **not** `data3D[9]`: `Config::data3D` is a fixed nine-entry
+array mirrored positionally by the tickboxes, and widening it would move every member declared after
+it in a header that every translation unit includes.  So the new flag was appended at the end of the
+struct, and the two tickboxes above it (`Cavity`, the Fibonacci sphere, and `Lattice`, the box) are
+distinct switches with distinct keys -- before this pass `data3D.lattice` meant the cavity;
+`data3D.cavity` is the cavity's key now, and `data3D.lattice` is the box's.
+
+Verified by dumping the app's own frame: labelled `Lattice` in the list, `1,888` edge-coloured and
+`4,727` grid-coloured pixels inside the 3-D area when on, `0` and `44` when off, and the ten tickboxes
+fit the column (`110 + 9 x 25 = 335`, above the "Delays" section at 390).
+
 **Region-overlay pass (20 Sep 2026):** the setup screen was regrouped into three cards (parameters,
 summary, and one card that keeps `Start Paused` together with the three mode buttons, so nothing is
 left outside a box and the tickbox is no longer inside the summary card).  Two latent projection bugs

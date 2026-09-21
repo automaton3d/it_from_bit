@@ -108,6 +108,15 @@ struct {
     // them (inserting in the middle silently corrupts them).
     // =========================
     bool data3DVisited = false;   // "Visited" toggle of the 3-D view
+
+    // "Lattice" toggle of the 3-D view: draws the lattice box (the twelve edges
+    // plus the grid of the faces turned towards the camera, see renderLattice()).
+    //
+    // It is its own flag rather than a tenth slot of data3D[9] on purpose: this
+    // struct is mirrored by the tickboxes positionally, and widening the array
+    // would move every member after it -- a stale object would then read the wrong
+    // offsets.  Appended here, at the end, nothing moves (see the note above).
+    bool data3DLattice = false;
 };
 
 // global
