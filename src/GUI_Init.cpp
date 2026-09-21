@@ -12,6 +12,8 @@
 #include "model/simulation.h"
 #include "hud.h"
 #include "tomography.h"
+#include "recorder.h"
+#include "replay.h"
 #include <vector>
 #include <cassert>
 #include <cstdlib>
@@ -27,6 +29,7 @@ namespace framework
     extern double tbegin;
     extern Tickbox* scenarioHelpToggle;
     extern ProgressBar* progress;
+    extern FrameRecorder recorder;
     extern std::unique_ptr<LayerList> layerList;
     extern int barWidths[3];
     extern bool showAboutDialog;
@@ -129,6 +132,22 @@ namespace framework
         sineVisitedToggle = new Tickbox(0, 0, "Visited", gConfig.data3DVisited);
         sineVisitedToggle->setFontScale(0.6f);
         sineVisitedToggle->onToggle = [](bool state) { gConfig.data3DVisited = state; };
+
+        // ------------------------------------------------------------
+        // "Record" toggle (drawn above the Visited one, in simulation mode
+        // only): the switch that feeds the replay recorder.  Without it nothing
+        // ever set framework::recordFrames, so a run recorded no frames and
+        // "Save replay" wrote an empty file.
+        // ------------------------------------------------------------
+        recordToggle = new Tickbox(0, 0, "Record", false);
+        recordToggle->setFontScale(0.6f);
+        recordToggle->onToggle = [](bool state) {
+            framework::recordFrames = state;
+            std::cout << "[Replay] recording " << (state ? "started" : "stopped")
+                      << " (" << framework::recorder.getFrameCount() << " frames, "
+                      << framework::recorder.getMemoryUsageKB() << " KB)"
+                      << std::endl;
+        };
 
         // ------------------------------------------------------------
         // Delay tickboxes
@@ -242,12 +261,17 @@ namespace framework
         // Create and add a File menu
         auto fileMenu = std::make_unique<Menu>("File");
         fileMenu->AddItem("New", []() {
-            std::cout << "New file" << std::endl;
+            // File > New: a new recording (the recorder had no way to be emptied).
+            framework::newReplay();
         });
         fileMenu->AddItem("Open replay", []() {
+            // File dialog + recorder.loadFromFile + start playing (replay.cpp).
+            framework::loadReplay();
         });
         fileMenu->AddItem("Save replay", []() {
-            std::cout << "Save file" << std::endl;
+            // File dialog + recorder.saveToFile.  It refuses while recording or
+            // playing back, and now says so instead of doing nothing.
+            framework::saveReplay();
         });
         fileMenu->AddItem("Exit", [&]() {
             glfwSetWindowShouldClose(window, true);

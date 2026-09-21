@@ -99,6 +99,12 @@ extern Tickbox* tomoEnable;
 // wavefront visited during its last pass (defined in globals.cpp).
 extern Tickbox* sineVisitedToggle;
 
+// "Record" tickbox (simulation mode): the switch that feeds the replay recorder.
+// Nothing used to set framework::recordFrames, so a run never recorded a frame and
+// a replay could only come from a file -- and the File menu could not even reach the
+// recorder (its items were stubs).  See also replay.cpp.
+extern Tickbox* recordToggle;
+
 // globals.h or GUI.h
 extern Button* gHelpLink;
 

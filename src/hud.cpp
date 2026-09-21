@@ -412,6 +412,8 @@ void renderHUD(int screenW, int screenH)
 
     renderSineVisitedToggle(screenW, screenH);
 
+    renderRecordToggle(screenW, screenH);
+
     renderTomoRadios();
 
     renderSimulationStats();

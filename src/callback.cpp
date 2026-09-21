@@ -27,6 +27,7 @@
 #include "tomography.h"
 #include "app_context.h"
 #include "render_pipeline.h"
+#include "replay.h"
 
 void toggleFullscreen(GLFWwindow* window);
 
@@ -149,6 +150,7 @@ namespace framework {
                         }
 
                         int mouseX = (int)xpos, mouseY = (int)ypos;
+
                         for (Tickbox& cb : data3D) {
                             cb.onClick(mouseX, mouseY);
                             if (cb.contains(mouseX, mouseY)) return;
@@ -156,6 +158,13 @@ namespace framework {
                         if (sineVisitedToggle &&
                             sineVisitedToggle->contains(mouseX, mouseY)) {
                             sineVisitedToggle->onClick(mouseX, mouseY);
+                            return;
+                        }
+                        // "Record": the replay recorder's switch.  Only a
+                        // simulation records, and the box is only drawn there.
+                        if (recordToggle && currentMode == SIMULATION &&
+                            recordToggle->contains(mouseX, mouseY)) {
+                            recordToggle->onClick(mouseX, mouseY);
                             return;
                         }
                         for (Tickbox& cb : delays) {

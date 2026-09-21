@@ -109,6 +109,7 @@ namespace framework
   void renderSliders();
   void renderTomoControls();
   void renderSineVisitedToggle(int screenW, int screenH);
+  void renderRecordToggle(int screenW, int screenH);
   void renderPauseOverlay();
   void renderSectionLabels();
   void render3Dboxes();

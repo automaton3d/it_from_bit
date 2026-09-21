@@ -68,6 +68,7 @@ bool enable = true;
 std::vector<Radio> tomoDirs;
 Tickbox* tomoEnable = nullptr;
 Tickbox* sineVisitedToggle = nullptr;
+Tickbox* recordToggle = nullptr;
 
 Mode currentMode = SPLASH;
 

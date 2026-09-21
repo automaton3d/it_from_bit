@@ -223,6 +223,42 @@ message; `glfwGetCursorPos` then reports the real position): clicking the label,
 box printed `yes`, `no`, `yes`; clicking `Simulation` started the run with `startPaused = yes`; and a
 frame dump taken after a click on the `L` dropdown shows the list still open.
 
+**Replay: the loop is wired (20 Sep 2026).**  The progress bar was already drawn
+(hud.cpp, in REPLAY mode, quarter of the window wide, `Frame: n / N` plus a yellow
+pointer); what was missing were the three switches, none of which anything in this
+tree ever flipped:
+
+* `recordFrames` was never set to true, so `recorder.recordFrame` (core.cpp) never
+  ran and a run recorded nothing.  There is a **`Record` tickbox** in the simulation
+  HUD now (above `Visited`, drawn in SIMULATION only, since that is the mode that
+  records).  It follows the atomic rather than the other way round, so when the
+  recorder hits its memory cap and clears the flag itself the box shows that.
+* The File menu items were stubs (`New` printed, `Open replay` was an empty lambda,
+  `Save replay` printed).  They now call `newReplay()`, `loadReplay()` and
+  `saveReplay()`; `newReplay()` is new and empties the recorder, which until now
+  could only grow to its cap.
+* `replayFrames` was never set either, so even a loaded replay never played.
+  `loadReplay()` rewinds the play head and starts it, and `updateReplay()` returns
+  false past the last frame -- core.cpp clears `replayFrames` on that, which used to
+  never happen: a finished replay kept the loop spinning four times a second.
+
+The loading itself moved to `loadReplayFrom(path)`, so a path can be loaded without
+going through the modal dialog.  The guards (a snapshot needs a settled simulation)
+now print **why** they refuse instead of doing nothing:
+
+```
+[Replay] save needs a paused-free SIMULATION with recording and playback off
+(mode=1, recording=1, replaying=0, paused=0)
+```
+
+Verified with the app: `Record` on/off from the HUD printed `recording started` and
+`recording stopped (2 frames, 0 KB)`; `File > Save replay` opened the OS dialog and
+wrote a real 69-byte `replay.dat` (1 frame); loading it printed `[Replay] playing 1
+frames from replay.dat` and fed the bar exactly once (`update(1, 1)`), after which the
+play loop stopped -- and the guard above is that refusal path, seen in the final build.
+The save dialog was driven by script; the load path was verified through
+`loadReplayFrom` (the same code the dialog path calls), not by typing into the dialog.
+
 **Text the renderer could not draw (20 Sep 2026):** `TextRenderer` loads glyphs for bytes 0..127 only,
 so the non-ASCII characters in three setup-screen labels (`L - lattice side (odd)` and the two others
 used an em dash, and the presets caption a middle dot) were silently dropped -- the labels read with a

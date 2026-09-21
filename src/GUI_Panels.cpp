@@ -6,6 +6,7 @@
 #include "globals.h"
 #include "tickbox.h"
 #include "radio.h"
+#include "recorder.h"     // framework::recordFrames (the Record toggle follows it)
 #include <vector>
 
 
@@ -94,6 +95,24 @@ namespace framework
         sineVisitedToggle->setPosition(screenW - 250, screenH - 95);
         sineVisitedToggle->setFontScale(0.6f);
         sineVisitedToggle->draw(hudText);
+    }
+
+    // The "Record" toggle sits above "Visited".  It is the switch of the replay
+    // recorder, and only a simulation records (core.cpp records in SIMULATION
+    // mode), so it is drawn there and hidden in the other modes.
+    //
+    // The tickbox follows the atomic rather than the other way round: when the
+    // recorder hits its memory cap it clears recordFrames itself
+    // (FrameRecorder::recordFrame), and the box has to show that.
+    void renderRecordToggle(int screenW, int screenH)
+    {
+        if (!recordToggle || currentMode != SIMULATION)
+            return;
+
+        recordToggle->setState(framework::recordFrames.load());
+        recordToggle->setPosition(screenW - 250, screenH - 135);
+        recordToggle->setFontScale(0.6f);
+        recordToggle->draw(hudText);
     }
 
     // -----------------------------------------------------------------
