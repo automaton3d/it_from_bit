@@ -205,6 +205,9 @@ bool SubRegionBox::cycleHandle(int dir)
 {
     if (dir == 0) return false;
 
+    // Cube mode has no face to pick: the three axes are one number.
+    if (mode_ == EditMode::Cube) return false;
+
     int index = (int)active_ + ((dir > 0) ? 1 : -1);
     if (index < 0) index = kHandleCount - 1;
     if (index >= kHandleCount) index = 0;
@@ -269,7 +272,98 @@ bool SubRegionBox::assignValueOf(Handle h, int value)
 bool SubRegionBox::moveActive(int delta)
 {
     if (delta == 0) return false;
+
+    // In cube mode the whole selection is one number, so the arrows resize the
+    // cube instead of moving a face.
+    if (mode_ == EditMode::Cube) return growCube(delta);
+
     return assignValueOf(active_, valueOf(active_) + delta);
+}
+
+// ============================================================================
+// Centred-cube editing
+// ============================================================================
+
+int SubRegionBox::minExtent() const
+{
+    const int dx = x1_ - x0_ + 1;
+    const int dy = y1_ - y0_ + 1;
+    const int dz = z1_ - z0_ + 1;
+
+    return std::min(dx, std::min(dy, dz));
+}
+
+int SubRegionBox::cubeSide() const
+{
+    // Centred on the lattice means the six bounds are c-k .. c+k for the same k,
+    // which is exactly what setCubeSide writes.
+    if (x0_ != y0_ || y0_ != z0_) return -1;
+    if (x1_ != y1_ || y1_ != z1_) return -1;
+    if ((x0_ + x1_) != (lattice_ - 1)) return -1;   // the centre, on all three axes
+
+    const int side = x1_ - x0_ + 1;
+    return ((side & 1) != 0) ? side : -1;
+}
+
+bool SubRegionBox::setCubeSide(int side)
+{
+    if (lattice_ < 1) return false;
+
+    if (side < 1)        side = 1;
+    if (side > lattice_) side = lattice_;
+    if ((side & 1) == 0) --side;             // odd, inward from the requested one
+    if (side < 1)        side = 1;
+
+    const int c = (lattice_ - 1) / 2;        // the lattice centre cell
+    const int k = (side - 1) / 2;
+    const int lo = c - k, hi = c + k;
+
+    if (lo == x0_ && hi == x1_ && lo == y0_ && hi == y1_ &&
+        lo == z0_ && hi == z1_) return false;
+
+    x0_ = y0_ = z0_ = lo;
+    x1_ = y1_ = z1_ = hi;
+    return true;
+}
+
+bool SubRegionBox::growCube(int delta)
+{
+    if (delta == 0) return false;
+
+    // Already centred: grow from the current side.  Not centred (or free mode):
+    // start from the smallest extent, so entering cube mode never grows the box.
+    const int current = cubeSide();
+    const int from = (current > 0) ? current : minExtent();
+
+    return setCubeSide(from + delta);
+}
+
+bool SubRegionBox::toggleEditMode()
+{
+    if (mode_ == EditMode::Cube)
+    {
+        mode_ = EditMode::Free;
+        return false;
+    }
+
+    // Entering cube mode: the centred cube of the smallest extent, so nothing
+    // grows on the switch (a 11 x 21 x 21 box becomes 11 x 11 x 11).
+    const int from = (cubeSide() > 0) ? cubeSide() : minExtent();
+    setCubeSide(from);
+
+    mode_ = EditMode::Cube;
+    return true;
+}
+
+bool SubRegionBox::runnable() const
+{
+    // Mirrors automaton::configureLatticeFromRegion: odd extents of at least 5.
+    const int dx = x1_ - x0_ + 1;
+    const int dy = y1_ - y0_ + 1;
+    const int dz = z1_ - z0_ + 1;
+
+    if ((dx & 1) == 0 || (dy & 1) == 0 || (dz & 1) == 0) return false;
+    return dx >= 5 && dy >= 5 && dz >= 5;
 }
 
 

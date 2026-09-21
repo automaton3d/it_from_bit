@@ -113,6 +113,7 @@ struct Layout
     float dropdownY[3] = { 0.0f, 0.0f, 0.0f };
     float dropdownH = 30.0f;
     float presetCaptionY = 0.0f, presetY = 0.0f, presetW = 0.0f;
+    float cubeY = 0.0f, cubeW = 0.0f;      // centred-cube presets row
     float infoX = 0.0f, infoY = 0.0f, infoW = 0.0f, infoH = 0.0f;
     float pausedY = 0.0f, pausedX = 0.0f;
     float buttonX = 0.0f, buttonY[3] = { 0.0f, 0.0f, 0.0f }, buttonW = 200.0f, buttonH = 40.0f;
@@ -316,10 +317,11 @@ static void drawFormLabels()
     const glm::vec3 label(0.14f, 0.17f, 0.30f);
     const glm::vec3 dim(0.35f, 0.38f, 0.45f);
 
-    drawTextTD("L — lattice side (odd)",           lay.colX, lay.labelY[0], 0.30f, label);
-    drawTextTD("W — winding layers",               lay.colX, lay.labelY[1], 0.30f, label);
+    drawTextTD("L - lattice side (odd)",           lay.colX, lay.labelY[0], 0.30f, label);
+    drawTextTD("W - winding layers",               lay.colX, lay.labelY[1], 0.30f, label);
     drawTextTD("Scenario (single)",                lay.colX, lay.labelY[2], 0.30f, label);
-    drawTextTD("presets (L/W) · suggested 21/10",  lay.colX, lay.presetCaptionY, 0.28f, dim);
+    drawTextTD("presets (L/W) suggested 21/10   |   centred cube (side)",
+               lay.colX, lay.presetCaptionY, 0.28f, dim);
     drawTextTD("subregion of the lattice (opens a 3D view)",
                lay.colX, lay.regionLabelY, 0.26f, dim);
 }
@@ -487,6 +489,9 @@ namespace splash {
     Button* presetSmall = nullptr;
     Button* presetMid = nullptr;
     Button* presetLarge = nullptr;
+    Button* cubeSmall = nullptr;         // centred-cube presets (side)
+    Button* cubeMid = nullptr;
+    Button* cubeLarge = nullptr;
     Button* regionButton = nullptr;      // opens the 3D overlay
     Tickbox* startPausedBox = nullptr;
     SubRegionBox* subregion = nullptr;   // the region itself (see subregion_box.h)
@@ -651,7 +656,6 @@ namespace splash {
         regionModal->open(subregion, winW(), winH());
         regionModal->setRunContext(readSelectionFromUI().W,
                                    (unsigned long long)sizeof(automaton::Cell));
-
         std::cout << "[Splash] Region overlay opened ("
                   << subregion->handleName(subregion->activeHandle())
                   << " face active)" << std::endl;
@@ -810,7 +814,8 @@ namespace splash {
                            3.0f * buttonH + 2.0f * buttonGap + runPadY;
 
         const float leftColumnH  = pad + 3.0f * rowH + presetCapH + presetH +
-                                   regionGap + regionLabelH + regionButtonH +
+                                   8.0f + presetH + regionGap +
+                                   regionLabelH + regionButtonH +
                                    regionReadoutH + pad;
         const float infoH        = infoLines * infoLineH + 2.0f * infoPadY;
         const float rightColumnH = pad + infoH + 14.0f + runH + pad;
@@ -882,7 +887,14 @@ namespace splash {
         lay.presetCaptionY = y + presetCapH * 0.5f;
         lay.presetY        = y + presetCapH;
         lay.presetW        = (leftW - 2.0f * 8.0f) / 3.0f;
-        y += presetCapH + presetH + regionGap;
+        y += presetCapH + presetH + 8.0f;
+
+        // Second preset row: centred cubes.  One click sets the side and the region
+        // stays centred on the lattice; the caption above introduces the row, so it
+        // needs no caption of its own (and the left card keeps its height).
+        lay.cubeY = y;
+        lay.cubeW = lay.presetW;
+        y += presetH + regionGap;
 
         // The button opens the 3D overlay; its numbers go just under it, still
         // inside the light card.
@@ -963,6 +975,23 @@ namespace splash {
         {
             presetLarge->setPosition(lay.colX + 2.0f * (lay.presetW + 8.0f), lay.presetY);
             presetLarge->setSize(lay.presetW, presetH);
+        }
+
+        // Centred-cube presets, same three slots as the row above.
+        if (cubeSmall)
+        {
+            cubeSmall->setPosition(lay.colX, lay.cubeY);
+            cubeSmall->setSize(lay.cubeW, presetH);
+        }
+        if (cubeMid)
+        {
+            cubeMid->setPosition(lay.colX + lay.cubeW + 8.0f, lay.cubeY);
+            cubeMid->setSize(lay.cubeW, presetH);
+        }
+        if (cubeLarge)
+        {
+            cubeLarge->setPosition(lay.colX + 2.0f * (lay.cubeW + 8.0f), lay.cubeY);
+            cubeLarge->setSize(lay.cubeW, presetH);
         }
 
         if (startPausedBox)
@@ -1199,6 +1228,13 @@ namespace splash {
         presetMid   = new Button(0, 0, 80, 26, "21/10");
         presetLarge = new Button(0, 0, 80, 26, "31/20");
 
+        // Centred cubes: the side only (the position of a region does not reach the
+        // model -- the lattice is periodic and the seed is translation-invariant), so
+        // one click is the whole selection.
+        cubeSmall   = new Button(0, 0, 80, 26, "cube 11");
+        cubeMid     = new Button(0, 0, 80, 26, "cube 15");
+        cubeLarge   = new Button(0, 0, 80, 26, "cube 21");
+
         std::vector<std::string> sizes, layers;
         for (int s = kSizeMin; s <= kSizeMax; s += kSizeStep)
             sizes.push_back(std::to_string(s));
@@ -1303,6 +1339,9 @@ namespace splash {
         delete presetSmall; presetSmall = nullptr;
         delete presetMid; presetMid = nullptr;
         delete presetLarge; presetLarge = nullptr;
+        delete cubeSmall; cubeSmall = nullptr;
+        delete cubeMid; cubeMid = nullptr;
+        delete cubeLarge; cubeLarge = nullptr;
         delete startPausedBox; startPausedBox = nullptr;
         delete regionButton; regionButton = nullptr;
         delete regionModal; regionModal = nullptr;
@@ -1352,6 +1391,9 @@ namespace splash {
         if (presetSmall) presetSmall->draw(*textRenderer, w, h);
         if (presetMid)   presetMid->draw(*textRenderer, w, h);
         if (presetLarge) presetLarge->draw(*textRenderer, w, h);
+        if (cubeSmall)   cubeSmall->draw(*textRenderer, w, h);
+        if (cubeMid)     cubeMid->draw(*textRenderer, w, h);
+        if (cubeLarge)   cubeLarge->draw(*textRenderer, w, h);
 
         if (scenarioDropdown) scenarioDropdown->render(textRenderer);
         if (layerDropdown)    layerDropdown->render(textRenderer);
@@ -1392,6 +1434,26 @@ static void applyPreset(int L, int W, int focusIndex)
     splash::gFocus = focusIndex;
 
     std::cout << "[Splash] Preset: L = " << L << ", W = " << W << std::endl;
+}
+
+// Centred-cube preset: sets the region's side, leaving it centred on the lattice.
+// The side is clamped to the L on screen, and nothing is allocated -- the summary
+// updates, the user still presses Enter.
+static void applyCentredCube(int side)
+{
+    if (!splash::subregion) return;
+
+    // The lattice the cube must fit in follows the L dropdown.
+    splash::syncSubregionLattice();
+
+    const int L = splash::subregion->latticeSize();
+    const int wanted = side;
+
+    if (splash::subregion->setCubeSide(side))
+        splash::printSubregion("centred cube preset");
+
+    std::cout << "[Splash] Centred cube: side " << wanted << " -> "
+              << splash::subregion->cubeSide() << " of L = " << L << std::endl;
 }
 
 // ---------------------------------------------------------------------
@@ -1500,6 +1562,15 @@ void mouseButtonCallback(GLFWwindow*, int button, int action, int)
     }
     else if (splash::presetLarge && splash::presetLarge->contains(mx, my_button, winH())) {
         applyPreset(31, 20, splash::kFocusSize);
+    }
+    else if (splash::cubeSmall && splash::cubeSmall->contains(mx, my_button, winH())) {
+        applyCentredCube(11);
+    }
+    else if (splash::cubeMid && splash::cubeMid->contains(mx, my_button, winH())) {
+        applyCentredCube(15);
+    }
+    else if (splash::cubeLarge && splash::cubeLarge->contains(mx, my_button, winH())) {
+        applyCentredCube(21);
     }
     else if (splash::regionButton && splash::regionButton->contains(mx, my_button, winH())) {
         splash::gFocus = splash::kFocusRegion;

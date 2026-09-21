@@ -138,6 +138,28 @@ x W 10 (region)`, its cells and RAM) and the comparison with the full lattice, a
 the pre-flight memory guard measures the region's volume too -- so a small region
 can make an `L x W` that would not fit on its own fit.
 
+**Two ways to select it.**  Free editing moves one face at a time (above); `C` in the
+overlay switches to **centred cube**, where the whole selection is one number -- the
+side `S` -- and the box stays centred on the lattice (`c-k .. c+k`, `c = (L-1)/2`).
+`Up`/`Down` change `S` by two cells (`Shift` ten), `Left`/`Right` have no face to pick,
+`Home` returns to the whole lattice (which is itself a centred cube) and `C` goes back to
+free faces; dragging any face in cube mode scales the cube symmetrically.  Entering cube
+mode collapses the box to the centred cube of its *smallest* extent, so switching never
+grows the region.  The splash keeps a row of centred-cube presets (`cube 11`, `cube 15`,
+`cube 21`) under the L/W ones: one click sets the side, no overlay needed.
+
+Because the model re-centres the seed on the lattice it is given, the cube is a
+**convenience**, not a different run: a centred `11^3` and the `11 x 21 x 21`-style box
+with the same extents produce the same `calculateParameters` line, the same schedule and
+the same allocation (checked in a run: `region 11 x 11 x 11 (from x 5..15 ...)` gave
+`EL=11, RMAX=5, FRAME=216` and 13,310 cells, exactly as the non-centred `x 0..10` case
+did).  What the mode buys is gesture count: the `11^3` selection is `C` + `Down x5`
+instead of `Down x5, Right x2` three times.
+
+The overlay also states the model's own validity rule before start-up: a region whose
+edges are not odd and at least 5 cells shows `cannot run: every edge must be odd and at
+least 5 cells`, instead of the user only discovering it in the start-up refusal.
+
 The region is **persisted**: six keys (`simulation.subX0` ... `simulation.subZ1`)
 go back into `automaton.cfg` with the same in-place rewrite the other managed keys
 use, so the setup screen reopens on the region the last run used and the log says so
@@ -200,6 +222,12 @@ Verified with real clicks (the cursor moved with `SetCursorPos` and the button p
 message; `glfwGetCursorPos` then reports the real position): clicking the label, the label again and the
 box printed `yes`, `no`, `yes`; clicking `Simulation` started the run with `startPaused = yes`; and a
 frame dump taken after a click on the `L` dropdown shows the list still open.
+
+**Text the renderer could not draw (20 Sep 2026):** `TextRenderer` loads glyphs for bytes 0..127 only,
+so the non-ASCII characters in three setup-screen labels (`L - lattice side (odd)` and the two others
+used an em dash, and the presets caption a middle dot) were silently dropped -- the labels read with a
+gap where the dash was.  They are ASCII now.  Worth remembering when labelling a widget: anything above
+0x7F disappears without a word.
 
 **Region-overlay pass (20 Sep 2026):** the setup screen was regrouped into three cards (parameters,
 summary, and one card that keeps `Start Paused` together with the three mode buttons, so nothing is

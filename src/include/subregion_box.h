@@ -30,6 +30,14 @@ public:
     enum class Handle { XMin = 0, XMax, YMin, YMax, ZMin, ZMax };
     static constexpr int kHandleCount = 6;
 
+    // How the overlay edits the region.
+    //   Free: the six faces move independently, so any box can be selected.
+    //   Cube: the region stays centred on the lattice and the three axes share one
+    //         side, so the whole selection is a single number.  It is the same
+    //         box underneath -- six bounds -- which is why the configuration, the
+    //         model call and the reports are unaffected by the mode.
+    enum class EditMode { Free, Cube };
+
     SubRegionBox() = default;
 
     // Lattice side.  The bounds are reclamped to [0, L-1]; returns true when
@@ -63,6 +71,26 @@ public:
     bool assignValueOf(Handle h, int value);       // true when it changed
     bool moveActive(int delta);                    // true when it changed
 
+    // ---- centred-cube editing ----------------------------------------------
+    EditMode editMode() const { return mode_; }
+    void     setEditMode(EditMode m) { mode_ = m; }
+    // Free <-> Cube.  Entering Cube collapses the box to the centred cube of its
+    // smallest extent, so switching never grows the region.  Returns true when it
+    // is Cube afterwards.
+    bool toggleEditMode();
+
+    // Side of the centred cube, or -1 when the box is not centred on the lattice.
+    int  cubeSide() const;
+    // Sets the side (clamped to [1, L], odd) about the lattice centre.  True when
+    // the bounds changed.
+    bool setCubeSide(int side);
+    bool growCube(int delta);                      // side += delta, two cells at a time
+
+    // Whether the model can run this region: every extent odd and >= 5, which is
+    // exactly what automaton::configureLatticeFromRegion enforces.  The overlay
+    // shows it, so the limit is visible before start-up.
+    bool runnable() const;
+
     // ---- text ---------------------------------------------------------------
     std::string boundsLine() const;                // "x 4..17   y 0..20   z 8..20"
 
@@ -83,6 +111,7 @@ public:
 
 private:
     void clampBounds();
+    int  minExtent() const;      // smallest of the three extents
 
     int lattice_ = 21;
 
@@ -92,6 +121,7 @@ private:
     int z0_ = 0, z1_ = 20;
 
     Handle active_ = Handle::XMax;
+    EditMode mode_ = EditMode::Free;
 };
 
 #endif /* SUBREGION_BOX_H_ */

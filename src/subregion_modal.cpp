@@ -401,6 +401,18 @@ bool SubRegionModal::dragFaceTo(float mx, float my, int winW, int winH)
     int value = (int)std::lround(lat);
     if (isMaxFace(grabbed_)) value -= 1;
 
+    // Cube mode: the face drags all three axes at once, so what matters is how far
+    // from the lattice centre it was dropped (the box stays centred).  The ray
+    // maths above is unchanged -- it answers "which cell of that axis is under the
+    // cursor", which is exactly the half-extent here.
+    if (model_->editMode() == SubRegionBox::EditMode::Cube)
+    {
+        const int c = (model_->latticeSize() - 1) / 2;
+        const int k = (value > c) ? (value - c) : (c - value);
+
+        return model_->setCubeSide(2 * k + 1);
+    }
+
     return model_->assignValueOf((SubRegionBox::Handle)grabbed_, value);
 }
 // ============================================================================
@@ -500,6 +512,7 @@ SubRegionModal::Result SubRegionModal::onKey(int key, int mods)
 
     const bool shift = (mods & GLFW_MOD_SHIFT) != 0;
 
+
     switch (key)
     {
         case GLFW_KEY_ESCAPE:
@@ -512,8 +525,20 @@ SubRegionModal::Result SubRegionModal::onKey(int key, int mods)
 
         case GLFW_KEY_LEFT:
         case GLFW_KEY_RIGHT:
+            // In cube mode the three axes move together, so there is no face to
+            // pick: cycleHandle() ignores it there.
             if (model_) model_->cycleHandle((key == GLFW_KEY_RIGHT) ? 1 : -1);
             r.changed = true;
+            break;
+
+        case GLFW_KEY_C:
+            // Free faces <-> centred cube.  Entering cube mode collapses the box to
+            // the centred cube of its smallest extent, so it never grows here.
+            if (model_)
+            {
+                model_->toggleEditMode();
+                r.changed = true;
+            }
             break;
 
         case GLFW_KEY_UP:
@@ -736,11 +761,23 @@ void SubRegionModal::render(TextRenderer* textRenderer, int winW, int winH)
     float y = (float)winH - (float)kBottomBandPx + 26.0f;
 
     drawText2D(textRenderer, "L = " + std::to_string(b.latticeSize()), left, y, 0.34f, white, winW, winH);
-    drawText2D(textRenderer,
-               std::string("face ") + b.handleName(b.activeHandle()) +
-               "   (Up/Down moves it two cells -- the model needs odd edges; Shift: ten; "
-               "Left/Right picks the face; Home: whole lattice)",
-               left + 90.0f, y, 0.30f, accent, winW, winH);
+
+    if (b.editMode() == SubRegionBox::EditMode::Cube)
+    {
+        const int side = b.cubeSide();
+        drawText2D(textRenderer,
+                   "centred cube, S = " + ((side > 0) ? std::to_string(side) : std::string("?")) +
+                   "   (Up/Down: side +-2, Shift: ten; C: free faces)",
+                   left + 90.0f, y, 0.30f, accent, winW, winH);
+    }
+    else
+    {
+        drawText2D(textRenderer,
+                   std::string("face ") + b.handleName(b.activeHandle()) +
+                   "   (Up/Down moves it two cells -- the model needs odd edges; Shift: ten; "
+                   "Left/Right picks the face; C: centred cube)",
+                   left + 90.0f, y, 0.30f, accent, winW, winH);
+    }
     y += step;
 
     drawText2D(textRenderer, sum.bounds, left, y, 0.34f, white, winW, winH);
@@ -752,9 +789,22 @@ void SubRegionModal::render(TextRenderer* textRenderer, int winW, int winH)
     drawText2D(textRenderer, sum.memory, left, y, 0.30f, white, winW, winH);
     y += step;
 
-    drawText2D(textRenderer,
-               "mouse: left-drag on a face moves it; left-drag elsewhere or middle-drag orbits; "
-               "Ctrl+middle-drag pans; wheel zooms",
-               left, y, 0.28f, dim, winW, winH);
+    if (!b.runnable())
+    {
+        // The model's own rule, said here instead of only in the start-up refusal
+        // (automaton::configureLatticeFromRegion: odd edges of at least 5 cells).
+        drawText2D(textRenderer,
+                   "cannot run: every edge must be odd and at least 5 cells "
+                   "(Home: whole lattice) -- this region would be refused at start-up",
+                   left, y, 0.28f, glm::vec3(1.00f, 0.48f, 0.38f), winW, winH);
+    }
+    else
+    {
+        drawText2D(textRenderer,
+                   "mouse: left-drag on a face moves it (cube mode scales the cube); "
+                   "left-drag elsewhere or middle-drag orbits; Ctrl+middle-drag pans; "
+                   "wheel zooms; Home: whole lattice",
+                   left, y, 0.28f, dim, winW, winH);
+    }
 }
 
