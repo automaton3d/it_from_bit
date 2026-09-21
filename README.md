@@ -374,8 +374,11 @@ back over them. Two workable habits:
 
 `build_odr.log` and `build_gui.log` are the logs of the last build (kept as evidence, regenerated on
 every run); `obj\` and `build\` are build outputs and can be deleted at any time.  Since commit
-`77e9a0e`, `.gitignore` keeps all of them out of git (`obj/`, `build/`, `*.log`), so a rebuild no
-longer shows up as a dirty tree; the files themselves stay on disk.
+`161fe54`, `.gitignore` keeps all of them out of git (`obj/`, `build/`, `*.log`), so a rebuild no
+longer shows up as a dirty tree; the files themselves stay on disk.  The history was then rewritten to
+drop the build outputs it had recorded before that commit, which is why hashes quoted in older notes
+-- this line's former `77e9a0e` among them -- no longer exist.  `E:\alpha` keeps the unreduced copy of
+the paper and is unaffected either way.
 
 Note on the merge: the merge that created this tree left conflict markers in this file
 (`<<<<<<< HEAD`, `=======`, `>>>>>>> cc53489`); the two sides are merged into the single text above
