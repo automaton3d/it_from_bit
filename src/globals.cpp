@@ -36,7 +36,8 @@ std::vector<unsigned int> voxels;
 GLuint textProgram = 0;
 
 //GLint uProjLoc = -1;
-GLint uColorLoc = -1;
+// uColorLoc removed 2026-09-20: never assigned, and its only user
+// (drawTriangleFan2D) now colours through Renderer2D::setColor.
 
 GLuint textureProgram2D = 0;
 

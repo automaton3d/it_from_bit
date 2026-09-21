@@ -11,7 +11,9 @@
 
 // External shader (should already exist in the project)
 extern GLint uProjLoc;
-extern GLint uColorLoc;
+// Removed 2026-09-20: `extern GLint uColorLoc;` here and its definition in
+// globals.cpp.  It was never assigned (so it stayed -1) and the only user was
+// drawTriangleFan2D, which now sets the colour through Renderer2D::setColor.
 
 static GLuint vao = 0;
 static GLuint vbo = 0;
@@ -58,7 +60,13 @@ void drawTriangleFan2D(
     Renderer2D::setMVP(
         ProjectionManager::instance().get2DOrtho()
     );    
-    glUniform3fv(uColorLoc, 1, &color[0]);
+    // The colour argument used to be sent to glUniform3fv(uColorLoc, ...), but
+    // uColorLoc was never assigned anywhere (it stayed -1, and -1 is a silent
+    // no-op), so every fan in the project -- radio fills, the gizmo cube, the
+    // origin dot, the subregion faces -- was drawn with whatever colour the
+    // last drawQuad2D had left in the Renderer2D program.  setColor() is the
+    // uniform drawQuad2D itself uses.
+    Renderer2D::setColor(color);
 
     glBindVertexArray(vao);
     upload(verts);

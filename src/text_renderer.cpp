@@ -11,6 +11,7 @@
 #include <vector>
 #include <string>
 #include "text_renderer.h"
+#include "globals.h"        // gViewport: the projection must match the window
 
 bool TextRenderer::init(const std::string& fontPath, int fontSize, unsigned int shader)
 {
@@ -179,12 +180,25 @@ void TextRenderer::RenderText(const std::string& text,
                               float scale,
                               glm::vec3 color)
 {
-    RenderText(text, x, y, scale, color, screenW, screenH);
+    // This overload used the screenW/screenH MEMBERS, which only change when
+    // setScreenSize() is called -- and that happens in one place, the resize
+    // callback.  Before the first resize they kept their 800x600 defaults, so
+    // everything drawn through here (dropdown values, tickbox labels, most of
+    // the 2D HUD) was projected onto a window of the wrong shape: on the 980x780
+    // setup screen the dropdown text landed ~760 px above where it belongs.  The
+    // live viewport is the projection that matches what is on screen.
+    const int w = (gViewport[2] > 0) ? gViewport[2] : screenW;
+    const int h = (gViewport[3] > 0) ? gViewport[3] : screenH;
+
+    RenderText(text, x, y, scale, color, w, h);
 }
 
 void TextRenderer::RenderText(const std::string& text, float x, float y)
 {
-    RenderText(text, x, y, 1.0f, glm::vec3(1.0f), screenW, screenH);
+    const int w = (gViewport[2] > 0) ? gViewport[2] : screenW;
+    const int h = (gViewport[3] > 0) ? gViewport[3] : screenH;
+
+    RenderText(text, x, y, 1.0f, glm::vec3(1.0f), w, h);
 }
 // ADDED: Implementation for the missing function
 float TextRenderer::measureTextWidth(const std::string& text, float scale)

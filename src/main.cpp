@@ -241,7 +241,10 @@ int main()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_SAMPLES, 4);
 
-    window = glfwCreateWindow(600, 600, "Toy Universe - It from Bit", nullptr, nullptr);
+    // The setup screen (the splash) is the first thing the user sees and it now
+    // carries the subregion editor, so it is created roomy; a run maximizes the
+    // window anyway (glfwMaximizeWindow in splash::launch).
+    window = glfwCreateWindow(900, 660, "Toy Universe - It from Bit", nullptr, nullptr);
     if (!window) {
         std::cerr << "[FATAL] Failed to create GLFW window\n";
         glfwTerminate();

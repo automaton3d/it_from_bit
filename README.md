@@ -33,6 +33,7 @@ candidate or conjecture. Read the grade markers literally.
 | `src/model/*.cpp` | **the rule set** that the build links: `initSim`, `interaction`, `simulation`, `utils`, `geometry`, `polarization`, `charges`, `bridge` (8 files, all in `OBJ_COMMON`) |
 | `src/model/attractor.cpp`, `src/model/wavefront.cpp` | read-only diagnostics/instrumentation: they compile, their headers are part of the ODR gate, but nothing in the simulation calls them, so they are deliberately **not** linked into `automaton.exe`. `nmake check-extras` compiles them so they cannot rot unnoticed |
 | `src/include/**` | all headers, including `src/include/zlib` (the CPU reference) and `src/include/model/*.h` (the transition rules) |
+| `src/subregion_box.*`, `src/subregion_modal.*` | the region of the lattice: the model (bounds, counts, the printed report; no GL) and the 3D overlay that edits it (see *Region of the lattice* below) |
 | `glad/glad.c`, `lib/*.lib` | OpenGL loader and the import libraries (`glfw3dll`, `zlib`) |
 | `fonts/arial.ttf` | the HUD font (runtime) |
 | `logo.png`, `logo_bar.png` | the GUI logos (runtime) |
@@ -72,6 +73,39 @@ Keyboard: `Enter` starts the mode the focus ring is on (Simulation by default), 
 `Down` move the ring, `Left` / `Right` change the focused value (or toggle `Start Paused`), and
 `Esc` quits from the setup screen.  Clicking a control moves the ring to it as well.
 
+The setup window is created 900x660: a run calls `glfwMaximizeWindow` anyway, so this size only
+affects the screen where the parameters and the region are chosen, which now has to fit three cards.
+
+**Region of the lattice (3D overlay).**  The region a run should use -- a box inside the `L x L x L`
+lattice -- is chosen in an overlay opened by the `Select region...` button (or by `Enter` with the
+ring on it).  The overlay is a full-window view with only what the choice needs:
+
+* the lattice drawn in 3D: its twelve edges plus the grid of the three faces turned towards the
+  camera (the grid follows the camera, so orbiting never leaves the lattice looking solid or empty);
+* the gizmo: the box being selected, with its three camera-facing faces translucent and its twelve
+  edges bright, and one square handle in the middle of each of its six faces (the active one orange,
+  the one under the cursor light blue);
+* the readouts: `L`, the active face and its keys, the bounds `x a..b  y c..d  z e..f`, the cells per
+  layer and the percentage of `L^3`, the same with `W`, and the estimated memory for three lattices;
+* the camera is the program's own `OrbitCamera`, so it orbits exactly like the main scene: left-drag
+  on a face moves that face, left-drag elsewhere (or middle-drag) orbits, `Ctrl`+middle-drag pans and
+  the wheel zooms.  `Up`/`Down` move the active face (`Shift` for five cells at a time), `Left`/`Right`
+  pick which face that is, `Home` goes back to the whole lattice, and `Enter` or `Esc` returns to the
+  setup screen.  Nothing has to be confirmed: the region is edited live, and the splash shows the new
+  numbers and the button's summary as soon as the overlay closes.
+
+Every change is **printed** on stdout as one line, so the widget can be checked before anything in
+the model reads it:
+
+```
+[Subregion] x 0..10   y 3..20   z 0..20 | per layer 11 x 18 x 21 = 4,158 of 9,261 cells (44.9%) |
+W = 10 -> 41,580 of 92,610 cells | est. RAM 19.0 MB of 42.4 MB (3 lattices x 160 bytes/cell)
+```
+
+**Not applied to the model yet:** the region travels with the selection and is reported when a run
+starts (with a `NOTE:` line), but `automaton::tryAllocate` still allocates the whole `L^3 x W`
+lattice.  Making the model use it is the next step.
+
 **Modes:** `Replay` renders through the same HUD as `Simulation` (it used to start without `initHUD`,
 so its first frame read an empty `data3D` vector and a null `layerList`; the process died with
 `0xC0000005` before drawing anything).  `render3DObjects()` now also returns early when the HUD is
@@ -102,6 +136,21 @@ launched from `build\` and ran (CPU active, `[Config] Loading: automaton.cfg`, n
 frame); and the HUD is now clean of GL errors -- `glGetError` probes (temporary, removed afterwards)
 showed `GL_INVALID_OPERATION` from `Button::drawAsHyperlink` on every frame, which is fixed in
 `Button::cleanup()`.
+
+**Region-overlay pass (20 Sep 2026):** the setup screen was regrouped into three cards (parameters,
+summary, and one card that keeps `Start Paused` together with the three mode buttons, so nothing is
+left outside a box and the tickbox is no longer inside the summary card).  Two latent projection bugs
+turned up and were fixed: `TextRenderer::RenderText`'s 5-argument overload projected onto stale
+800x600 members instead of the live viewport (the dropdown values landed ~760 px above their boxes
+once the window grew), and `drawTriangleFan2D` ignored its colour argument because `uColorLoc` was
+never assigned.  The overlay itself was verified with temporary `glReadPixels` dumps of the app's own
+frames (the screen captures of this environment come back blank or stale) plus a closed-loop
+self-test that grabbed a face handle at its projected position and dragged it to where it should be
+for `x1 = 10`.  That test first failed and exposed a real bug: the drag used ray-versus-face-plane,
+and every ray hits that plane at the plane's own coordinate, so the value could never change; it now
+takes the closest point between the ray and the face's axis, and the same test lands exactly on 10.
+`Tab` x3 then `Enter` opens the overlay, `Right`/`Up` move faces with every change printed, `Esc`
+returns to the splash, and the next `Enter` starts the run.
 
 ## Editing here
 

@@ -50,6 +50,8 @@ OBJ_COMMON = \
 	$(OBJ_DIR)\shader.obj \
 	$(OBJ_DIR)\sound.obj \
 	$(OBJ_DIR)\splash.obj \
+	$(OBJ_DIR)\subregion_box.obj \
+	$(OBJ_DIR)\subregion_modal.obj \
 	$(OBJ_DIR)\stats.obj \
 	$(OBJ_DIR)\stb_impl.obj \
 	$(OBJ_DIR)\text_renderer.obj \
@@ -294,6 +296,11 @@ $(OBJ_DIR)\sound.obj: src\sound.cpp
 
 $(OBJ_DIR)\splash.obj: src\splash.cpp src\include\splash.h
 	$(CC) $(CFLAGS) /c src\splash.cpp /Fo$(OBJ_DIR)\splash.obj
+$(OBJ_DIR)\subregion_box.obj: src\subregion_box.cpp src\include\subregion_box.h
+	$(CC) $(CFLAGS) /c src\subregion_box.cpp /Fo$(OBJ_DIR)\subregion_box.obj
+
+$(OBJ_DIR)\subregion_modal.obj: src\subregion_modal.cpp src\include\subregion_modal.h src\include\subregion_box.h
+	$(CC) $(CFLAGS) /c src\subregion_modal.cpp /Fo$(OBJ_DIR)\subregion_modal.obj
 
 $(OBJ_DIR)\stats.obj: src\stats.cpp src\include\stats.h
 	$(CC) $(CFLAGS) /c src\stats.cpp /Fo$(OBJ_DIR)\stats.obj
@@ -427,6 +434,8 @@ ALL_HEADERS = \
 	src\include\shader.h \
 	src\include\sinc_overlay.h \
 	src\include\splash.h \
+	src\include\subregion_box.h \
+	src\include\subregion_modal.h \
 	src\include\stats.h \
 	src\include\stb_image.h \
 	src\include\text_renderer.h \

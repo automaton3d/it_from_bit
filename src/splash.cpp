@@ -30,6 +30,8 @@
 #include "config.h"
 #include "Renderer2D.h"
 #include "help.h"
+#include "subregion_box.h"
+#include "subregion_modal.h"
 
 // Declaration of updateProjection from the framework namespace
 namespace framework {
@@ -80,6 +82,12 @@ struct Selection
     int  W           = 10;     // winding layers
     int  scenario    = 0;      // index into scenarioOptions
     bool startPaused = false;  // "Start Paused" tickbox
+
+    // Subregion of the lattice, inclusive lattice indices.  The widget phase of
+    // the feature: the numbers are read here, printed, and shown on screen, but
+    // the model still allocates the whole L^3 x W lattice (see README).
+    glm::ivec3 subLo = glm::ivec3(0, 0, 0);
+    glm::ivec3 subHi = glm::ivec3(20, 20, 20);
 };
 
 // Grid offered by the lattice-side dropdown: kSizeMin, +2, ... up to kSizeMax.
@@ -108,6 +116,16 @@ struct Layout
     float infoX = 0.0f, infoY = 0.0f, infoW = 0.0f, infoH = 0.0f;
     float pausedY = 0.0f, pausedX = 0.0f;
     float buttonX = 0.0f, buttonY[3] = { 0.0f, 0.0f, 0.0f }, buttonW = 200.0f, buttonH = 40.0f;
+
+    // "Run" card: the Start Paused tickbox and the three mode buttons.  They
+    // used to live half inside the summary card, which read as a grouping
+    // mistake; the three buttons and the tickbox share one box now.
+    float runX = 0.0f, runY = 0.0f, runW = 0.0f, runH = 0.0f;
+
+    // Editable subregion of the lattice: a button that opens the 3D overlay
+    // (subregion_modal.h) plus the lines that report what it selects.
+    float regionLabelY = 0.0f, regionButtonY = 0.0f, regionReadoutY = 0.0f;
+
     float footerY = 0.0f;
     float helpX = 0.0f, helpY = 0.0f, helpW = 70.0f, helpH = 20.0f;
 };
@@ -122,8 +140,18 @@ struct Preview
     int    rmax = 0, islandCount = 0, islandSize = 0, frame = 0;
 };
 
-// Keyboard focus: 0..2 dropdowns, 3 tickbox, 4..6 the three mode buttons.
-const int kFocusCount = 7;
+// Keyboard focus ring.  Named instead of the bare 0..6 this used to be: the
+// subregion cube was inserted in the middle of the ring, so every literal would
+// have had to move silently.
+const int kFocusSize     = 0;
+const int kFocusLayers   = 1;
+const int kFocusScenario = 2;
+const int kFocusRegion   = 3;
+const int kFocusPaused   = 4;
+const int kFocusSim      = 5;
+const int kFocusStats    = 6;
+const int kFocusReplay   = 7;
+const int kFocusCount    = 8;
 
 // Defined in the state block below; declared here because the drawing helpers
 // live above the namespace and read them.
@@ -131,10 +159,14 @@ extern Layout gLayout;
 extern int    gFocus;
 extern double gPhysicalBytes;
 extern framework::Logo* logo_splash;
+extern SubRegionBox* subregion;
 
 static void setupUI();
 static void applyLayout();
 static void computeLayout(int width, int height);
+static void printSubregion(const char* reason);
+static void syncSubregionLattice();
+static bool openRegionOverlay();
 static void drawTextTD(const std::string& text, float x, float yCenter,
                        float scale, const glm::vec3& color);
 static std::string withThousands(unsigned long long value);
@@ -239,13 +271,40 @@ static void drawPanels()
 {
     const splash::Layout& lay = splash::gLayout;
 
-    // Light "paper" panel for the parameters, dark card for the run summary.
-    // Both come from the static-VAO helpers, so nothing is allocated per frame.
+    // Three cards, one per group of widgets: parameters (light "paper"), the run
+    // summary (dark) and the run card (dark) with "Start Paused" and the three
+    // mode buttons.  The tickbox and the Simulation button used to sit half
+    // inside the summary card, so the grouping read wrong; the Replay button,
+    // on shorter windows, used to fall outside its box.  All three panels come
+    // from the static-VAO helpers, so nothing is allocated per frame.
     drawPanel(lay.panelX, lay.panelY, lay.panelW, lay.panelH,
               glm::vec3(0.85f, 0.85f, 0.90f), glm::vec3(0.70f, 0.70f, 0.80f));
 
     drawPanel(lay.infoX, lay.infoY, lay.infoW, lay.infoH,
               glm::vec3(0.28f, 0.28f, 0.28f), glm::vec3(0.35f, 0.35f, 0.40f));
+
+    drawPanel(lay.runX, lay.runY, lay.runW, lay.runH,
+              glm::vec3(0.24f, 0.24f, 0.30f), glm::vec3(0.35f, 0.35f, 0.45f));
+}
+
+// Numbers of the subregion editor, under the cube and on the light card.
+static void drawSubregionReadout()
+{
+    if (!textRenderer || !splash::subregion) return;
+
+    const splash::Layout&   lay = splash::gLayout;
+    const splash::Selection sel = splash::readSelectionFromUI();
+
+    // The same Summary the overlay shows, so the card and the 3D view cannot
+    // disagree about the numbers.
+    const SubRegionBox::Summary sum =
+        splash::subregion->summarize(sel.W, (unsigned long long)sizeof(automaton::Cell));
+
+    const glm::vec3 strong(0.14f, 0.17f, 0.30f);
+    const glm::vec3 dim(0.36f, 0.39f, 0.47f);
+
+    drawTextTD(sum.bounds, lay.colX, lay.regionReadoutY, 0.28f, strong);
+    drawTextTD(sum.cells,  lay.colX, lay.regionReadoutY + 17.0f, 0.26f, dim);
 }
 
 static void drawFormLabels()
@@ -258,6 +317,8 @@ static void drawFormLabels()
     drawTextTD("W — winding layers",               lay.colX, lay.labelY[1], 0.30f, label);
     drawTextTD("Scenario (single)",                lay.colX, lay.labelY[2], 0.30f, label);
     drawTextTD("presets (L/W) · suggested 21/10",  lay.colX, lay.presetCaptionY, 0.28f, dim);
+    drawTextTD("subregion of the lattice (opens a 3D view)",
+               lay.colX, lay.regionLabelY, 0.26f, dim);
 }
 
 static void drawRunSummary()
@@ -303,13 +364,42 @@ static void drawRunSummary()
     y += step;
     drawTextTD("physical memory = " + splash::formatBytes(splash::gPhysicalBytes),
                x, y, 0.28f, dim);
+    y += step;
+
+    // Subregion readout: same numbers the widget prints, so the screen and the
+    // log cannot disagree.
+    if (splash::subregion)
+    {
+        const unsigned long long perLayer  = splash::subregion->cellsPerLayer();
+        const unsigned long long l3        = (unsigned long long)sel.L *
+                                             (unsigned long long)sel.L *
+                                             (unsigned long long)sel.L;
+        const double             fraction  = (l3 > 0)
+            ? (100.0 * (double)perLayer / (double)l3) : 100.0;
+        const double subBytes  = 3.0 * (double)perLayer * (double)sel.W *
+                                 (double)sizeof(automaton::Cell);
+        const double fullBytes = 3.0 * (double)l3 * (double)sel.W *
+                                 (double)sizeof(automaton::Cell);
+
+        char pct[32];
+        std::snprintf(pct, sizeof(pct), "%.1f%%", fraction);
+
+        const glm::vec3 sub(0.55f, 0.85f, 1.00f);
+        drawTextTD("subregion = " + splash::subregion->boundsLine(),
+                   x, y, 0.28f, sub);
+        y += step;
+        drawTextTD(std::string("subregion ") + pct + " of the lattice -> RAM " +
+                   splash::formatBytes(subBytes) + " of " + splash::formatBytes(fullBytes),
+                   x, y, 0.28f, sub);
+    }
 }
 
 static void drawFooter()
 {
     const splash::Layout& lay = splash::gLayout;
 
-    // Short enough to leave the Help link (bottom-right) clear.
+    // Short enough to leave the Help link (bottom-right) clear.  The subregion
+    // keys are listed by the cube itself, next to its numbers.
     drawTextCenteredTD("Enter: start    Tab: move    Left-Right: change    Esc: quit",
                        lay.footerY, 0.28f, glm::vec3(0.33f, 0.36f, 0.44f));
 }
@@ -321,20 +411,25 @@ static void drawFocusRing()
     const float pad = 4.0f;
     const int f = splash::gFocus;
 
-    if (f >= 0 && f < 3)
+    if (f >= splash::kFocusSize && f <= splash::kFocusScenario)
     {
         strokeRectTD(lay.colX - pad, lay.dropdownY[f] - pad,
                      lay.colW + 2 * pad, lay.dropdownH + 2 * pad, ring);
     }
-    else if (f == 3)
+    else if (f == splash::kFocusRegion)
+    {
+        strokeRectTD(lay.colX - pad, lay.regionButtonY - pad,
+                     lay.colW + 2 * pad, 34.0f + 2 * pad, ring);
+    }
+    else if (f == splash::kFocusPaused)
     {
         const float labelW = textWidth("Start Paused", 0.32f);
         strokeRectTD(lay.pausedX - pad, lay.pausedY - pad,
                      18.0f + 8.0f + labelW + 2 * pad, 18.0f + 2 * pad, ring);
     }
-    else if (f >= 4 && f < 7)
+    else if (f >= splash::kFocusSim && f <= splash::kFocusReplay)
     {
-        const int b = f - 4;
+        const int b = f - splash::kFocusSim;
         strokeRectTD(lay.buttonX - pad, lay.buttonY[b] - pad,
                      lay.buttonW + 2 * pad, lay.buttonH + 2 * pad, ring);
     }
@@ -353,6 +448,7 @@ namespace splash {
     // memory figure shown in the run summary (read once, in initialize()).
     Layout gLayout;
     int    gFocus = 0;
+    int    gFocusBeforeRegion = 0;   // ring position to restore when the overlay closes
     double gPhysicalBytes = 0.0;
 
     Button* simBtn = nullptr;
@@ -362,7 +458,10 @@ namespace splash {
     Button* presetSmall = nullptr;
     Button* presetMid = nullptr;
     Button* presetLarge = nullptr;
+    Button* regionButton = nullptr;      // opens the 3D overlay
     Tickbox* startPausedBox = nullptr;
+    SubRegionBox* subregion = nullptr;   // the region itself (see subregion_box.h)
+    SubRegionModal* regionModal = nullptr;
     Cortina* sizeDropdown = nullptr;
     Cortina* layerDropdown = nullptr;
     Cortina* scenarioDropdown = nullptr;
@@ -466,7 +565,72 @@ namespace splash {
         if (startPausedBox)
             sel.startPaused = startPausedBox->getState();
 
+        // The subregion model is the source of the requested bounds; its lattice
+        // size follows the L dropdown through syncSubregionLattice().
+        if (subregion)
+        {
+            sel.subLo = glm::ivec3(subregion->x0(), subregion->y0(), subregion->z0());
+            sel.subHi = glm::ivec3(subregion->x1(), subregion->y1(), subregion->z1());
+        }
+        else
+        {
+            const int last = sel.L - 1;
+            sel.subLo = glm::ivec3(0, 0, 0);
+            sel.subHi = glm::ivec3(last, last, last);
+        }
+
         return sel;
+    }
+
+    // The lattice side lives in the L dropdown and the cube follows it.  Called
+    // once per frame before drawing; setLatticeSize() returns early when the
+    // side did not change, so this costs a comparison.
+    static void syncSubregionLattice()
+    {
+        if (!subregion || !sizeDropdown) return;
+
+        const int L = sizeFromIndex(sizeDropdown->getSelectedIndex());
+        if (subregion->setLatticeSize(L))
+            printSubregion("lattice side changed");
+    }
+
+    // Opens the 3D overlay that edits the region (subregion_modal.h).  Control
+    // comes back on Enter or Esc; the region is edited live, so there is nothing
+    // to confirm.
+    static bool openRegionOverlay()
+    {
+        if (!regionModal || !subregion) return false;
+
+        // Remember where the ring was: closing the overlay puts it back, so the
+        // key that closed it does not immediately reopen it.
+        gFocusBeforeRegion = gFocus;
+
+        regionModal->open(subregion, winW(), winH());
+        regionModal->setRunContext(readSelectionFromUI().W,
+                                   (unsigned long long)sizeof(automaton::Cell));
+
+        std::cout << "[Splash] Region overlay opened ("
+                  << subregion->handleName(subregion->activeHandle())
+                  << " face active)" << std::endl;
+        return true;
+    }
+
+    // One stdout line per change.  This is the point of the widget step: the
+    // numbers are printed, and visible on screen, BEFORE anything in the model
+    // reads them (the integration is the next step, see README).
+    static void printSubregion(const char* reason)
+    {
+        if (!subregion) return;
+
+        const Selection sel = readSelectionFromUI();
+
+        std::cout << subregion->report(sel.W, (unsigned long long)sizeof(automaton::Cell));
+
+        if (reason && *reason)
+            std::cout << "   [" << reason << "; face "
+                      << subregion->handleName(subregion->activeHandle()) << "]";
+
+        std::cout << std::endl;
     }
 
     static int sizeCount()
@@ -575,18 +739,33 @@ namespace splash {
         const float presetCapH = 26.0f;
         const float presetH    = 26.0f;
         const float infoLineH  = 19.0f;
-        const int   infoLines  = 6;
+        const int   infoLines  = 8;       // six run numbers + two subregion lines
         const float infoPadY   = 12.0f;
         const float pausedRowH = 24.0f;
         const float buttonH    = 36.0f;
         const float buttonGap  = 8.0f;
+        const float runPadX    = 12.0f;
+        const float runPadY    = 12.0f;
 
         const float rowH = labelBand + lay.dropdownH + rowGap;
 
-        const float leftColumnH  = pad + 3.0f * rowH + presetCapH + presetH + pad;
-        const float infoH        = infoLines * infoLineH + infoPadY + pausedRowH;
-        const float rightColumnH = pad + infoH + 14.0f +
-                                   3.0f * buttonH + 2.0f * buttonGap + pad;
+        // Subregion editor: one button that opens the 3D overlay, plus the two
+        // lines that report what it selects.
+        const float regionGap      = 14.0f;
+        const float regionLabelH   = 20.0f;
+        const float regionButtonH  = 34.0f;
+        const float regionReadoutH = 44.0f;
+
+        // Run card: Start Paused + the three mode buttons, one box.
+        const float pausedRowPad = 10.0f;
+        const float runH = runPadY + pausedRowH + pausedRowPad +
+                           3.0f * buttonH + 2.0f * buttonGap + runPadY;
+
+        const float leftColumnH  = pad + 3.0f * rowH + presetCapH + presetH +
+                                   regionGap + regionLabelH + regionButtonH +
+                                   regionReadoutH + pad;
+        const float infoH        = infoLines * infoLineH + 2.0f * infoPadY;
+        const float rightColumnH = pad + infoH + 14.0f + runH + pad;
         const float contentH     = (leftColumnH > rightColumnH) ? leftColumnH : rightColumnH;
 
         lay.infoH = infoH;
@@ -655,21 +834,36 @@ namespace splash {
         lay.presetCaptionY = y + presetCapH * 0.5f;
         lay.presetY        = y + presetCapH;
         lay.presetW        = (leftW - 2.0f * 8.0f) / 3.0f;
+        y += presetCapH + presetH + regionGap;
+
+        // The button opens the 3D overlay; its numbers go just under it, still
+        // inside the light card.
+        lay.regionLabelY   = y + regionLabelH * 0.5f;
+        lay.regionButtonY  = y + regionLabelH;
+        lay.regionReadoutY = lay.regionButtonY + regionButtonH + 12.0f;
 
         lay.infoX = innerX + leftW + colGap;
         lay.infoY = lay.panelY + pad;
         lay.infoW = rightW;
 
-        // "Start Paused" sits on the dark card, because that is where its light
-        // label is readable (the Tickbox colours are global and tuned dark).
-        lay.pausedX = lay.infoX + 12.0f;
-        lay.pausedY = lay.infoY + infoPadY + infoLines * infoLineH + 2.0f;
+        // The run card is the box under the summary card: "Start Paused" and the
+        // three mode buttons live together there, so none of them is left
+        // dangling outside a box and the tickbox is out of the summary card.
+        // It is dark because the Tickbox colours are global and tuned for a dark
+        // background (its label is near-white).
+        lay.runX = lay.infoX;
+        lay.runY = lay.infoY + lay.infoH + 14.0f;
+        lay.runW = rightW;
+        lay.runH = runH;
 
-        lay.buttonX = lay.infoX;
-        lay.buttonW = rightW;
+        lay.pausedX = lay.runX + runPadX;
+        lay.pausedY = lay.runY + runPadY + 4.0f;
+
+        lay.buttonX = lay.runX + runPadX;
+        lay.buttonW = rightW - 2.0f * runPadX;
         lay.buttonH = buttonH;
 
-        float by = lay.infoY + lay.infoH + 14.0f;
+        float by = lay.runY + runPadY + pausedRowH + pausedRowPad;
         for (int i = 0; i < 3; ++i)
         {
             lay.buttonY[i] = by;
@@ -725,6 +919,12 @@ namespace splash {
 
         if (startPausedBox)
             startPausedBox->setPosition((int)lay.pausedX, (int)lay.pausedY);
+
+        if (regionButton)
+        {
+            regionButton->setPosition(lay.colX, lay.regionButtonY);
+            regionButton->setSize(lay.colW, 34.0f);
+        }
 
         if (simBtn)
         {
@@ -829,6 +1029,20 @@ namespace splash {
                   << ", startPaused = " << (sel.startPaused ? "yes" : "no")
                   << std::endl;
 
+        // The subregion travels with the selection and is reported at start-up,
+        // but the model does not read it yet: this is the widget step.
+        if (subregion)
+        {
+            std::cout << subregion->report(sel.W, (unsigned long long)sizeof(automaton::Cell))
+                      << std::endl;
+
+            if (!subregion->isFull())
+            {
+                std::cout << "[Subregion] NOTE: not applied to the model yet -- the run still "
+                             "allocates the full L^3 x W lattice." << std::endl;
+            }
+        }
+
         // Keep the published values in sync with what the screen displays.
         lattice_size = sel.L;
         numLayers    = sel.W;
@@ -916,6 +1130,13 @@ namespace splash {
 
         startPausedBox = new Tickbox(0, 0, "Start Paused");
 
+        // The region of the lattice: a button that opens the 3D overlay, and the
+        // model the overlay edits.  Its side follows the L dropdown
+        // (syncSubregionLattice) and its numbers are printed on every change.
+        regionButton = new Button(0, 0, 200, 34, "Select region...");
+        subregion    = new SubRegionBox();
+        regionModal  = new SubRegionModal();
+
         logo_splash = new framework::Logo("logo_bar.png");
     }
 
@@ -945,7 +1166,12 @@ namespace splash {
             scenarioDropdown->setSelectedIndex(0);
         }
 
-        gFocus = 0;
+        gFocus = kFocusSize;
+
+        // The cube starts on the whole lattice of the L the screen opened with,
+        // and reports it once so the log shows the starting point.
+        syncSubregionLattice();
+        printSubregion("setup");
     }
 
     int initialize(GLFWwindow* win)
@@ -981,11 +1207,15 @@ namespace splash {
         delete presetMid; presetMid = nullptr;
         delete presetLarge; presetLarge = nullptr;
         delete startPausedBox; startPausedBox = nullptr;
+        delete regionButton; regionButton = nullptr;
+        delete regionModal; regionModal = nullptr;
+        delete subregion; subregion = nullptr;
         delete sizeDropdown; sizeDropdown = nullptr;
         delete layerDropdown; layerDropdown = nullptr;
         delete scenarioDropdown; scenarioDropdown = nullptr;
         delete logo_splash; logo_splash = nullptr;
     }
+
 
     void render()
     {
@@ -1010,6 +1240,13 @@ namespace splash {
         drawPanels();
         drawFormLabels();
 
+        // The subregion editor follows the L dropdown, so it is synced before it
+        // is drawn; the ring around its button is the ordinary focus ring.
+        syncSubregionLattice();
+        drawSubregionReadout();
+
+        if (regionButton) regionButton->draw(*textRenderer, w, h);
+
         if (helpLink) helpLink->drawAsHyperlink(*textRenderer, helpHover, w, h);
 
         if (simBtn)    simBtn->draw(*textRenderer, w, h);
@@ -1033,6 +1270,16 @@ namespace splash {
         drawRunSummary();
         drawFocusRing();
         drawFooter();
+
+        // The 3D overlay goes last: it dims the whole window and draws its own
+        // view, its gizmo and its readouts on top of the setup screen.
+        if (regionModal && regionModal->isOpen())
+        {
+            const Selection overlaySel = readSelectionFromUI();
+            regionModal->setRunContext(overlaySel.W,
+                                       (unsigned long long)sizeof(automaton::Cell));
+            regionModal->render(textRenderer, w, h);
+        }
     }
 } // namespace splash
 
@@ -1068,7 +1315,32 @@ static int myTopDown(int my_bottom)
 
 void mouseButtonCallback(GLFWwindow*, int button, int action, int)
 {
-    if (button != GLFW_MOUSE_BUTTON_LEFT || action != GLFW_PRESS) return;
+    // While the 3D overlay is open it owns every mouse event: it orbits, zooms
+    // and drags the faces, and the setup widgets underneath must not react.
+    if (splash::regionModal && splash::regionModal->isOpen())
+    {
+        if (action == GLFW_RELEASE)
+        {
+            const SubRegionModal::Result r = splash::regionModal->onMouseRelease();
+            if (r.changed) splash::printSubregion("3D overlay");
+        }
+        else if (action == GLFW_PRESS)
+        {
+            const int b = (button == GLFW_MOUSE_BUTTON_LEFT)   ? 0
+                        : (button == GLFW_MOUSE_BUTTON_MIDDLE) ? 2 : -1;
+            if (b >= 0)
+            {
+                double x, y;
+                glfwGetCursorPos(splash::window, &x, &y);
+                const SubRegionModal::Result r =
+                    splash::regionModal->onMousePress((float)x, (float)y, b);
+                if (r.changed) splash::printSubregion("3D overlay");
+            }
+        }
+        return;
+    }
+
+    if (button != GLFW_MOUSE_BUTTON_LEFT) return;
 
     double xpos, ypos;
     glfwGetCursorPos(splash::window, &xpos, &ypos);
@@ -1082,17 +1354,17 @@ void mouseButtonCallback(GLFWwindow*, int button, int action, int)
     bool handled = false;
     if (splash::sizeDropdown && splash::sizeDropdown->handleMouseClick(mx, my_dropdown))
     {
-        splash::gFocus = 0;
+        splash::gFocus = splash::kFocusSize;
         handled = true;
     }
     if (!handled && splash::layerDropdown && splash::layerDropdown->handleMouseClick(mx, my_dropdown))
     {
-        splash::gFocus = 1;
+        splash::gFocus = splash::kFocusLayers;
         handled = true;
     }
     if (!handled && splash::scenarioDropdown && splash::scenarioDropdown->handleMouseClick(mx, my_dropdown))
     {
-        splash::gFocus = 2;
+        splash::gFocus = splash::kFocusScenario;
         handled = true;
     }
 
@@ -1106,25 +1378,29 @@ void mouseButtonCallback(GLFWwindow*, int button, int action, int)
     // the same allocator path, so they cannot drift from the Enter key or from
     // each other again.
     if (splash::simBtn && splash::simBtn->contains(mx, my_button, winH())) {
-        splash::gFocus = 4;
+        splash::gFocus = splash::kFocusSim;
         splash::launch(splash::LaunchTarget::Simulation);
     }
     else if (splash::statBtn && splash::statBtn->contains(mx, my_button, winH())) {
-        splash::gFocus = 5;
+        splash::gFocus = splash::kFocusStats;
         splash::launch(splash::LaunchTarget::Statistics);
     }
     else if (splash::replayBtn && splash::replayBtn->contains(mx, my_button, winH())) {
-        splash::gFocus = 6;
+        splash::gFocus = splash::kFocusReplay;
         splash::launch(splash::LaunchTarget::Replay);
     }
     else if (splash::presetSmall && splash::presetSmall->contains(mx, my_button, winH())) {
-        applyPreset(15, 12, 0);
+        applyPreset(15, 12, splash::kFocusSize);
     }
     else if (splash::presetMid && splash::presetMid->contains(mx, my_button, winH())) {
-        applyPreset(21, 10, 0);
+        applyPreset(21, 10, splash::kFocusSize);
     }
     else if (splash::presetLarge && splash::presetLarge->contains(mx, my_button, winH())) {
-        applyPreset(31, 20, 0);
+        applyPreset(31, 20, splash::kFocusSize);
+    }
+    else if (splash::regionButton && splash::regionButton->contains(mx, my_button, winH())) {
+        splash::gFocus = splash::kFocusRegion;
+        splash::openRegionOverlay();
     }
     else if (splash::helpLink && splash::helpLink->contains(mx, my_button, winH())) {
         // Same link (and same URL) as the HUD hyperlink; see help.cpp.
@@ -1142,6 +1418,13 @@ void mouseButtonCallback(GLFWwindow*, int button, int action, int)
 
 void scrollCallback(GLFWwindow*, double xoffset, double yoffset)
 {
+    // The wheel zooms the overlay while it is open.
+    if (splash::regionModal && splash::regionModal->isOpen())
+    {
+        splash::regionModal->onScroll((float)yoffset);
+        return;
+    }
+
     int mx, my;
     getMousePos(mx, my);
     if (splash::sizeDropdown && splash::sizeDropdown->isExpanded())
@@ -1158,6 +1441,31 @@ void keyCallback(GLFWwindow*, int key, int, int action, int mods)
     const bool repeat  = (action == GLFW_REPEAT);
     if (!pressed && !repeat) return;
 
+    // The subregion keys belong to the 3D overlay now: here the ring only starts
+    // it with Enter, so the arrows keep moving the focus as everywhere else.
+    if (splash::regionModal && splash::regionModal->isOpen())
+    {
+        const SubRegionModal::Result r = splash::regionModal->onKey(key, mods);
+
+        if (r.consumed)
+        {
+            if (r.changed) splash::printSubregion("3D overlay");
+
+            if (!splash::regionModal->isOpen())
+            {
+                splash::printSubregion("overlay closed");
+
+                // Back to where the ring was.  If that was the region button, it
+                // moves to Simulation, so the footer's "Enter: start" still holds
+                // (otherwise Enter would reopen the overlay instead of starting).
+                splash::gFocus = splash::gFocusBeforeRegion;
+                if (splash::gFocus == splash::kFocusRegion)
+                    splash::gFocus = splash::kFocusSim;
+            }
+            return;
+        }
+    }
+
     if (pressed)
     {
         if (key == GLFW_KEY_ESCAPE)
@@ -1169,11 +1477,15 @@ void keyCallback(GLFWwindow*, int key, int, int action, int mods)
 
         if (key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER)
         {
-            // Start with exactly the selection on screen; if the focus ring sits
-            // on one of the mode buttons, start that mode instead.
-            if (splash::gFocus == 5)      splash::launch(splash::LaunchTarget::Statistics);
-            else if (splash::gFocus == 6) splash::launch(splash::LaunchTarget::Replay);
-            else                          splash::launch(splash::LaunchTarget::Simulation);
+            // The ring on the region button starts the 3D overlay; on one of the
+            // mode buttons it starts that mode; otherwise it starts the
+            // simulation, with exactly the selection on screen.
+            if (splash::gFocus == splash::kFocusRegion && splash::openRegionOverlay())
+                return;
+
+            if (splash::gFocus == splash::kFocusStats)       splash::launch(splash::LaunchTarget::Statistics);
+            else if (splash::gFocus == splash::kFocusReplay) splash::launch(splash::LaunchTarget::Replay);
+            else                                             splash::launch(splash::LaunchTarget::Simulation);
             return;
         }
 
@@ -1205,28 +1517,28 @@ void keyCallback(GLFWwindow*, int key, int, int action, int mods)
 
     switch (splash::gFocus)
     {
-        case 0:
+        case splash::kFocusSize:
             if (splash::sizeDropdown)
                 splash::sizeDropdown->setSelectedIndex(splash::sizeDropdown->getSelectedIndex() + step);
             break;
 
-        case 1:
+        case splash::kFocusLayers:
             if (splash::layerDropdown)
                 splash::layerDropdown->setSelectedIndex(splash::layerDropdown->getSelectedIndex() + step);
             break;
 
-        case 2:
+        case splash::kFocusScenario:
             if (splash::scenarioDropdown)
                 splash::scenarioDropdown->setSelectedIndex(splash::scenarioDropdown->getSelectedIndex() + step);
             break;
 
-        case 3:
+        case splash::kFocusPaused:
             if (splash::startPausedBox)
                 splash::startPausedBox->toggle();
             break;
 
         default:
-            break;   // the mode buttons start on Enter
+            break;   // the cube has its own block above; the buttons start on Enter
     }
 }
 
@@ -1235,6 +1547,17 @@ void passiveMotionCallback(GLFWwindow*, double xpos, double ypos)
     int mx = (int)xpos;
     int my = winH() - (int)ypos;
     int my_top = myTopDown(my);
+
+    // The overlay takes the motion while it is open: it orbits, drags a face and
+    // highlights the handle under the cursor.
+    if (splash::regionModal && splash::regionModal->isOpen())
+    {
+        const SubRegionModal::Result r =
+            splash::regionModal->onMouseMove((float)xpos, (float)ypos);
+        if (r.changed) splash::printSubregion("3D overlay");
+        return;
+    }
+
     if (splash::helpLink) splash::helpHover = splash::helpLink->contains(mx, my_top, winH());
     if (splash::sizeDropdown) splash::sizeDropdown->updateHover(mx, my);
     if (splash::layerDropdown) splash::layerDropdown->updateHover(mx, my);
