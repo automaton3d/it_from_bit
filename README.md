@@ -73,6 +73,14 @@ Keyboard: `Enter` starts the mode the focus ring is on (Simulation by default), 
 `Down` move the ring, `Left` / `Right` change the focused value (or toggle `Start Paused`), and
 `Esc` quits from the setup screen.  Clicking a control moves the ring to it as well.
 
+The 3-D view's data tickboxes (left edge of the scene) are named after what they draw.  The one
+that draws the bubble's spherical cavity -- the Fibonacci sphere inscribed in the unit cube
+(`renderCavity()`, 850 points) -- is `Cavity`; it used to be labelled `Lattice`, which described
+neither the drawing nor the switch.  Its configuration key follows (`data3D.cavity`), and the old
+`data3D.lattice` is still read, so a file written before the rename keeps its setting.  The
+function was renamed with it (`renderCube` -> `renderCavity`: the wireframe cube in its body has
+been commented out for a long time, only the sphere is drawn).
+
 The setup window is created 900x660: a run calls `glfwMaximizeWindow` anyway, so this size only
 affects the screen where the parameters and the region are chosen, which now has to fit three cards.
 

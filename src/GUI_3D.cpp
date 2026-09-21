@@ -588,7 +588,11 @@ void renderWavefront()
       gAxisProjValid = true;
   }
 
-void renderCube()
+/**
+ * Spherical cavity of the bubble: the Fibonacci sphere inscribed in the unit
+ * cube (850 points).  Called by the "Cavity" tickbox (data3D[6]).
+ */
+void renderCavity()
 {
     const float a = 0.25f;                    // half cube size
     const float sphereRadius = a;             // inscribed sphere (fits inside cube)
@@ -935,7 +939,7 @@ void renderGizmo()
     if (data3D.size() > 6 && data3D[6].getState())
     {
 //      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-      renderCube();
+      renderCavity();
   //    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
     if (data3D[7].getState()) renderAxes();

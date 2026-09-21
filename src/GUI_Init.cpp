@@ -107,7 +107,7 @@ namespace framework
             Tickbox(50, d3Dpos + 3*RAD_SEP, "Sine mask"),
             Tickbox(50, d3Dpos + 4*RAD_SEP, "Polarization"),
             Tickbox(50, d3Dpos + 5*RAD_SEP, "Centers"),
-            Tickbox(50, d3Dpos + 6*RAD_SEP, "Lattice"),
+            Tickbox(50, d3Dpos + 6*RAD_SEP, "Cavity"),
             Tickbox(50, d3Dpos + 7*RAD_SEP, "Axes"),
             Tickbox(50, d3Dpos + 8*RAD_SEP, "Plane")
         };
