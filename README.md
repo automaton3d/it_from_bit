@@ -35,7 +35,7 @@ and puts them on record:
 | quoted in the text | lives in |
 |---|---|
 | `experiments/DYNAMIC_QUANTIZATION_DERIVATION.md`, `experiments/J1_SPIN.md`, `experiments/census_ref_el9_s64/census.csv` | `E:\alpha\experiments\` |
-| `experiments/GEOMETRIC_QUANTUM.md`, `gravity_probe_DESIGN.md` | `E:\alpha\attic\closed_programmes\` |
+| `experiments/GEOMETRIC_QUANTUM.md` | `E:\alpha\attic\closed_programmes\` |
 | `RESULTS.md` | `E:\alpha\attic\alpha_campaign\` |
 | `quantization/`, `quantize_stdlib.py` | `E:\alpha\quantization\` |
 | `spiral/spiral.c` | `E:\spiral\` (standalone SDL project) |
@@ -47,6 +47,13 @@ The reference `\cite{af_neto}` used to point to the older repository
 (`github.com/automaton3d/it_from_bit`), which is where `simulation.cpp` and `interaction.cpp` -- the
 two files the text names as "the repository" -- actually live, and which is also the home of the
 implementation the cell-structure table cites.
+
+Appendix D no longer names the historical runner program of the two-bubble campaign, nor its design
+log: both are retired material kept with the study archive, and this repository distributes neither.
+The appendix keeps its content (the overlap gate, the cube mini-sweep, the tube, the collapse
+telegraph and its status paragraph) and its label is now `app:tube-campaign`.  The header comment of
+`it_from_bit.tex` records this and the two other edits made here, so the file's provenance against
+`E:\alpha` stays readable.
 
 ## The simulator (model + GUI)
 
