@@ -43,6 +43,26 @@ std::string humanBytes(double bytes)
     return buf;
 }
 
+// The model runs the region as a lattice of its own, and needs odd edges: the
+// seed sits on the centre cell and the periodic wrap has to be symmetric (see
+// automaton::configureLatticeFromRegion).  A face therefore never produces an
+// even edge -- it stays on the parity of the opposite face, which is the same as
+// saying that a face moves two cells at a time.
+//
+// `v` is the requested cell index for the moving face, `ref` the opposite bound
+// and [lo, hi] the range that face may take.  There is always a value of the
+// right parity in that range, because the range always contains `ref`.
+int snapOddExtent(int v, int ref, int lo, int hi)
+{
+    if (((v - ref) & 1) != 0)
+        v += (v > ref) ? 1 : -1;
+
+    if (v < lo) v = lo + (int)(((lo - ref) & 1) != 0);
+    if (v > hi) v = hi - (int)(((hi - ref) & 1) != 0);
+
+    return v;
+}
+
 } // namespace
 
 // ============================================================================
@@ -68,28 +88,6 @@ bool SubRegionBox::setLatticeSize(int L)
     }
 
     const int before[6] = { x0_, x1_, y0_, y1_, z0_, z1_ };
-    clampBounds();
-
-    return (before[0] != x0_ || before[1] != x1_ ||
-            before[2] != y0_ || before[3] != y1_ ||
-            before[4] != z0_ || before[5] != z1_);
-}
-
-bool SubRegionBox::setBounds(int xa, int xb, int ya, int yb, int za, int zb)
-{
-    if (xa > xb || ya > yb || za > zb) return false;   // inverted: refuse
-    if (xb < 0 || yb < 0 || zb < 0)    return false;   // behind the lattice
-    if (xa > lattice_ - 1 ||
-        ya > lattice_ - 1 ||
-        za > lattice_ - 1)             return false;   // beyond the lattice
-
-    const int before[6] = { x0_, x1_, y0_, y1_, z0_, z1_ };
-
-    x0_ = xa; x1_ = xb;
-    y0_ = ya; y1_ = yb;
-    z0_ = za; z1_ = zb;
-
-    // A range that merely sticks out is clamped, and that counts as a change.
     clampBounds();
 
     return (before[0] != x0_ || before[1] != x1_ ||
@@ -210,12 +208,12 @@ bool SubRegionBox::assignValueOf(Handle h, int value)
 
     switch (h)
     {
-        case Handle::XMin: { const int v = std::max(0, std::min(value, x1_));    if (v == x0_) return false; x0_ = v; return true; }
-        case Handle::XMax: { const int v = std::max(x0_, std::min(value, last)); if (v == x1_) return false; x1_ = v; return true; }
-        case Handle::YMin: { const int v = std::max(0, std::min(value, y1_));    if (v == y0_) return false; y0_ = v; return true; }
-        case Handle::YMax: { const int v = std::max(y0_, std::min(value, last)); if (v == y1_) return false; y1_ = v; return true; }
-        case Handle::ZMin: { const int v = std::max(0, std::min(value, z1_));    if (v == z0_) return false; z0_ = v; return true; }
-        default:           { const int v = std::max(z0_, std::min(value, last)); if (v == z1_) return false; z1_ = v; return true; }
+        case Handle::XMin: { const int v = snapOddExtent(value, x1_, 0,    x1_);    if (v == x0_) return false; x0_ = v; return true; }
+        case Handle::XMax: { const int v = snapOddExtent(value, x0_, x0_,  last);   if (v == x1_) return false; x1_ = v; return true; }
+        case Handle::YMin: { const int v = snapOddExtent(value, y1_, 0,    y1_);    if (v == y0_) return false; y0_ = v; return true; }
+        case Handle::YMax: { const int v = snapOddExtent(value, y0_, y0_,  last);   if (v == y1_) return false; y1_ = v; return true; }
+        case Handle::ZMin: { const int v = snapOddExtent(value, z1_, 0,    z1_);    if (v == z0_) return false; z0_ = v; return true; }
+        default:           { const int v = snapOddExtent(value, z0_, z0_,  last);   if (v == z1_) return false; z1_ = v; return true; }
     }
 }
 

@@ -41,11 +41,7 @@ public:
     int y0() const { return y0_; } int y1() const { return y1_; }
     int z0() const { return z0_; } int z1() const { return z1_; }
 
-    // Inclusive bounds; false when the request was rejected (an inverted or
-    // out-of-lattice range) or when it did not change anything.  Values that
-    // only stick out of the lattice are clamped, and that counts as a change.
-    bool setBounds(int xa, int xb, int ya, int yb, int za, int zb);
-
+    // Back to the whole lattice.  True when something changed.
     bool resetToFull();          // true when something changed
     bool isFull() const;
 

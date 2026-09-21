@@ -520,7 +520,7 @@ SubRegionModal::Result SubRegionModal::onKey(int key, int mods)
         case GLFW_KEY_DOWN:
             if (model_)
                 r.changed = model_->moveActive(((key == GLFW_KEY_UP) ? 1 : -1) *
-                                               (shift ? 5 : 1));
+                                               (shift ? 10 : 2));   // odd edges
             break;
 
         case GLFW_KEY_HOME:
@@ -738,7 +738,8 @@ void SubRegionModal::render(TextRenderer* textRenderer, int winW, int winH)
     drawText2D(textRenderer, "L = " + std::to_string(b.latticeSize()), left, y, 0.34f, white, winW, winH);
     drawText2D(textRenderer,
                std::string("face ") + b.handleName(b.activeHandle()) +
-               "   (Up/Down moves it, Shift for five cells; Left/Right picks the face; Home: whole lattice)",
+               "   (Up/Down moves it two cells -- the model needs odd edges; Shift: ten; "
+               "Left/Right picks the face; Home: whole lattice)",
                left + 90.0f, y, 0.30f, accent, winW, winH);
     y += step;
 

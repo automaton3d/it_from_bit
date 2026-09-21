@@ -227,6 +227,63 @@ void initGeneral()
     }
   }
 
+  /**
+   * Region-driven configuration (the setup screen's "subregion of the lattice").
+   *
+   * The region's EXTENTS become the lattice edges.  Its position inside the
+   * L x L x L grading is deliberately not used: the lattice is periodic and the
+   * initial condition is translation-invariant (every bubble is born at the
+   * lattice centre -- see initCenters), so a translated region is the same
+   * experiment on the same torus.  What the region changes, and the only thing
+   * the memory bill depends on, is the size.
+   *
+   * A cubic region goes through the legacy cubic path (calculateParameters +
+   * tryAllocate), so selecting the whole lattice is bit-identical to the way the
+   * runs were configured before.  A non-cubic region takes the anisotropic path
+   * the model already had (tryAllocateTube: per-axis edges, RMAX = short side,
+   * schedule scale = long edge).
+   *
+   * Bounds are inclusive cell indices, in the same L-grading the setup screen
+   * draws.  Returns false (with lastAllocationError set) when the region cannot
+   * be a lattice: an even edge would break the centre/parity assumptions the
+   * seed and the sieve algebra rely on, and an edge below 5 cannot hold a shell.
+   */
+  bool configureLatticeFromRegion(unsigned W, int x0, int x1, int y0, int y1, int z0, int z1)
+  {
+    auto refuse = [](const char* why) -> bool
+    {
+      lastAllocationError = std::string("region: ") + why;
+      std::cerr << lastAllocationError << std::endl;
+      return false;
+    };
+
+    const int dx = x1 - x0 + 1;
+    const int dy = y1 - y0 + 1;
+    const int dz = z1 - z0 + 1;
+
+    if (dx < 1 || dy < 1 || dz < 1)
+      return refuse("empty region.");
+    if (W < 1)
+      return refuse("W must be >= 1.");
+    if ((dx & 1) == 0 || (dy & 1) == 0 || (dz & 1) == 0)
+      return refuse("every region edge must be odd (move a face by two cells).");
+    if (dx < 5 || dy < 5 || dz < 5)
+      return refuse("every region edge must be >= 5.");
+
+    printf("configureLatticeFromRegion: region %d x %d x %d (from x %d..%d y %d..%d z %d..%d), W = %u\n",
+           dx, dy, dz, x0, x1, y0, y1, z0, z1, W);
+
+    if (dx == dy && dy == dz)
+    {
+      // Cubic: the legacy path, cell for cell.
+      calculateParameters((unsigned)dx, W);
+      return tryAllocate(dx, (int)W);
+    }
+
+    // Anisotropic: tryAllocateTube sets the per-axis parameters and allocates.
+    return tryAllocateTube((unsigned)dx, (unsigned)dy, (unsigned)dz, W);
+  }
+
   void initCenters(unsigned wDim);
 
   /**

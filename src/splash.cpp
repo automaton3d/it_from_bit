@@ -171,8 +171,11 @@ static void drawTextTD(const std::string& text, float x, float yCenter,
                        float scale, const glm::vec3& color);
 static std::string withThousands(unsigned long long value);
 static std::string formatBytes(double bytes);
-static Preview previewParameters(int L, int W);
+static Preview previewParameters(int ex, int ey, int ez, int W);
 static bool previewMatchesModel(const Preview& p);
+// Lattice edges the run will use: the region's extents, or L when the region is
+// the whole lattice.
+static void effectiveEdges(int L, int& ex, int& ey, int& ez);
 static int  sizeFromIndex(int index);
 static int  sizeCount();
 static int  closestSizeIndex(int L);
@@ -327,7 +330,13 @@ static void drawRunSummary()
 
     const splash::Layout&   lay = splash::gLayout;
     const splash::Selection sel = splash::readSelectionFromUI();
-    const splash::Preview   pv  = splash::previewParameters(sel.L, sel.W);
+
+    // What the run will use: the region's extents when the region is smaller than
+    // the lattice, L itself when it is the whole lattice.
+    int ex = sel.L, ey = sel.L, ez = sel.L;
+    splash::effectiveEdges(sel.L, ex, ey, ez);
+
+    const splash::Preview   pv  = splash::previewParameters(ex, ey, ez, sel.W);
 
     // White normally; amber when the run is heavy for this machine, red when the
     // start-up guard would refuse it (> 90% of physical memory).
@@ -350,9 +359,21 @@ static void drawRunSummary()
     drawTextTD("L = " + std::to_string(sel.L) + "    W = " + std::to_string(sel.W),
                x, y, 0.30f, white);
     y += step;
-    drawTextTD("cells = " + splash::withThousands(pv.cells) + "   (L^3 * W)",
-               x, y, 0.30f, white);
-    y += step;
+
+    // The run's own lattice: the region's edges.  With the whole lattice selected
+    // this reads exactly as before.
+    {
+        const bool whole = (ex == sel.L && ey == sel.L && ez == sel.L);
+        const std::string dims = std::to_string(ex) + " x " + std::to_string(ey) +
+                                 " x " + std::to_string(ez);
+        drawTextTD(std::string("lattice = ") + dims + "   x W " + std::to_string(sel.W) +
+                   (whole ? "   (= L^3)" : "   (region)"),
+                   x, y, 0.30f, white);
+        y += step;
+        drawTextTD("cells = " + splash::withThousands(pv.cells), x, y, 0.30f, white);
+        y += step;
+    }
+
     drawTextTD("lattice RAM = " + splash::formatBytes(pv.bytes), x, y, 0.30f, ramColor);
     y += step;
     drawTextTD("RMAX = " + std::to_string(pv.rmax) +
@@ -367,18 +388,22 @@ static void drawRunSummary()
     y += step;
 
     // Subregion readout: same numbers the widget prints, so the screen and the
-    // log cannot disagree.
+    // log cannot disagree.  With the whole lattice selected this is the same
+    // lattice the run would have used anyway, and the model runs exactly that.
     if (splash::subregion)
     {
-        const unsigned long long perLayer  = splash::subregion->cellsPerLayer();
-        const unsigned long long l3        = (unsigned long long)sel.L *
-                                             (unsigned long long)sel.L *
-                                             (unsigned long long)sel.L;
-        const double             fraction  = (l3 > 0)
-            ? (100.0 * (double)perLayer / (double)l3) : 100.0;
-        const double subBytes  = 3.0 * (double)perLayer * (double)sel.W *
+        const unsigned long long cells    = splash::subregion->cellsPerLayer();
+        const unsigned long long l3       = (unsigned long long)sel.L *
+                                            (unsigned long long)sel.L *
+                                            (unsigned long long)sel.L;
+        const unsigned long long region   = cells * (unsigned long long)sel.W;
+        const unsigned long long fullCell = l3 * (unsigned long long)sel.W;
+        const double             fraction = (fullCell > 0)
+            ? (100.0 * (double)region / (double)fullCell) : 100.0;
+
+        const double subBytes  = 3.0 * (double)region *
                                  (double)sizeof(automaton::Cell);
-        const double fullBytes = 3.0 * (double)l3 * (double)sel.W *
+        const double fullBytes = 3.0 * (double)fullCell *
                                  (double)sizeof(automaton::Cell);
 
         char pct[32];
@@ -388,8 +413,12 @@ static void drawRunSummary()
         drawTextTD("subregion = " + splash::subregion->boundsLine(),
                    x, y, 0.28f, sub);
         y += step;
-        drawTextTD(std::string("subregion ") + pct + " of the lattice -> RAM " +
-                   splash::formatBytes(subBytes) + " of " + splash::formatBytes(fullBytes),
+        drawTextTD(std::string("subregion ") + pct + " of the lattice -> cells " +
+                   splash::withThousands(region) + " of " + splash::withThousands(fullCell),
+                   x, y, 0.28f, sub);
+        y += step;
+        drawTextTD("run RAM " + splash::formatBytes(subBytes) + " of " +
+                   splash::formatBytes(fullBytes) + " (3 lattices)",
                    x, y, 0.28f, sub);
     }
 }
@@ -594,6 +623,20 @@ namespace splash {
             printSubregion("lattice side changed");
     }
 
+    // The lattice edges the run will use: the region's extents, or L itself when
+    // the region is the whole lattice (so a plain run is unchanged).  The panel
+    // and the launcher share it, so the numbers on screen are the ones allocated.
+    static void effectiveEdges(int L, int& ex, int& ey, int& ez)
+    {
+        ex = ey = ez = L;
+
+        if (!subregion) return;
+
+        ex = subregion->x1() - subregion->x0() + 1;
+        ey = subregion->y1() - subregion->y0() + 1;
+        ez = subregion->z1() - subregion->z0() + 1;
+    }
+
     // Opens the 3D overlay that edits the region (subregion_modal.h).  Control
     // comes back on Enter or Esc; the region is edited live, so there is nothing
     // to confirm.
@@ -673,25 +716,30 @@ namespace splash {
         return buf;
     }
 
-    static Preview previewParameters(int L, int W)
+    static Preview previewParameters(int ex, int ey, int ez, int W)
     {
         Preview p;
 
-        const unsigned long long l3 = (unsigned long long)L *
-                                      (unsigned long long)L *
-                                      (unsigned long long)L;
-        p.cells = l3 * (unsigned long long)W;
+        // The lattice the run uses: the region's edges.  These are the numbers
+        // automaton::configureLatticeFromRegion will produce -- a cubic region
+        // through calculateParameters (edges = L), anything else through
+        // tryAllocateTube (schedule scale = long edge, RMAX = short side).
+        p.cells = (unsigned long long)ex * (unsigned long long)ey *
+                  (unsigned long long)ez * (unsigned long long)W;
         p.bytes = (double)p.cells * 3.0 * (double)sizeof(automaton::Cell);
-        p.rmax  = L / 2;
+
+        const int L = ex;                       // schedule scale (EL)
+        p.rmax  = ((ey < ez) ? ey : ez) / 2;    // short side (RMAX)
 
         p.islandCount = 9 * L;
         p.islandSize  = (p.islandCount > 0) ? (W / p.islandCount) : 0;
         if (p.islandSize == 0) p.islandSize = 1;
 
         // Light-frame length.  Mirrors the schedule built by
-        // automaton::calculateParameters (src/model/initSim.cpp:413-457): the
-        // live panel cannot call that function, because it prints one line per
-        // layer and rebuilds the centre list.  The copy is therefore re-checked
+        // automaton::calculateParameters / tryAllocateTube (src/model/initSim.cpp):
+        // the live panel cannot call them, because they print one line per layer
+        // and rebuild the centre list.  CENTER only enters through CONTRACT, which
+        // is not part of FRAME, so it is not needed here.  The copy is re-checked
         // against the model by previewMatchesModel() on every start.
         const int rmax = p.rmax;
         const int gx = W + 2 * rmax;
@@ -739,7 +787,7 @@ namespace splash {
         const float presetCapH = 26.0f;
         const float presetH    = 26.0f;
         const float infoLineH  = 19.0f;
-        const int   infoLines  = 8;       // six run numbers + two subregion lines
+        const int   infoLines  = 10;      // seven run numbers + three subregion lines
         const float infoPadY   = 12.0f;
         const float pausedRowH = 24.0f;
         const float buttonH    = 36.0f;
@@ -754,7 +802,7 @@ namespace splash {
         const float regionGap      = 14.0f;
         const float regionLabelH   = 20.0f;
         const float regionButtonH  = 34.0f;
-        const float regionReadoutH = 44.0f;
+        const float regionReadoutH = 54.0f;
 
         // Run card: Start Paused + the three mode buttons, one box.
         const float pausedRowPad = 10.0f;
@@ -840,7 +888,7 @@ namespace splash {
         // inside the light card.
         lay.regionLabelY   = y + regionLabelH * 0.5f;
         lay.regionButtonY  = y + regionLabelH;
-        lay.regionReadoutY = lay.regionButtonY + regionButtonH + 12.0f;
+        lay.regionReadoutY = lay.regionButtonY + regionButtonH + 20.0f;
 
         lay.infoX = innerX + leftW + colGap;
         lay.infoY = lay.panelY + pad;
@@ -956,12 +1004,12 @@ namespace splash {
 
         constexpr double kGiB = 1024.0 * 1024.0 * 1024.0;
 
-        // lattice_curr + lattice_draft + lattice_partner, each L^3 * W cells.
+        // lattice_curr + lattice_draft + lattice_partner, each ex*ey*ez*W cells.
         // sizeof(automaton::Cell) comes from the model, never hard-coded
         // (it is 160 bytes with MSVC x64 today).
-        double estimateLatticeBytes(int L, int W)
+        double estimateLatticeBytes(int ex, int ey, int ez, int W)
         {
-            const double cells = (double)L * (double)L * (double)L * (double)W;
+            const double cells = (double)ex * (double)ey * (double)ez * (double)W;
             return cells * 3.0 * (double)sizeof(automaton::Cell);
         }
 
@@ -969,14 +1017,16 @@ namespace splash {
         // touched: the dropdowns reach L = 89, W = 364, which needs ~117 GB and
         // could only end in a bad_alloc.  The bound is deliberately loose (90%
         // of physical memory) so it cannot block a run that would have worked.
-        bool requestFitsInMemory(int L, int W, std::string& why)
+        // The volume measured is the one the run actually allocates, so a small
+        // region can make an otherwise impossible L x W fit.
+        bool requestFitsInMemory(int ex, int ey, int ez, int W, std::string& why)
         {
             MEMORYSTATUSEX memory = {};
             memory.dwLength = sizeof(memory);
             if (!GlobalMemoryStatusEx(&memory))
                 return true;   // no information: let the allocator decide
 
-            const double needed   = estimateLatticeBytes(L, W);
+            const double needed   = estimateLatticeBytes(ex, ey, ez, W);
             const double physical = (double)memory.ullTotalPhys;
 
             if (needed > 0.9 * physical)
@@ -993,26 +1043,34 @@ namespace splash {
 
     } // anonymous namespace
 
+    // Reports what the run wanted to allocate, not what the dropdowns say: with a
+    // region the two differ, and the region is what was refused.
     static void reportStartFailure(const Selection& sel, const std::string& why)
     {
+        int ex = sel.L, ey = sel.L, ez = sel.L;
+        effectiveEdges(sel.L, ex, ey, ez);
+
         const unsigned long long cells =
-            (unsigned long long)sel.L * (unsigned long long)sel.L *
-            (unsigned long long)sel.L * (unsigned long long)sel.W;
+            (unsigned long long)ex * (unsigned long long)ey *
+            (unsigned long long)ez * (unsigned long long)sel.W;
 
         const char* reason = !why.empty() ? why.c_str()
                                           : automaton::lastAllocationError.c_str();
         if (!reason || !*reason)
             reason = "unspecified allocation failure";
 
-        char buf[512];
+        char buf[640];
         std::snprintf(buf, sizeof(buf),
                       "Cannot start with L = %d, W = %d.\n\n"
-                      "L^3 * W = %llu cells\n"
+                      "run lattice = %d x %d x %d x W %d\n"
+                      "cells = %llu\n"
                       "lattice memory (3 lattices, %llu bytes/cell) = %.2f GB\n\n"
                       "Reason: %s",
-                      sel.L, sel.W, cells,
+                      sel.L, sel.W,
+                      ex, ey, ez, sel.W,
+                      cells,
                       (unsigned long long)sizeof(automaton::Cell),
-                      estimateLatticeBytes(sel.L, sel.W) / kGiB,
+                      estimateLatticeBytes(ex, ey, ez, sel.W) / kGiB,
                       reason);
 
         std::cerr << "[Splash] " << buf << std::endl;
@@ -1029,41 +1087,52 @@ namespace splash {
                   << ", startPaused = " << (sel.startPaused ? "yes" : "no")
                   << std::endl;
 
-        // The subregion travels with the selection and is reported at start-up,
-        // but the model does not read it yet: this is the widget step.
+        // The region is what the run uses: its extents become the lattice edges,
+        // and only that volume is allocated (automaton::configureLatticeFromRegion).
+        // With the whole lattice selected this is L^3 x W, exactly as before.
+        int ex = sel.L, ey = sel.L, ez = sel.L;
+        effectiveEdges(sel.L, ex, ey, ez);
+
+        const int x0 = subregion ? subregion->x0() : 0;
+        const int x1 = subregion ? subregion->x1() : sel.L - 1;
+        const int y0 = subregion ? subregion->y0() : 0;
+        const int y1 = subregion ? subregion->y1() : sel.L - 1;
+        const int z0 = subregion ? subregion->z0() : 0;
+        const int z1 = subregion ? subregion->z1() : sel.L - 1;
+
         if (subregion)
         {
             std::cout << subregion->report(sel.W, (unsigned long long)sizeof(automaton::Cell))
                       << std::endl;
-
-            if (!subregion->isFull())
-            {
-                std::cout << "[Subregion] NOTE: not applied to the model yet -- the run still "
-                             "allocates the full L^3 x W lattice." << std::endl;
-            }
+            std::cout << "[Subregion] run lattice = " << ex << " x " << ey << " x " << ez
+                      << " x W " << sel.W
+                      << ", " << (subregion->isFull() ? "the whole lattice"
+                                                      : "a smaller periodic lattice")
+                      << std::endl;
         }
 
         // Keep the published values in sync with what the screen displays.
         lattice_size = sel.L;
         numLayers    = sel.W;
 
-        automaton::calculateParameters((unsigned)sel.L, (unsigned)sel.W);
-
-        // The live panel derives its numbers locally (it cannot call
-        // calculateParameters on every key press); make sure the copy still
-        // agrees with the model before the run starts.
-        if (!previewMatchesModel(previewParameters(sel.L, sel.W)))
-        {
-            std::cerr << "[Splash] WARNING: the panel preview disagrees with the model "
-                         "parameters for L = " << sel.L << ", W = " << sel.W << std::endl;
-        }
-
         std::string why;
-        if (!requestFitsInMemory(sel.L, sel.W, why) ||
-            !automaton::tryAllocate(sel.L, sel.W))
+        if (!requestFitsInMemory(ex, ey, ez, sel.W, why) ||
+            !automaton::configureLatticeFromRegion((unsigned)sel.W, x0, x1, y0, y1, z0, z1))
         {
             reportStartFailure(sel, why);
             return false;
+        }
+
+        // The live panel derives its numbers locally (it cannot call the model
+        // functions on every key press); check that copy against the model the
+        // call above just configured.  This has to come after the configuration:
+        // before it, it would compare against the previous run's parameters (or
+        // against zeros on the first start).
+        if (!previewMatchesModel(previewParameters(ex, ey, ez, sel.W)))
+        {
+            std::cerr << "[Splash] WARNING: the panel preview disagrees with the model "
+                         "parameters for lattice " << ex << " x " << ey << " x " << ez
+                      << ", W = " << sel.W << std::endl;
         }
 
         // The selection becomes the configuration the next run opens with.

@@ -102,9 +102,41 @@ the model reads it:
 W = 10 -> 41,580 of 92,610 cells | est. RAM 19.0 MB of 42.4 MB (3 lattices x 160 bytes/cell)
 ```
 
-**Not applied to the model yet:** the region travels with the selection and is reported when a run
-starts (with a `NOTE:` line), but `automaton::tryAllocate` still allocates the whole `L^3 x W`
-lattice.  Making the model use it is the next step.
+**The region is what runs (20 Sep 2026):** the model now uses it.
+`automaton::configureLatticeFromRegion()` (src/model/initSim.cpp) is the single
+entry point the setup screen calls instead of `calculateParameters` +
+`tryAllocate`: it takes the region's bounds, turns its **extents** into the lattice
+edges and allocates only that volume.  So a region of `11 x 11 x 11` with `W = 10`
+allocates 13,310 cells (~6 MB) where the full `21^3 x 10` allocates 92,610
+(~42 MB), and the schedule follows: `RMAX = 5`, `CENTER = 5`, `FRAME = 216`,
+`ISLAND_COUNT = 99`.
+
+The box's **position is deliberately not used**: the lattice is periodic and the
+initial condition is translation-invariant (every bubble is born at the lattice
+centre -- `initCenters`), so a translated region is the same experiment on the
+same torus.  Only the size matters, and the size is what the memory bill depends
+on.
+
+Two consequences the widget honours, because the model requires them:
+
+* **odd edges** -- the seed sits on the centre cell and the periodic wrap has to
+  be symmetric (the same assumption the sieve algebra has always made), so a face
+  never produces an even edge: it keeps the parity of the opposite face, which
+  means it moves two cells at a time (`Up`/`Down`, `Shift` for ten).  Even or
+  under-5 edges are refused at start-up with a reason instead of being adjusted
+  silently;
+* **cubic or not** -- a cubic region goes through the legacy path
+  (`calculateParameters` + `tryAllocate`), so selecting the whole lattice is
+  **bit-identical** to the way runs were configured before (checked with a
+  deterministic digest of the lattice every 50 ticks, 15 samples, all equal);
+  an anisotropic region uses `tryAllocateTube`, which the model already had
+  (per-axis edges, `RMAX` = short side, schedule scale = long edge).  A
+  `11 x 21 x 21` region was run to 2,600 ticks with no error.
+
+The setup panel shows the lattice that will actually run (`lattice = 11 x 11 x 11
+x W 10 (region)`, its cells and RAM) and the comparison with the full lattice, and
+the pre-flight memory guard measures the region's volume too -- so a small region
+can make an `L x W` that would not fit on its own fit.
 
 **Modes:** `Replay` renders through the same HUD as `Simulation` (it used to start without `initHUD`,
 so its first frame read an empty `data3D` vector and a null `layerList`; the process died with

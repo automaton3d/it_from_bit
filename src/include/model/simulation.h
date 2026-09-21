@@ -230,6 +230,8 @@ struct NeighborResult
 
   /// Function prototypes ///
   void calculateParameters(unsigned L, unsigned W);
+  // Region-driven configuration: the setup screen's region selects the lattice.
+  bool configureLatticeFromRegion(unsigned W, int x0, int x1, int y0, int y1, int z0, int z1);
   void* SimulationLoop();
   void DeleteAutomaton();
   bool swap_lattices();
