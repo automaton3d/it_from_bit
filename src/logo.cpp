@@ -70,6 +70,8 @@ namespace framework
 
   Logo::~Logo()
   {
+    if (mVbo_) glDeleteBuffers(1, &mVbo_);
+    if (mVao_) glDeleteVertexArrays(1, &mVao_);
     if (mTexture_) glDeleteTextures(1, &mTexture_);
   }
 
@@ -106,18 +108,29 @@ namespace framework
           { (float)x,       (float)(y + h), 0.0f, 0.0f }  // bottom-left
       };
 
-      GLuint vao, vbo;
-      glGenVertexArrays(1, &vao);
-      glGenBuffers(1, &vbo);
+      // One VAO/VBO per Logo instance, built on the first draw and refilled
+      // with glBufferSubData afterwards.  The old body ran
+      // glGenVertexArrays/glGenBuffers + glDelete* on every call, i.e. two GL
+      // objects created and destroyed per frame (splash screen and HUD).
+      if (!mVao_)
+      {
+          glGenVertexArrays(1, &mVao_);
+          glGenBuffers(1, &mVbo_);
 
-      glBindVertexArray(vao);
-      glBindBuffer(GL_ARRAY_BUFFER, vbo);
-      glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
+          glBindVertexArray(mVao_);
+          glBindBuffer(GL_ARRAY_BUFFER, mVbo_);
+          glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_DYNAMIC_DRAW);
 
-      glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-      glEnableVertexAttribArray(0);
-      glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(2 * sizeof(float)));
-      glEnableVertexAttribArray(1);
+          glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+          glEnableVertexAttribArray(0);
+          glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(2 * sizeof(float)));
+          glEnableVertexAttribArray(1);
+
+          glBindVertexArray(0);
+      }
+
+      glBindBuffer(GL_ARRAY_BUFFER, mVbo_);
+      glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(verts), verts);
 
       // Use the texture shader
       glUseProgram(textureProgram2D);
@@ -132,13 +145,9 @@ namespace framework
       glUniform1i(textureSamplerLoc, 0);
 
       // Draw quad
-      glBindVertexArray(vao);
+      glBindVertexArray(mVao_);
       glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
       glBindVertexArray(0);
-
-      // Cleanup
-      glDeleteBuffers(1, &vbo);
-      glDeleteVertexArrays(1, &vao);
 
       if (depthWasEnabled) glEnable(GL_DEPTH_TEST);
   }

@@ -23,6 +23,7 @@
 #include "model/simulation.h"
 #include "animator.h"
 #include "replay_progress.h"
+#include "help.h"
 #include "tomography.h"
 #include "app_context.h"
 #include "render_pipeline.h"
@@ -77,7 +78,7 @@ namespace framework {
         setScreenSize(width, height);
 
         if (replayProgress)
-            replayProgress->setPosition(width, height, 100);
+            replayProgress->setPosition(width, height, ReplayProgressBar::kDefaultProgressY);
         if (menuBar)
             menuBar->Resize((float)width, (float)height);
 
@@ -216,7 +217,9 @@ namespace framework {
                             int mx = (int)xpos, my = (int)ypos;
                             int flippedY = height - my;
                             if (gHelpLink->contains(mx, flippedY, height)) {
-                                system("start https://github.com/automaton3d/automaton/blob/master/help.md");
+                                // Same link (and same URL) as the splash `Help`
+                                // button; see help.cpp.
+                                framework::openHelpPage();
                                 return;
                             }
                         }

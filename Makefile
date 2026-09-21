@@ -347,13 +347,10 @@ $(OBJ_DIR)\glad.obj: glad\glad.c
 $(OBJ_DIR)\tinyfiledialogs.obj: src\tinyfiledialogs.c src\include\tinyfiledialogs.h
 	$(CC) $(CFLAGS) /c src\tinyfiledialogs.c /Fo$(OBJ_DIR)\tinyfiledialogs.obj
 
-# --- AC Project (Novo Núcleo Esférico) — movido para tests\ac_project ---
-$(OBJ_DIR)\ac_project\bridge_simple.obj: tests\ac_project\bridge_simple.cpp tests\ac_project\simulation.h tests\ac_project\core_sphere.h
-	$(CC) $(CFLAGS) /c tests\ac_project\bridge_simple.cpp /Fo$(OBJ_DIR)\ac_project\bridge_simple.obj
-
-$(OBJ_DIR)\ac_project\core_sphere.obj: tests\ac_project\core_sphere.cpp tests\ac_project\simulation.h tests\ac_project\core_sphere.h
-	$(CC) $(CFLAGS) /c tests\ac_project\core_sphere.cpp /Fo$(OBJ_DIR)\ac_project\core_sphere.obj
-
+# --- AC Project (new spherical core) ---
+# Removed 2026-09-20: these rules pointed at tests\ac_project\, a directory that
+# does not exist in this tree, so nmake could not build them anyway.  The model
+# sources in src\model\ are the only core this build links.
 # ================================================
 # DLLs
 # ================================================
@@ -461,7 +458,6 @@ $(OBJ): $(ALL_HEADERS)
 clean:
 	@echo Limpando objetos...
 	-@del /Q /F $(OBJ_DIR)\*.obj 2>nul
-	-@del /Q /F $(OBJ_DIR)\ac_project\*.obj 2>nul
 
 	@echo Limpando binarios...
 	-@del /Q /F $(BUILD_DIR)\*.exe 2>nul
@@ -507,6 +503,18 @@ check-odr: dirs
 	$(CC) $(OBJ_DIR)\odr_gate_tu1.obj $(OBJ_DIR)\odr_gate_tu2.obj /Fe:$(OBJ_DIR)\odr_gate.exe /link /SUBSYSTEM:CONSOLE
 	@echo [check-odr] OK - shared headers link cleanly (no duplicate symbols)
 
+# ================================================
+# Unlinked diagnostics (compile-only check)
+# ================================================
+# src\model\attractor.cpp and src\model\wavefront.cpp are read-only diagnostics:
+# nothing in the simulation calls them, so they are deliberately kept out of
+# OBJ_COMMON and out of automaton.exe -- but they must keep compiling, and their
+# headers are already part of the ODR gate.  This target compiles them into obj\
+# and links nothing.
+check-extras: dirs
+	$(CC) $(CFLAGS) /c src\model\attractor.cpp src\model\wavefront.cpp /Fo"$(OBJ_DIR)\\"
+	@echo [check-extras] OK - unlinked diagnostics compile
+
 rebuild:
 	nmake clean
 	nmake
@@ -515,4 +523,4 @@ rebuild:
 # Targets simbólicos
 # ================================================
 
-.SYMBOLIC: clean run rebuild all dirs dlls copy_config check-odr
+.SYMBOLIC: clean run rebuild all dirs dlls copy_config check-odr check-extras

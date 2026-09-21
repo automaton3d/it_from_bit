@@ -166,24 +166,28 @@ void Cortina::render(TextRenderer* renderer)
 
     // ------------------------------------------------------------------------
     // Main text
+    //
+    // Coordinate bookkeeping, which the names used to get backwards: the box
+    // rectangle above is drawn in the TOP-DOWN space of drawRect() (origin
+    // top-left, y grows downwards), while TextRenderer::RenderText takes a
+    // BOTTOM-UP y (it builds its own y-up ortho).  The vertical centring is
+    // computed in the box's own top-down space and only the final baseline is
+    // converted -- the arithmetic is unchanged, the two names were lying.
     // ------------------------------------------------------------------------
 
-    float main_rect_center_y_bu =
+    const float main_rect_center_y_td =
         y + height * 0.5f;
 
-    float main_text_baseline_y_bu =
-        main_rect_center_y_bu -
-        centerline_offset +
-        VISUAL_TWEAK_PX;
-
-    float main_text_y_td =
+    const float main_text_baseline_y_bu =
         (float)gViewport[3] -
-        main_text_baseline_y_bu;
+        main_rect_center_y_td +
+        centerline_offset -
+        VISUAL_TWEAK_PX;
 
     renderer->RenderText(
         options[selectedIndex],
         x + padding_x,
-        main_text_y_td - padding_y,
+        main_text_baseline_y_bu - padding_y,
         text_scale,
         text_color
     );

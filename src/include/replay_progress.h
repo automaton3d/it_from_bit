@@ -9,9 +9,28 @@
 
 //#include <glad/glad.h>
 
+/*
+ * Progress bar of the replay mode: `Frame: n / N`, a yellow pointer and a
+ * border, a quarter of the window wide.
+ *
+ * Coordinate conventions (they are the standing trap of this GUI):
+ *   * render() draws through the shared 2D helpers in the TOP-DOWN space of
+ *     ProjectionManager's 2D ortho (origin top-left, y grows downwards), so
+ *     barY_ is measured from the TOP edge;
+ *   * isMouseOver()/getFrameAtPosition() take a BOTTOM-UP mouse y (the
+ *     `height - glfwY` value the callbacks pass to Button::contains and
+ *     Cortina::isMouseOver) and convert it to that same top-down space.
+ *
+ * All three call sites that place the bar (constructor, GUI.cpp and
+ * callback.cpp) must agree on barY_, hence the constant below.
+ */
 class ReplayProgressBar
 {
 public:
+  // Distance of the bar from the top edge, in pixels.  Chosen to sit in the
+  // same band as the simulation ProgressBar (which occupies y = 110..130).
+  static constexpr int kDefaultProgressY = 100;
+
   // Constructor: initializes bar with screen dimensions
   explicit ReplayProgressBar(int screenWidth, int screenHeight);
 

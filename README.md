@@ -1,5 +1,6 @@
-<<<<<<< HEAD
 # `it_from_bit` -- standalone build of the paper **and** the simulator
+
+*Physics emerging from a cellular automaton.*
 
 Created 20 Sep 2026 as a **basic version of the project to re-evaluate it**: the construction and the
 measurements of the rule set, the simulator that produces them (CPU build, with the GUI), and nothing
@@ -11,7 +12,7 @@ else. No experiment tree, no harnesses, no attic, no retired material.
 |---|---|
 | `it_from_bit.tex` | the document: Sections 1-8 (the construction), the Conclusion, the Nomenclature, Appendices A-D |
 | `ijuc.cls` | document class (loads only the standard `article` class) |
-| `manuscript.bib` | bibliography (34 keys; read by `biber`) |
+| `manuscript.bib` | bibliography (39 entries; read by `biber`) |
 | `fig1.png` | the **only** figure the retained text includes (`\includegraphics{fig1}`, line 389) |
 | `build.bat` | `pdflatex -> biber -> pdflatex x2`, then opens the PDF |
 
@@ -28,8 +29,9 @@ candidate or conjecture. Read the grade markers literally.
 
 | path | what |
 |---|---|
-| `src/*.cpp` | the GUI and framework: `main`, `GUI*`, `scene`, `input`, `hud`, `text_renderer`, `recorder`, `replay`, `stats`, `tomography`, `tinyfiledialogs`, ... (41 files) |
-| `src/model/*.cpp` | **the rule set**: `initSim`, `interaction`, `simulation`, `utils`, `config`, `geometry`, `polarization`, `charges`, `attractor`, `bridge` |
+| `src/*.cpp` | the GUI and framework: `main`, `GUI*`, `scene`, `input`, `hud`, `text_renderer`, `recorder`, `replay`, `stats`, `tomography`, `splash`, `cortina`, ..., plus `config.cpp` and `tinyfiledialogs.c` (37 .cpp files + that one .c) |
+| `src/model/*.cpp` | **the rule set** that the build links: `initSim`, `interaction`, `simulation`, `utils`, `geometry`, `polarization`, `charges`, `bridge` (8 files, all in `OBJ_COMMON`) |
+| `src/model/attractor.cpp`, `src/model/wavefront.cpp` | read-only diagnostics/instrumentation: they compile, their headers are part of the ODR gate, but nothing in the simulation calls them, so they are deliberately **not** linked into `automaton.exe`. `nmake check-extras` compiles them so they cannot rot unnoticed |
 | `src/include/**` | all headers, including `src/include/zlib` (the CPU reference) and `src/include/model/*.h` (the transition rules) |
 | `glad/glad.c`, `lib/*.lib` | OpenGL loader and the import libraries (`glfw3dll`, `zlib`) |
 | `fonts/arial.ttf` | the HUD font (runtime) |
@@ -46,6 +48,8 @@ build_gui.bat
 ```
 
 Then run `build\automaton.exe` (the working directory must be `build\`, where the assets and DLLs are).
+`nmake check-odr` (run first by `build_gui.bat`) links the two gate TUs, and `nmake check-extras`
+compiles the two unlinked diagnostics of `src/model\` (`attractor.cpp`, `wavefront.cpp`).
 
 **Setup screen (splash):** the lattice side `L` and the winding layers `W` are picked in the splash
 window before any mode starts.  The three buttons (`Simulation`, `Statistics`, `Replay`) and the
@@ -68,6 +72,20 @@ Keyboard: `Enter` starts the mode the focus ring is on (Simulation by default), 
 `Down` move the ring, `Left` / `Right` change the focused value (or toggle `Start Paused`), and
 `Esc` quits from the setup screen.  Clicking a control moves the ring to it as well.
 
+**Modes:** `Replay` renders through the same HUD as `Simulation` (it used to start without `initHUD`,
+so its first frame read an empty `data3D` vector and a null `layerList`; the process died with
+`0xC0000005` before drawing anything).  `render3DObjects()` now also returns early when the HUD is
+missing, so a mode without widgets draws an empty scene instead of crashing.  Replay draws its own
+progress bar (`Frame: n / N` plus a yellow pointer), a quarter of the window wide, at
+`ReplayProgressBar::kDefaultProgressY` = 100 px below the top edge -- the same band as the simulation
+bar -- and it is redrawn both on start-up and on window resize through that one constant.
+
+`Help` (the splash link and the HUD hyperlink) opens the repository's `README.md` through
+`ShellExecuteA`, from a single place (`framework::openHelpPage()` in `help.cpp`).  It used to call
+`system("start https://github.com/automaton3d/automaton/blob/master/help.md")` from two call sites: a
+different repository, a file that does not exist there, one shell process per click, and the URL
+duplicated.
+
 **External dependency, not vendored:** the Visual Studio toolchain (`cl`, `nmake`) and vcpkg at
 `E:\vcpkg\installed\x64-windows` for `freetype`, `brotli`, `bz2`, `zlib`, `glfw3` headers and libraries.
 `build_gui.bat` sets `VCPKG_ROOT` to that path explicitly, because the environment may define it as the
@@ -77,6 +95,13 @@ the `dlls` target.
 
 **Verified on creation:** ODR gate OK; `nmake` -> `build\automaton.exe` (465 kB) with 0 errors; the GUI
 launched from `build\` and ran (CPU active, `[Config] Loading: automaton.cfg`, no stderr output).
+
+**Verified after the last pass (20 Sep 2026):** `check-odr` and `check-extras` OK; `build_gui.bat` ->
+`build\automaton.exe` with 0 errors; splash -> `Enter` runs the simulation; splash -> `Tab` x6 ->
+`Enter` starts the replay and the process stays alive (it used to die with `0xC0000005` in its first
+frame); and the HUD is now clean of GL errors -- `glGetError` probes (temporary, removed afterwards)
+showed `GL_INVALID_OPERATION` from `Button::drawAsHyperlink` on every frame, which is fixed in
+`Button::cleanup()`.
 
 ## Editing here
 
@@ -90,8 +115,12 @@ back over them. Two workable habits:
 
 `build_odr.log` and `build_gui.log` are the logs of the last build (kept as evidence, regenerated on
 every run); `obj\` and `build\` are build outputs and can be deleted at any time.
+`build_odr.log` and `build_gui.log` are the logs of the last build (kept as evidence, regenerated on
+every run); `obj\` and `build\` are build outputs and can be deleted at any time. Since commit
+`77e9a0e`, `.gitignore` keeps all of them out of git (`obj/`, `build/`, `*.log`), so a rebuild no
+longer shows up as a dirty tree; the files themselves stay on disk.
 
-=======
-# it_from_bit
-Physics emerging from a cellular automaton
->>>>>>> cc534895581c4806553829f43773a1643f288480
+Note on the merge: this file was left with unresolved conflict markers
+(`<<<<<<< HEAD`, `=======`, `>>>>>>> cc53489`) by the merge that created the tree; the two sides are
+now merged into the single text above (the title from `HEAD`, the one-line description from the
+other side).

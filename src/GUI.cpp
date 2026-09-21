@@ -107,10 +107,12 @@ namespace framework
 
         if (replayProgress)
         {
+            // Same constant the constructor and the resize callback use, so
+            // that the bar does not jump between start-up and the first resize.
             replayProgress->setPosition(
                 width,
                 height,
-                height - 100
+                ReplayProgressBar::kDefaultProgressY
             );
         }
 

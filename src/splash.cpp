@@ -29,6 +29,7 @@
 #include "splash.h"
 #include "config.h"
 #include "Renderer2D.h"
+#include "help.h"
 
 // Declaration of updateProjection from the framework namespace
 namespace framework {
@@ -1126,7 +1127,8 @@ void mouseButtonCallback(GLFWwindow*, int button, int action, int)
         applyPreset(31, 20, 0);
     }
     else if (splash::helpLink && splash::helpLink->contains(mx, my_button, winH())) {
-        system("start https://github.com/automaton3d/automaton/blob/master/help.md");
+        // Same link (and same URL) as the HUD hyperlink; see help.cpp.
+        framework::openHelpPage();
     }
 
     if (splash::startPausedBox) {

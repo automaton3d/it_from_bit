@@ -20,7 +20,7 @@ ReplayProgressBar::ReplayProgressBar(int screenWidth, int screenHeight)
   barHeight_ = 20;
   barWidth_ = screenWidth / 4;
   barX_ = (screenWidth - barWidth_) / 2;
-  barY_ = screenHeight - 100;
+  barY_ = kDefaultProgressY;   // top-down, see the note in the header
   progress_ = 0.0f;
   pointerX_ = barX_;
   currentFrame_ = 0;
@@ -107,9 +107,17 @@ void ReplayProgressBar::render()
     if (textRenderer) {
         char buffer[64];
         snprintf(buffer, sizeof(buffer), "Frame: %llu / %llu", currentFrame_, totalFrames_);
+
+        // RenderText takes a BOTTOM-UP y (it builds its own y-up ortho), while
+        // everything above is in the top-down space of the shared 2D helpers --
+        // the simulation ProgressBar does the same flip for its legend text.
+        const float label_x      = static_cast<float>(barX_);
+        const float label_y_top  = static_cast<float>(barY_) - 25.0f;   // above the bar
+        const float label_y_bu   = static_cast<float>(gViewport[3]) - label_y_top;
+
         textRenderer->RenderText(buffer,
-            static_cast<float>(barX_), 
-            static_cast<float>(barY_ - 25),
+            label_x,
+            label_y_bu,
             0.6f,
             glm::vec3(1.0f, 1.0f, 1.0f),
             gViewport[2], gViewport[3]);

@@ -476,10 +476,23 @@ void renderHUD(int screenW, int screenH)
             }
         }
     }
+    else if (currentMode == REPLAY)
+    {
+        // The replay bar is fed by framework::updateReplay() (replay.cpp) and
+        // only needs to be drawn here.  It used to be created, positioned and
+        // updated but never rendered, so a replay showed no progress at all.
+        // With an empty recorder updateReplay() returns early and the bar
+        // stays at `Frame: 0 / 0`, which is also the right thing to show.
+        if (replayProgress)
+        {
+            replayProgress->render();
+        }
+    }
 
     // --------------------------------------------------------
     // Restore state
     // --------------------------------------------------------
+
     glDepthMask(GL_TRUE);
 
     glEnable(GL_DEPTH_TEST);

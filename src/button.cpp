@@ -131,17 +131,23 @@ void Button::setupGeometry()
 
 void Button::cleanup()
 {
-    if (shadowVAO) glDeleteVertexArrays(1, &shadowVAO);
-    if (shadowVBO) glDeleteBuffers(1, &shadowVBO);
+    // The handles are zeroed after every deletion.  glDelete* releases the
+    // name, but it does NOT write 0 back through the pointer, so a stale
+    // non-zero member made `if (!underlineVAO)` in drawAsHyperlink() skip the
+    // re-creation and bind a deleted name instead: that is an
+    // GL_INVALID_OPERATION in a core profile, and the hyperlink underline was
+    // silently dropped from the second frame onwards.
+    if (shadowVAO) { glDeleteVertexArrays(1, &shadowVAO); shadowVAO = 0; }
+    if (shadowVBO) { glDeleteBuffers(1, &shadowVBO);        shadowVBO = 0; }
 
-    if (bgVAO) glDeleteVertexArrays(1, &bgVAO);
-    if (bgVBO) glDeleteBuffers(1, &bgVBO);
+    if (bgVAO) { glDeleteVertexArrays(1, &bgVAO); bgVAO = 0; }
+    if (bgVBO) { glDeleteBuffers(1, &bgVBO);      bgVBO = 0; }
 
-    if (borderVAO) glDeleteVertexArrays(1, &borderVAO);
-    if (borderVBO) glDeleteBuffers(1, &borderVBO);
+    if (borderVAO) { glDeleteVertexArrays(1, &borderVAO); borderVAO = 0; }
+    if (borderVBO) { glDeleteBuffers(1, &borderVBO);      borderVBO = 0; }
 
-    if (underlineVAO) glDeleteVertexArrays(1, &underlineVAO);
-    if (underlineVBO) glDeleteBuffers(1, &underlineVBO);
+    if (underlineVAO) { glDeleteVertexArrays(1, &underlineVAO); underlineVAO = 0; }
+    if (underlineVBO) { glDeleteBuffers(1, &underlineVBO);      underlineVBO = 0; }
 }
 
 bool Button::contains(int mouseX,
@@ -313,7 +319,7 @@ void Button::drawAsHyperlink(TextRenderer& renderer,
         tx + textWidth, underlineY
     };
 
-    if (!underlineVAO)
+    if (!underlineVAO || !underlineVBO)
     {
         glGenVertexArrays(1, &underlineVAO);
         glGenBuffers(1, &underlineVBO);
@@ -369,6 +375,12 @@ void Button::drawAsHyperlink(TextRenderer& renderer,
 
 void Button::setPosition(float x, float y)
 {
+    // A full geometry rebuild (six VAO/VBO pairs deleted and recreated) is
+    // only needed when the position really changes: the HUD hyperlink called
+    // this every frame with the same value.
+    if (x_ == x && y_ == y)
+        return;
+
     x_ = x;
     y_ = y;
 
@@ -378,6 +390,9 @@ void Button::setPosition(float x, float y)
 
 void Button::setSize(float w, float h)
 {
+    if (w_ == w && h_ == h)
+        return;
+
     w_ = w;
     h_ = h;
 
