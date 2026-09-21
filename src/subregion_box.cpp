@@ -121,6 +121,55 @@ bool SubRegionBox::resetToFull()
     return true;
 }
 
+bool SubRegionBox::restore(int xa, int xb, int ya, int yb, int za, int zb)
+{
+    const int last = lattice_ - 1;
+
+    // Same rules the editing path enforces, applied to a pair of bounds at once:
+    // inside the lattice, at least one cell, and an odd extent.  There is no
+    // moving face here, so the *far* bound is the one that gives way (it snaps to
+    // the parity of the near one), which keeps the region anchored where the file
+    // said and is what the editing path does when a face moves.
+    struct Axis { int lo, hi; };
+
+    Axis axes[3] = { { xa, xb }, { ya, yb }, { za, zb } };
+
+    for (int a = 0; a < 3; ++a)
+    {
+        int lo = axes[a].lo;
+        int hi = axes[a].hi;
+
+        if (lo > hi) std::swap(lo, hi);                    // inverted: read it as a range
+        if (hi < 0 || lo > last) { lo = 0; hi = last; }    // entirely outside
+
+        if (lo < 0)    lo = 0;
+        if (hi > last) hi = last;
+
+        if (((hi - lo) & 1) != 0)                          // even extent: make it odd
+        {
+            if (hi > lo) --hi;                             // prefer keeping the near bound
+            else         ++hi;
+        }
+
+        axes[a].lo = lo;
+        axes[a].hi = hi;
+    }
+
+    const bool changed =
+        axes[0].lo != x0_ || axes[0].hi != x1_ ||
+        axes[1].lo != y0_ || axes[1].hi != y1_ ||
+        axes[2].lo != z0_ || axes[2].hi != z1_ ||
+        axes[0].lo != xa || axes[0].hi != xb ||
+        axes[1].lo != ya || axes[1].hi != yb ||
+        axes[2].lo != za || axes[2].hi != zb;
+
+    x0_ = axes[0].lo; x1_ = axes[0].hi;
+    y0_ = axes[1].lo; y1_ = axes[1].hi;
+    z0_ = axes[2].lo; z1_ = axes[2].hi;
+
+    return changed;
+}
+
 bool SubRegionBox::isFull() const
 {
     const int last = lattice_ - 1;

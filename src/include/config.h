@@ -69,6 +69,18 @@ struct {
         // shift the offsets that already-compiled objects read.
         int lattice = 21;   // L, lattice side: odd, 5..89
         int layers  = 10;   // W, winding layers: >= 2
+
+        // Region of the lattice the last run used (the setup screen's 3-D
+        // overlay).  Inclusive cell bounds in the L x L x L grading; the model
+        // runs the region's extents, so these bounds are what the next start
+        // reopens with, and what the memory bill depends on.
+        //
+        // A file without these keys means "the whole lattice": loadConfig()
+        // resolves them against simulation.lattice once the whole file has been
+        // read, because the full-lattice bounds depend on the side.
+        int subX0 = 0, subX1 = 20;
+        int subY0 = 0, subY1 = 20;
+        int subZ0 = 0, subZ1 = 20;
     } simulation;
 
     // =========================
@@ -111,9 +123,9 @@ extern std::string gConfigPath;
 bool loadConfig(const std::string& path);
 
 // writer: updates the managed keys (simulation.scenario / simulation.lattice /
-// simulation.layers) in place, preserving the comments and the layout of the
-// rest of the file; keys the file does not have are appended at the end.
-// Returns false when the path cannot be read or written.
+// simulation.layers / simulation.subX0..subZ1) in place, preserving the comments
+// and the layout of the rest of the file; keys the file does not have are
+// appended at the end.  Returns false when the path cannot be read or written.
 bool saveConfig(const std::string& path);
 
 #endif

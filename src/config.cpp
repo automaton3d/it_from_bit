@@ -6,6 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <utility>
 #include <vector>
 
 Config gConfig;
@@ -62,6 +63,46 @@ static int clampLayers(int W)
     return W;
 }
 
+// Region bounds: inside the lattice, at least one cell per axis, and every extent
+// odd (the model needs odd edges -- see automaton::configureLatticeFromRegion).
+// Values that only stick out are clamped; an even extent snaps to the closest odd
+// one, the same way an unrepresentable L snaps to the offered grid.
+struct Region
+{
+    int x0, x1, y0, y1, z0, z1;
+};
+
+static Region clampRegion(int x0, int x1, int y0, int y1, int z0, int z1, int L)
+{
+    const int last = (L > 0) ? L - 1 : 0;
+    Region r{ x0, x1, y0, y1, z0, z1 };
+
+    int* lo[3] = { &r.x0, &r.y0, &r.z0 };
+    int* hi[3] = { &r.x1, &r.y1, &r.z1 };
+
+    for (int a = 0; a < 3; ++a)
+    {
+        int a0 = *lo[a];
+        int a1 = *hi[a];
+
+        if (a0 > a1) std::swap(a0, a1);      // inverted: read it the right way round
+        if (a1 < 0 || a0 > last) { a0 = 0; a1 = last; }   // entirely outside
+
+        if (a0 < 0)    a0 = 0;
+        if (a1 > last) a1 = last;
+
+        // extent = a1 - a0 + 1, so an EVEN difference means an odd extent, which
+        // is what the model wants; an odd difference shrinks by one, inward.
+        if (((a1 - a0) & 1) != 0 && a1 > a0) ++a0;
+        if (a0 > a1) a0 = a1;                             // one-cell region
+
+        *lo[a] = a0;
+        *hi[a] = a1;
+    }
+
+    return r;
+}
+
 bool loadConfig(const std::string& path)
 {
     std::ifstream file(path);
@@ -90,6 +131,10 @@ bool loadConfig(const std::string& path)
     gConfig = Config{};
 
     std::string line;
+
+    // Bit per axis: the whole-lattice default can only be resolved once the file
+    // has been read, because it depends on simulation.lattice.
+    unsigned regionKeys = 0u;
 
     while (std::getline(file, line))
     {
@@ -251,6 +296,16 @@ bool loadConfig(const std::string& path)
             gConfig.simulation.layers = clampLayers(std::stoi(value));
         }
 
+        // Region of the lattice edited in the setup screen's 3-D overlay.  The
+        // six keys are read one by one; the whole-lattice default (which depends
+        // on the side) is resolved after the whole file has been read.
+        else if (key == "simulation.subX0") { gConfig.simulation.subX0 = std::stoi(value); regionKeys |= 1u; }
+        else if (key == "simulation.subX1") { gConfig.simulation.subX1 = std::stoi(value); regionKeys |= 1u; }
+        else if (key == "simulation.subY0") { gConfig.simulation.subY0 = std::stoi(value); regionKeys |= 2u; }
+        else if (key == "simulation.subY1") { gConfig.simulation.subY1 = std::stoi(value); regionKeys |= 2u; }
+        else if (key == "simulation.subZ0") { gConfig.simulation.subZ0 = std::stoi(value); regionKeys |= 4u; }
+        else if (key == "simulation.subZ1") { gConfig.simulation.subZ1 = std::stoi(value); regionKeys |= 4u; }
+
         // =========================
         // tomography
         // =========================
@@ -289,10 +344,47 @@ bool loadConfig(const std::string& path)
         }
     }
 
+    // Region bounds.  A file that does not carry (all six of) the region keys
+    // means the whole lattice, which is the side that was just read.
+    if (regionKeys != 7u)
+    {
+        gConfig.simulation.subX0 = gConfig.simulation.subY0 = gConfig.simulation.subZ0 = 0;
+        gConfig.simulation.subX1 = gConfig.simulation.subY1 = gConfig.simulation.subZ1 =
+            gConfig.simulation.lattice - 1;
+    }
+
+    const Region raw{
+        gConfig.simulation.subX0, gConfig.simulation.subX1,
+        gConfig.simulation.subY0, gConfig.simulation.subY1,
+        gConfig.simulation.subZ0, gConfig.simulation.subZ1 };
+
+    const Region reg = clampRegion(raw.x0, raw.x1, raw.y0, raw.y1, raw.z0, raw.z1,
+                                   gConfig.simulation.lattice);
+
+    gConfig.simulation.subX0 = reg.x0; gConfig.simulation.subX1 = reg.x1;
+    gConfig.simulation.subY0 = reg.y0; gConfig.simulation.subY1 = reg.y1;
+    gConfig.simulation.subZ0 = reg.z0; gConfig.simulation.subZ1 = reg.z1;
+
+    if (reg.x0 != raw.x0 || reg.x1 != raw.x1 ||
+        reg.y0 != raw.y0 || reg.y1 != raw.y1 ||
+        reg.z0 != raw.z0 || reg.z1 != raw.z1)
+    {
+        std::cout << "[Config] region x " << raw.x0 << ".." << raw.x1
+                  << " y " << raw.y0 << ".." << raw.y1
+                  << " z " << raw.z0 << ".." << raw.z1
+                  << " is not a lattice region (inside 0.." << (gConfig.simulation.lattice - 1)
+                  << ", odd extents); using x " << reg.x0 << ".." << reg.x1
+                  << " y " << reg.y0 << ".." << reg.y1
+                  << " z " << reg.z0 << ".." << reg.z1 << std::endl;
+    }
+
     std::cout << "[Config] scenario = "
               << gConfig.simulation.scenario
               << ", lattice L = " << gConfig.simulation.lattice
               << ", layers W = " << gConfig.simulation.layers
+              << ", region x " << reg.x0 << ".." << reg.x1
+              << " y " << reg.y0 << ".." << reg.y1
+              << " z " << reg.z0 << ".." << reg.z1
               << std::endl;
 
     return true;
@@ -307,18 +399,32 @@ bool saveConfig(const std::string& path)
         return false;
     }
 
-    // The three keys the setup screen owns.  Everything else in the file is
-    // left byte-for-byte as it was, comments included.
+    // The keys the setup screen owns.  Everything else in the file is left
+    // byte-for-byte as it was, comments included.
     struct ManagedKey
     {
         const char* key;
         std::string value;
     };
 
+    const int subX0 = gConfig.simulation.subX0, subX1 = gConfig.simulation.subX1;
+    const int subY0 = gConfig.simulation.subY0, subY1 = gConfig.simulation.subY1;
+    const int subZ0 = gConfig.simulation.subZ0, subZ1 = gConfig.simulation.subZ1;
+
     std::vector<ManagedKey> managed = {
         { "simulation.scenario", std::to_string(gConfig.simulation.scenario) },
         { "simulation.lattice",  std::to_string(gConfig.simulation.lattice)  },
-        { "simulation.layers",   std::to_string(gConfig.simulation.layers)   }
+        { "simulation.layers",   std::to_string(gConfig.simulation.layers)   },
+
+        // Region of the lattice (the setup screen's 3-D overlay), one key per
+        // face.  Keeping them one per line makes the file readable and lets the
+        // in-place rewrite above work unchanged.
+        { "simulation.subX0",    std::to_string(subX0) },
+        { "simulation.subX1",    std::to_string(subX1) },
+        { "simulation.subY0",    std::to_string(subY0) },
+        { "simulation.subY1",    std::to_string(subY1) },
+        { "simulation.subZ0",    std::to_string(subZ0) },
+        { "simulation.subZ1",    std::to_string(subZ1) }
     };
 
     std::vector<bool>        replaced(managed.size(), false);
@@ -375,6 +481,9 @@ bool saveConfig(const std::string& path)
               << " (scenario=" << gConfig.simulation.scenario
               << ", lattice=" << gConfig.simulation.lattice
               << ", layers="  << gConfig.simulation.layers
+              << ", region x " << subX0 << ".." << subX1
+              << " y " << subY0 << ".." << subY1
+              << " z " << subZ0 << ".." << subZ1
               << ")" << std::endl;
 
     return true;

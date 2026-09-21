@@ -138,6 +138,20 @@ x W 10 (region)`, its cells and RAM) and the comparison with the full lattice, a
 the pre-flight memory guard measures the region's volume too -- so a small region
 can make an `L x W` that would not fit on its own fit.
 
+The region is **persisted**: six keys (`simulation.subX0` ... `simulation.subZ1`)
+go back into `automaton.cfg` with the same in-place rewrite the other managed keys
+use, so the setup screen reopens on the region the last run used and the log says so
+(`[Subregion] opened with the region saved in automaton.cfg`).  A file without the
+keys means the whole lattice -- the default is resolved against `simulation.lattice`
+once the whole file has been read, because the full-lattice bounds depend on the side.
+A region that cannot be a lattice (outside the side, inverted, or with an even extent)
+is clamped on load and reported:
+
+```
+[Config] region x 0..9 y 0..400 z 18..2 is not a lattice region (inside 0..20, odd
+extents); using x 1..9 y 0..20 z 2..18
+```
+
 **Modes:** `Replay` renders through the same HUD as `Simulation` (it used to start without `initHUD`,
 so its first frame read an empty `data3D` vector and a null `layerList`; the process died with
 `0xC0000005` before drawing anything).  `render3DObjects()` now also returns early when the HUD is

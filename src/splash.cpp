@@ -1139,6 +1139,18 @@ namespace splash {
         gConfig.simulation.lattice = sel.L;
         gConfig.simulation.layers  = sel.W;
 
+        // The region too, so the setup screen reopens on it (keys
+        // simulation.subX0..subZ1).
+        if (subregion)
+        {
+            gConfig.simulation.subX0 = subregion->x0();
+            gConfig.simulation.subX1 = subregion->x1();
+            gConfig.simulation.subY0 = subregion->y0();
+            gConfig.simulation.subY1 = subregion->y1();
+            gConfig.simulation.subZ0 = subregion->z0();
+            gConfig.simulation.subZ1 = subregion->z1();
+        }
+
         if (target == LaunchTarget::Statistics)
             gConfig.simulation.scenario = 0;   // statistics always ran the single scenario
         else if (target == LaunchTarget::Simulation)
@@ -1238,8 +1250,24 @@ namespace splash {
         gFocus = kFocusSize;
 
         // The cube starts on the whole lattice of the L the screen opened with,
-        // and reports it once so the log shows the starting point.
+        // then takes the region automaton.cfg carried (an absent region means the
+        // whole lattice, which loadConfig already resolved against that same L).
+        // restore() adjusts anything the widget cannot represent.
         syncSubregionLattice();
+
+        if (subregion)
+        {
+            subregion->restore(gConfig.simulation.subX0, gConfig.simulation.subX1,
+                               gConfig.simulation.subY0, gConfig.simulation.subY1,
+                               gConfig.simulation.subZ0, gConfig.simulation.subZ1);
+
+            if (!subregion->isFull())
+                std::cout << "[Subregion] opened with the region saved in "
+                          << (gConfigPath.empty() ? std::string("the defaults") : gConfigPath)
+                          << std::endl;
+        }
+
+        // Reports the starting point once, so the log shows it.
         printSubregion("setup");
     }
 

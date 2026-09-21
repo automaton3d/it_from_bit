@@ -42,7 +42,12 @@ public:
     int z0() const { return z0_; } int z1() const { return z1_; }
 
     // Back to the whole lattice.  True when something changed.
-    bool resetToFull();          // true when something changed
+    bool resetToFull();
+
+    // Loads bounds from the configuration: clamped inside the lattice and with
+    // odd extents (the model needs odd edges).  Returns true when the values had
+    // to be adjusted, so the caller can say what it used.
+    bool restore(int xa, int xb, int ya, int yb, int za, int zb);
     bool isFull() const;
 
     unsigned long long cellsPerLayer() const;      // dx * dy * dz
