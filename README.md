@@ -205,6 +205,31 @@ frame); and the HUD is now clean of GL errors -- `glGetError` probes (temporary,
 showed `GL_INVALID_OPERATION` from `Button::drawAsHyperlink` on every frame, which is fixed in
 `Button::cleanup()`.
 
+**GL objects per frame: audit (20 Sep 2026).**  The class of bug behind item 11 (a VAO+VBO
+pair created and deleted inside a per-frame draw) was swept again, site by site: all 20
+`glGenVertexArrays`/`glGenBuffers` call sites in `src/` are now one-time or guarded, so a
+frame creates no GL objects at all.
+
+| Site | Why it is safe |
+|---|---|
+| `logo.cpp:117` | one pair per `Logo` instance, built on the first `draw()` and refilled with `glBufferSubData` (in the tree since `6c41be7`; it was reverted once during a bisect and re-applied) |
+| `draw_utils.cpp:25` (`init`) | `if (vao) return;` -- the shared 2D quads/lines/outlines/fans |
+| `draw_utils.cpp:154` (`drawLine2D_new`) | one static pair for the 3D lines of several callers |
+| `GUI_3D.cpp:73` (`ensurePrimitiveBuffers`) | `if (vao) return;` -- points/lines/quads share it |
+| `GUI_3D.cpp:516` (`renderAxes`) | its own static pair, `if (!axisVao)`, because the layout is pos+colour |
+| `button.cpp:55/85/108` | `setupGeometry()`, i.e. the constructor and a real `setPosition`/`setSize` change |
+| `button.cpp:324` | the hyperlink underline, `if (!underlineVAO \|\| !underlineVBO)` -- `cleanup()` zeroes the handles |
+| `menubar.cpp:95` | the `MenuBar` constructor |
+| `progress.cpp:79..86/119` | `initBuffers()`, called once from the constructor |
+| `stats.cpp:306` | `ensureVAO()`, `if (sVao) return;` |
+| `subregion_modal.cpp:60` | `ensureBuffers()`, `if (vao) return;` |
+| `text_renderer.cpp:107` | `init()`, once per renderer |
+
+The two cases where the *caller* could still ask for a rebuild every frame are handled at
+the source: `Button::setPosition`/`setSize` return early when the value did not change (the
+HUD hyperlink used to call them each frame), and the per-frame widgets are positioned by
+the layout, not by a new value every tick.
+
 **Setup-screen clicking (20 Sep 2026):** the widget part of `mouseButtonCallback` never looked at
 `action`, so every click acted twice -- on the press and again on the release, which arrives at the
 same point.  The visible symptom was the `Start Paused` tickbox, whose state flipped on the press and
