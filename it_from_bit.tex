@@ -38,6 +38,7 @@
 \usepackage{amsmath}
 \usepackage[backend=biber,style=numeric-comp,citestyle=numeric,sorting=none]{biblatex}
 \usepackage{graphicx}
+\usepackage{url}
 \usepackage{physics}
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, arrows.meta, positioning}
@@ -110,6 +111,17 @@ One interpretive choice governs the entire construction and should be stated fro
 Our construction extends foundational work in digital physics: Zuse's discrete universe~\cite{zuse}, Fredkin's reversible computation~\cite{fredkin}, and Wolfram's complex behavior from simple rules~\cite{wolfram}. The proposal is a layered 3-torus with explicit interaction rules; whether those rules reproduce quantum-like or relativistic effects is the question this paper tests, not an assumption.
 
 The paper is organized as follows. Section~\ref{sec:related-work} reviews previous work. Section~\ref{sec:space-and-time} defines the universal fabric, and Section~\ref{initial-state} builds the initial state. The phase step and the emergent wave fields are described in Section~\ref{sec:phase-step}; the light frame in Section~\ref{sec:light-frame}. Section~\ref{sec:Interactions} details bubble interactions; Section~\ref{sec:dynamic-charge-quantization} addresses the dynamic organization of $W$-islands; the charge-combination census is deferred to Appendix~\ref{sec:charge-census-appendix}. Section~\ref{sec:Discussion} closes with a synthetic interpretation.
+
+\subsection*{Source and supporting material}
+The simulator of this document is the program \texttt{it\_from\_bit}, published at
+\url{https://github.com/automaton3d/it_from_bit}: the CPU build with the GUI, the rule set under
+\texttt{src/model/} and the framework under \texttt{src/}.  The study archive that the text points to
+--- the experiment logs and derivations under \texttt{experiments/}, the flux harness under
+\texttt{quantization/}, the retired campaigns under \texttt{attic/}, the helical-walker visualization
+\texttt{spiral/} and the charge-algebra studies \texttt{combine.c} and \texttt{virada.c} --- is
+maintained in the companion repositories of the same programme and is \emph{not} part of this one.
+The file paths quoted in the text therefore locate material in that archive, not files distributed
+here; where a claim rests on such material, the argument in the text is meant to stand on its own.
 
 \subsection*{Glossary of proprietary terms}
 For readability, the following model-specific terms are collected here with one-line definitions; the section in brackets is where each is first defined or used.

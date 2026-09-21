@@ -22,8 +22,24 @@ The document is a reduced form of `doc/manuscript.tex` in the repository `E:\alp
 `attic/make_it_from_bit.ps1`: Section 9 (*Results*), Section 10 (*Conjectures and prospects*) and the
 *Reproducibility* subsection are removed, and the 32 cross-references into that material are repaired.
 What is missing is the numerical results, the particle taxonomy, the quantum-formalism bridge and the
-prospects -- and every pointer to them. Section grading is kept: (P) postulate, (M) measured, (C)
-candidate or conjecture. Read the grade markers literally.
+prospects. Section grading is kept: (P) postulate, (M) measured, (C) candidate or conjecture. Read the
+grade markers literally.
+
+The **file paths quoted in the prose survive that reduction**, because they are evidence pointers
+rather than LaTeX references: they locate material in the study archive of the programme, which lives
+in the companion repositories -- `E:\alpha` for the experiments and the flux harness, `E:\spiral` for
+the walker visualization, `E:\automaton\tests` for the charge-algebra studies -- and is deliberately
+not part of this repository.  Section 1 now says so in its "Source and supporting material" paragraph:
+
+| quoted in the text | lives in |
+|---|---|
+| `experiments/DYNAMIC_QUANTIZATION_DERIVATION.md`, `experiments/J1_SPIN.md`, `experiments/census_ref_el9_s64/census.csv` | `E:\alpha\experiments\` |
+| `experiments/GEOMETRIC_QUANTUM.md`, `gravity_probe_DESIGN.md` | `E:\alpha\attic\closed_programmes\` |
+| `RESULTS.md` | `E:\alpha\attic\alpha_campaign\` |
+| `quantization/`, `quantize_stdlib.py` | `E:\alpha\quantization\` |
+| `spiral/spiral.c` | `E:\spiral\` (standalone SDL project) |
+| `combine.c`, `virada.c` | `E:\automaton\tests\studies\` |
+| `polar_fidelity.cpp` | `E:\automaton\tests\` |
 
 ## The simulator (model + GUI)
 
