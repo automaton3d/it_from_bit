@@ -29,7 +29,8 @@ The **file paths quoted in the prose survive that reduction**, because they are 
 rather than LaTeX references: they locate material in the study archive of the programme, which lives
 in the companion repositories -- `E:\alpha` for the experiments and the flux harness, `E:\spiral` for
 the walker visualization, `E:\automaton\tests` for the charge-algebra studies -- and is deliberately
-not part of this repository.  Section 1 now says so in its "Source and supporting material" paragraph:
+not part of this repository.  Section 1 now says so in its "Source and supporting material" paragraph,
+and puts them on record:
 
 | quoted in the text | lives in |
 |---|---|
@@ -40,6 +41,12 @@ not part of this repository.  Section 1 now says so in its "Source and supportin
 | `spiral/spiral.c` | `E:\spiral\` (standalone SDL project) |
 | `combine.c`, `virada.c` | `E:\automaton\tests\studies\` |
 | `polar_fidelity.cpp` | `E:\automaton\tests\` |
+
+The reference `\cite{af_neto}` used to point to the older repository
+(`github.com/automaton3d/automaton`); it now points to this one
+(`github.com/automaton3d/it_from_bit`), which is where `simulation.cpp` and `interaction.cpp` -- the
+two files the text names as "the repository" -- actually live, and which is also the home of the
+implementation the cell-structure table cites.
 
 ## The simulator (model + GUI)
 

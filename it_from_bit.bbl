@@ -351,10 +351,10 @@
       \field{title}{{It from Bit -- a Concrete Attempt}}
       \field{year}{2024}
       \verb{urlraw}
-      \verb https://github.com/automaton3d/automaton
+      \verb https://github.com/automaton3d/it_from_bit
       \endverb
       \verb{url}
-      \verb https://github.com/automaton3d/automaton
+      \verb https://github.com/automaton3d/it_from_bit
       \endverb
     \endentry
     \entry{feynman-2}{book}{}{}
