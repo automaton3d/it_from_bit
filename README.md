@@ -373,13 +373,11 @@ back over them. Two workable habits:
 2. treat the repository as the source of truth and copy the files out again whenever they change.
 
 `build_odr.log` and `build_gui.log` are the logs of the last build (kept as evidence, regenerated on
-every run); `obj\` and `build\` are build outputs and can be deleted at any time.
-`build_odr.log` and `build_gui.log` are the logs of the last build (kept as evidence, regenerated on
-every run); `obj\` and `build\` are build outputs and can be deleted at any time. Since commit
+every run); `obj\` and `build\` are build outputs and can be deleted at any time.  Since commit
 `77e9a0e`, `.gitignore` keeps all of them out of git (`obj/`, `build/`, `*.log`), so a rebuild no
 longer shows up as a dirty tree; the files themselves stay on disk.
 
-Note on the merge: this file was left with unresolved conflict markers
-(`<<<<<<< HEAD`, `=======`, `>>>>>>> cc53489`) by the merge that created the tree; the two sides are
-now merged into the single text above (the title from `HEAD`, the one-line description from the
-other side).
+Note on the merge: the merge that created this tree left conflict markers in this file
+(`<<<<<<< HEAD`, `=======`, `>>>>>>> cc53489`); the two sides are merged into the single text above
+(the title from `HEAD`, the one-line description from the other side), and the duplication that merge
+left in the build-outputs paragraph was cleaned when the history was rewritten to drop the binaries.
