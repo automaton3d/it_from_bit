@@ -54,6 +54,12 @@ public:
 
     void draw(TextRenderer& renderer) const;
     bool contains(int mx, int my) const;
+
+    // The whole control rather than just the box: a tickbox is expected to react
+    // to a click on its label too (the box alone is 18x18 px).  `my` is top-down,
+    // as in contains().
+    bool hitTest(int mx, int my, TextRenderer& renderer) const;
+
     void onClick(int mx, int my);
     void setState(bool s);
     bool getState() const;

@@ -137,6 +137,24 @@ frame); and the HUD is now clean of GL errors -- `glGetError` probes (temporary,
 showed `GL_INVALID_OPERATION` from `Button::drawAsHyperlink` on every frame, which is fixed in
 `Button::cleanup()`.
 
+**Setup-screen clicking (20 Sep 2026):** the widget part of `mouseButtonCallback` never looked at
+`action`, so every click acted twice -- on the press and again on the release, which arrives at the
+same point.  The visible symptom was the `Start Paused` tickbox, whose state flipped on the press and
+straight back on the release (a `[dbg]` trace with a real click showed `press ... state=on` immediately
+followed by `release ... state=off`).  The same double action made a dropdown open and close in one
+click, launched a mode twice and opened the help page twice.  The handler now returns unless the action
+is `GLFW_PRESS`.
+
+`Tickbox::hitTest()` is new: a tickbox answers to a click anywhere on the control, its label included.
+Only the 18x18 box used to react, so aiming at "Start Paused" did nothing; the splash uses the new test
+and prints the new state (`[Splash] Start Paused = yes`) so the result is visible in the log too.
+`Tickbox::contains()` and the HUD call sites are unchanged.
+
+Verified with real clicks (the cursor moved with `SetCursorPos` and the button posted as a window
+message; `glfwGetCursorPos` then reports the real position): clicking the label, the label again and the
+box printed `yes`, `no`, `yes`; clicking `Simulation` started the run with `startPaused = yes`; and a
+frame dump taken after a click on the `L` dropdown shows the list still open.
+
 **Region-overlay pass (20 Sep 2026):** the setup screen was regrouped into three cards (parameters,
 summary, and one card that keeps `Start Paused` together with the three mode buttons, so nothing is
 left outside a box and the tickbox is no longer inside the summary card).  Two latent projection bugs

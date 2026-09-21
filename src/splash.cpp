@@ -1342,6 +1342,12 @@ void mouseButtonCallback(GLFWwindow*, int button, int action, int)
 
     if (button != GLFW_MOUSE_BUTTON_LEFT) return;
 
+    // One click, one action.  Everything below acts on the PRESS only: the
+    // release arrives at the same spot and used to repeat the action, which
+    // undid it -- the tickbox toggled straight back off, and a dropdown opened
+    // and immediately closed again.
+    if (action != GLFW_PRESS) return;
+
     double xpos, ypos;
     glfwGetCursorPos(splash::window, &xpos, &ypos);
     int mx = static_cast<int>(xpos);
@@ -1407,12 +1413,19 @@ void mouseButtonCallback(GLFWwindow*, int button, int action, int)
         framework::openHelpPage();
     }
 
-    if (splash::startPausedBox) {
+    if (splash::startPausedBox && textRenderer) {
         const int myTopDown = winH() - my_button;
-        const bool wasOn = splash::startPausedBox->getState();
-        splash::startPausedBox->onClick(mx, myTopDown);
-        if (splash::startPausedBox->getState() != wasOn)
-            splash::gFocus = 3;
+
+        // The whole tickbox responds, label included (see Tickbox::hitTest).
+        if (splash::startPausedBox->hitTest(mx, myTopDown, *textRenderer))
+        {
+            splash::startPausedBox->toggle();
+            splash::gFocus = splash::kFocusPaused;
+
+            std::cout << "[Splash] Start Paused = "
+                      << (splash::startPausedBox->getState() ? "yes" : "no")
+                      << std::endl;
+        }
     }
 }
 
@@ -1534,7 +1547,15 @@ void keyCallback(GLFWwindow*, int key, int, int action, int mods)
 
         case splash::kFocusPaused:
             if (splash::startPausedBox)
+            {
                 splash::startPausedBox->toggle();
+
+                // Same line the mouse click prints, so the log shows the state
+                // whichever way it was changed.
+                std::cout << "[Splash] Start Paused = "
+                          << (splash::startPausedBox->getState() ? "yes" : "no")
+                          << std::endl;
+            }
             break;
 
         default:

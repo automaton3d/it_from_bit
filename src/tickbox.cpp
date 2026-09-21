@@ -74,6 +74,19 @@ bool Tickbox::contains(int mx, int my) const {
            my >= y_ && my <= y_ + BOX_SIZE;
 }
 
+bool Tickbox::hitTest(int mx, int my, TextRenderer& renderer) const {
+    // draw() puts the label at x_ + BOX_SIZE + 8 = x_ + LABEL_OFFSET_X, on the
+    // same row as the box; the band is a couple of pixels taller than the box so
+    // the label does not need pixel-perfect aiming.
+    const float labelW = renderer.measureTextWidth(label_, fontScale_);
+    const float left   = (float)x_;
+    const float right  = (float)(x_ + LABEL_OFFSET_X) + labelW;
+    const float top    = (float)y_ - 2.0f;
+    const float bottom = (float)(y_ + BOX_SIZE) + 2.0f;
+
+    return mx >= left && mx <= right && my >= top && my <= bottom;
+}
+
 void Tickbox::onClick(int mx, int my) {
     if (contains(mx, my)) {
         state_ = !state_;
