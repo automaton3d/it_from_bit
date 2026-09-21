@@ -10,13 +10,13 @@ else. No experiment tree, no harnesses, no attic, no retired material.
 
 | file | why |
 |---|---|
-| `it_from_bit.tex` | the document: Sections 1-8 (the construction), the Conclusion, the Nomenclature, Appendices A-D |
+| `it_from_bit.tex` | the document: Sections 1-8 (the construction), the Conclusion, the Nomenclature, Appendices A-C |
 | `ijuc.cls` | document class (loads only the standard `article` class) |
 | `manuscript.bib` | bibliography (39 entries; read by `biber`) |
 | `fig1.png` | the **only** figure the retained text includes (`\includegraphics{fig1}`, line 389) |
 | `build.bat` | `pdflatex -> biber -> pdflatex x2`, then opens the PDF |
 
-Build with `build.bat`: expect **39 pages, 0 errors, 0 undefined references**.
+Build with `build.bat`: expect **38 pages, 0 errors, 0 undefined references**.
 
 The document is a reduced form of `doc/manuscript.tex` in the repository `E:\alpha`, generated there by
 `attic/make_it_from_bit.ps1`: Section 9 (*Results*), Section 10 (*Conjectures and prospects*) and the
@@ -36,7 +36,6 @@ and puts them on record:
 |---|---|
 | `experiments/DYNAMIC_QUANTIZATION_DERIVATION.md`, `experiments/J1_SPIN.md`, `experiments/census_ref_el9_s64/census.csv` | `E:\alpha\experiments\` |
 | `experiments/GEOMETRIC_QUANTUM.md` | `E:\alpha\attic\closed_programmes\` |
-| `RESULTS.md` | `E:\alpha\attic\alpha_campaign\` |
 | `quantization/`, `quantize_stdlib.py` | `E:\alpha\quantization\` |
 | `spiral/spiral.c` | `E:\spiral\` (standalone SDL project) |
 | `combine.c`, `virada.c` | `E:\automaton\tests\studies\` |
@@ -48,12 +47,14 @@ The reference `\cite{af_neto}` used to point to the older repository
 two files the text names as "the repository" -- actually live, and which is also the home of the
 implementation the cell-structure table cites.
 
-Appendix D no longer names the historical runner program of the two-bubble campaign, nor its design
-log: both are retired material kept with the study archive, and this repository distributes neither.
-The appendix keeps its content (the overlap gate, the cube mini-sweep, the tube, the collapse
-telegraph and its status paragraph) and its label is now `app:tube-campaign`.  The header comment of
-`it_from_bit.tex` records this and the two other edits made here, so the file's provenance against
-`E:\alpha` stays readable.
+Appendix D was removed.  It preserved the historical two-bubble campaign, whose runner program and
+design log are retired material kept with the study archive -- neither is distributed here.  The
+variant now ends at Appendix C, and nothing in the document pointed at the removed appendix (no LaTeX
+reference and no textual pointer).  One mention of that experiment survives in the limitations list
+-- "the controlled two-bubble experiment yields a quantitative null result there: of 6,996 overlapping
+cell-frame events only 18 (0.26%) pass the s2B sieve" -- which states its own numbers and needs no
+appendix.  A note in the header comment of `it_from_bit.tex` records this and the other edits made
+here, so the file's provenance against `E:\alpha` stays readable.
 
 ## The simulator (model + GUI)
 

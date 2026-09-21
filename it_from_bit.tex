@@ -35,9 +35,10 @@
 %     study archive the text points to lives in the companion repositories.
 %   - the software reference af_neto points at that repository (it pointed at the
 %     older one of the programme).
-%   - App. D no longer names the historical runner program, which is retired material
-%     kept with the study archive; the campaign's content is unchanged and its label is
-%     now app:tube-campaign.
+%   - App. D (the historical two-bubble campaign, whose runner program and design log are
+%     retired material kept with the study archive) was removed here: this variant reports
+%     no measurements from that campaign, and nothing in the document pointed at it.  It is
+%     38 pages here, against the 39 of the copy in E:\alpha, which keeps App. D.
 % ---------------------------------------------------------------------------
 % Editorial policy: Use American English throughout this manuscript and in all future edits.
 %%%% IJUC %%%%
@@ -1418,82 +1419,5 @@ Classifying the Orbis column into explicit matter and antimatter fragments (lept
 \par\end{centering}
 \medskip{}
 \end{table}
-\section{Controlled two-bubble scattering and the rectangular tube\label{app:tube-campaign}}
-
-This appendix preserves a historical controlled-scattering campaign, preceding the inertia revision. Its numbers require revalidation with the current kernel. The campaign measures the
-two-bubble interaction in isolation and then removes the torus-wrap
-confounder by running the same geometry on a rectangular tube.  Every number
-below comes from headless runs of that campaign, in the cube geometry and in the
-tube, with the exact commands, the tick-stamped CSVs and the full design log
-archived with the study material of the programme.  Two complementary
-single-source bubbles ($W=2$) are planted at rest, $d_0$ cells apart on one
-axis, and the separation $d(t)$ between the two source centers is recorded at
-every completed light frame together with the encounter counters.
-
-\paragraph{Overlap gate.} In every geometry tested (cube and tube), the
-interaction train exists only while the two pulsating shells overlap, i.e.\
-for $d_0 < 2\,\mathrm{RMAX}$.  At $d_0 = 2\,\mathrm{RMAX}$ (shells just
-touching) no encounter fires at any sieve setting ($\mathrm{calls}=0$): the
-two bubbles remain exactly at rest forever.  For $d_0 < 2\,\mathrm{RMAX}$
-with the sieve open, contact fires in fixed windows and the bubbles recoil,
-collapse, or re-approach.
-
-\paragraph{Cube mini-sweep: no distance law for two bare bubbles.} On cubes
-$L=11,15$ with $S=64$, attract (charge words $0x00$ vs $0x3F$) and repel
-($0x00$ vs $0x00$) are \emph{indistinguishable} in every measured quantity.
-For $d_0<2\,\mathrm{RMAX}$ the evolution is a single contact event --
-collapse ($d\to0$) or recoil -- around light frames $3$--$7$, and for
-$d_0\ge2\,\mathrm{RMAX}$ nothing happens at all.  No inverse-square or any
-other distance law appears; two bare single-source bubbles do not constitute
-a gravitational ``mass''.  This is the expected negative that motivates
-structured aggregates and the tube.
-
-\paragraph{Rectangular tube (unequal edges).} To study the long-axis
-evolution without the periodic-wrap confounder the kernel was converted to
-per-axis indexing: edges $\mathrm{ELX},\mathrm{ELY},\mathrm{ELZ}$, per-axis
-wrapping, distance field, motion and wavefront passes, polarization walker
-and charge census, with a dedicated tube allocator ($\mathrm{RMAX}$ = short
-side, schedule scale = long edge).  With $\mathrm{ELX}=\mathrm{ELY}
-=\mathrm{ELZ}$ the modified kernel reproduces the reference run
-bit-for-bit ($6996/18/0$), so every unequal-edge result below rests on a
-cube-verified code path.  Reach runs (short side $7\times7$,
-$\mathrm{RMAX}=3$) are stable at long edges $25$, $51$ and $101$, and the
-measured separation stays far below $\mathrm{ELX}/2$ inside every reported
-window (no wrap contamination).
-
-\paragraph{The collapse telegraph.} On the tube the force resolves into a
-\emph{quantized, sieve-filtered burst train}.  Contact attempts fire on
-fixed windows roughly every six light frames, independent of the sieve
-modulus $S$ ($120$ attempts in $16$ frames for every $S\in\{32,64,128,256\}$
-at $d_0=4$).  The separation $d$ changes \emph{only} on a light frame whose
-window passes the sieve gate ($s2B>0$) and then holds exactly constant on a
-plateau until the next passed window.  Within a $16$-frame window the pass
-count is identical for $S=32$ and $S=64$ and drops to zero for $S\ge128$
-(fewer than one expected pass per $120$ attempts): the separation then stays
-frozen at its initial value.  The measured ``force'' is therefore the
-discrete telegraph of sieve-gated collapse; jump size and cadence, not a
-smooth acceleration, are its observables.
-
-\paragraph{Amplitude and symmetry of the bursts.} With a larger cross-section
-($9\times9$, $\mathrm{RMAX}=4$) and $d_0=4$, $S=64$, the first passed window
-arrives later and jumps further than at $\mathrm{RMAX}=3$ ($\Delta d=+8$ at
-tick $10990$ vs $+3$ at tick $3890$).  A $45$-frame run ($35{,}000$ ticks,
-$\mathrm{calls}=1072$, $s2B=290$) captured eight passed windows with burst
-sizes $+8,-3,-8,+7,-3,-3,+21,-16$, driving the separation inward to $d=1$
-and outward to $d=22.3$.  The outward ($+36$) and inward ($-33$) burst
-totals nearly balance: after an early outward transient the telegraph is
-symmetric, consistent with the collapse-dominated, charge-blind interaction
-reported in the full manuscript.
-
-\paragraph{Status.} None of these measurements changes the negative battery
-reported in the full manuscript: the only interaction channel of the model is
-sieve-gated collapse, no gravitational $1/r^2$ force exists between two bare
-bubbles.
-The campaign sharpens the mechanism (quantized symmetric telegraph with an
-overlap gate at $d=2\,\mathrm{RMAX}$), retires the cube-wrap confounder for
-long-axis evolution, and leaves structured aggregates as the next necessary
-step before any gravitational claim can be tested.
-
-
 
 \end{document}
