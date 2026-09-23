@@ -55,6 +55,9 @@ namespace automaton
     // the superposed and the placed seed) instead of quantising one chief per
     // island.  Here the rotation is cyclic WITHIN each ISLAND_SIZE block, so the
     // partner of a slot always belongs to the SAME island.
+    // [provenance: the 9L x L/3 grouping referred to above is a residue of an abandoned
+    //  line of research, not the ledger partition quoted in App. A (N_I = 192L charge
+    //  fragments of l = L/64 addresses); see the NOTE in initSim.cpp:511.]
     const unsigned blk = (ISLAND_SIZE > 0u) ? ISLAND_SIZE : 1u;
     if (blk < 2u || W_USED < blk)
       return;                              // nothing to rotate

@@ -117,6 +117,24 @@ namespace automaton
   extern unsigned ELY;
   extern unsigned ELZ;
   extern unsigned W_USED;
+
+  // ---------------------------------------------------------------------------
+  // Pending source impulses for the current housekeeping tick.
+  //
+  // reemitSourceAt() books a displacement per source and commitSourceTick() drains the
+  // queue into the draft lattice's source-centre cell just before applyMomentum() consumes
+  // it.  External linkage on purpose: the source-level working array (sourceBefore/
+  // sourceAfter, interaction.cpp) is re-seeded from the lattice at every tick and discarded
+  // at the end of it, so a booking had nowhere durable to live -- measured with the sieve
+  // open (L=7, first era): 1456 non-zero bookings in one tick, none applied, no source ever
+  // moved, and all W bubbles stayed in one cell for the whole era.
+  // ---------------------------------------------------------------------------
+  struct ImpulseBooking
+  {
+    unsigned w;      // W address of the booked source
+    int dx, dy, dz;  // displacement added to its reloc[]
+  };
+  extern std::vector<ImpulseBooking> g_pendingImpulses;
   extern bool convol_delay;
   extern bool diffuse_delay;
   extern bool reloc_delay;
@@ -340,6 +358,34 @@ struct NeighborResult
   // (tests/scatter_main.cpp --sieve, tests/s2b_sweep_main.cpp).  The
   // reference value 16384 reproduces the numbers reported in Sect. Results.
   extern int s2b_target;
+
+#ifdef S2B_TRACE
+  // Opt-in in-loop instrumentation of the s2B channel (definitions and semantics in
+  // simulation.cpp, next to s2b_target).  Compiled only with /DS2B_TRACE.
+  extern unsigned long long s2bTraceFired, s2bTraceFiredTOff, s2bTraceFiredTChanged,
+                            s2bTraceFiredActOff, s2bTraceActLost, s2bTraceClockReset,
+                            s2bTraceReemitResets, s2bTraceCBResets,
+                            s2bTraceFloodPulls, s2bTraceFloodResets,
+                            s2bTraceReemitImpulse, s2bTraceRelocSeen, s2bTraceRelocApplied,
+                            s2bTraceReemitAtCentre, s2bTraceReemitOffCentre,
+                            s2bTraceCommitPending, s2bTraceCommitWiped, s2bTraceImpulseCommitted,
+                            s2bTraceImpulseBooked, s2bTraceImpulseSkipped, s2bTraceRelocSumAtCommit,
+                            s2bTraceTicks, s2bTraceReapplySum, s2bTraceCommitAccSum,
+                            s2bTraceImpulseDrained, s2bTraceCommitCalls, s2bTraceDrainWriteback,
+                            s2bTraceNetLayers, s2bTraceNetMax, s2bTraceChargeDispersion,
+                            s2bTracePolarSeed, s2bTraceReseatSteps, s2bTraceReseatAligned,
+                            s2bTraceReseatOther, s2bTraceReseatAtContact, s2bTraceReseedCarried;
+  // Per-layer flag: a cohesion step (the moves[] table of resolveInternalContacts) was booked for
+  // this layer in the current light frame.  Guarded by S2B_TRACE with the counters above; the
+  // harness uses it to report the cohesion and flight channels' alignment separately.
+  extern std::vector<unsigned char> s2bTraceCohesionFlag;
+  // Per-layer writer mask (same frame): one bit per site that can contribute a displacement, so a
+  // layer whose mask has two bits was moved by TWO movers in one frame -- the "mixture" the trace is
+  // looking for.  Bits: 1 reemitSourceAt (walk funnel), 2 reseatStepToward (relay), 4
+  // reseatAtContact (relay contact), 8 cohesion table, 16 charge dispersion, 32 the own-axis
+  // exchange thrust, 64 the impulse-queue drain (draft).  See S2B_DUMP_PENDING.
+  extern std::vector<unsigned int> s2bTraceWriterMask;
+#endif
 
   // Tests
 

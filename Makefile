@@ -15,6 +15,24 @@ ENABLE_CUDA = 0
 !ENDIF
 
 # ================================================
+# Configuracao de candidatos (README: "Decision pack")
+#   nmake                 -> build de referencia: nenhum macro, e o que o paper cita
+#   nmake CANDIDATES=1    -> build promovida: dispersao de carga + seed polar + as duas
+#                            regras de par (CHARGE_DISPERSION_FSM, POLAR_SEED_FROM_PLACEMENT,
+#                            PAIR_SAME_OCTANT, PAIR_OWN_AXIS_EXCHANGE)
+# Os dois nomes de saida sao os mesmos (build\automaton.exe, build\first_era_trace.exe),
+# porque promover e exatamente substituir o default; objectos vao para obj_candidates\
+# para que uma configuracao nunca reutilize objectos da outra (nmake nao segue flags).
+# ================================================
+
+!IFDEF CANDIDATES
+CANDIDATE_FLAGS = /D "CHARGE_DISPERSION_FSM" /D "POLAR_SEED_FROM_PLACEMENT" /D "PAIR_SAME_OCTANT" /D "PAIR_OWN_AXIS_EXCHANGE"
+OBJ_DIR = obj_candidates
+!ELSE
+CANDIDATE_FLAGS =
+!ENDIF
+
+# ================================================
 # Objetos comuns
 # ================================================
 
@@ -123,7 +141,7 @@ INCLUDES_NVCC = \
 	-I"src\include\zlib\cuda" \
 	-I"src\cuda"
 
-CFLAGS = /nologo /std:c++20 /O2 /EHsc /MD /D "NOMINMAX" $(INCLUDES_MSVC) $(EXTRA_CPPFLAGS)
+CFLAGS = /nologo /std:c++20 /O2 /EHsc /MD /D "NOMINMAX" $(INCLUDES_MSVC) $(EXTRA_CPPFLAGS) $(CANDIDATE_FLAGS)
 
 NVCC_FLAGS = -allow-unsupported-compiler -c -std=c++17 -O2 -DNOMINMAX -D_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH=1 $(INCLUDES_NVCC) $(EXTRA_NVCCFLAGS) --compiler-options /MD,/D_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH=1
 
@@ -524,6 +542,30 @@ check-extras: dirs
 	$(CC) $(CFLAGS) /c src\model\attractor.cpp src\model\wavefront.cpp /Fo"$(OBJ_DIR)\\"
 	@echo [check-extras] OK - unlinked diagnostics compile
 
+# ================================================
+# First-era trace (headless; no GUI, no CUDA)
+# ================================================
+# experiments\first_era_trace.cpp drives the model sources directly and prints one
+# line per light frame of the expansion era: the shell radius and cell count, the
+# attractor census (K, D, S, P halves, unresolved), the number of distinct charge
+# words over the W source addresses, how many of those addresses are structurally
+# pairable under R1..R6, and the active-shell size.  It links no GUI and no CUDA:
+# the four GUI-side globals (voxels, convol_delay, diffuse_delay, reloc_delay) are
+# stubbed inside the harness.  Objects go to obj\trace\ so they never shadow the
+# GUI build's own objects.  Run from the repository root, where automaton.cfg lives:
+#   nmake trace-first-era
+#   build\first_era_trace.exe 9 16384 8      (L, s2b_target, frames)
+TRACE_SRC   = experiments\first_era_trace.cpp
+TRACE_MODEL = src\config.cpp src\model\initSim.cpp src\model\simulation.cpp \
+	src\model\interaction.cpp src\model\utils.cpp src\model\geometry.cpp \
+	src\model\polarization.cpp src\model\charges.cpp src\model\attractor.cpp \
+	src\model\wavefront.cpp
+
+trace-first-era: dirs
+	if not exist "$(OBJ_DIR)\trace" mkdir "$(OBJ_DIR)\trace"
+	$(CC) $(CFLAGS) $(TRACE_SRC) $(TRACE_MODEL) /Fo"$(OBJ_DIR)\trace\\" /Fe:$(BUILD_DIR)\first_era_trace.exe /link /SUBSYSTEM:CONSOLE
+	@echo [trace-first-era] built $(BUILD_DIR)\first_era_trace.exe
+
 rebuild:
 	nmake clean
 	nmake
@@ -532,4 +574,4 @@ rebuild:
 # Targets simbólicos
 # ================================================
 
-.SYMBOLIC: clean run rebuild all dirs dlls copy_config check-odr check-extras
+.SYMBOLIC: clean run rebuild all dirs dlls copy_config check-odr check-extras trace-first-era

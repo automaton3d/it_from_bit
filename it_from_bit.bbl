@@ -585,8 +585,8 @@
       \strng{authornamehash}{24e19fcb486304b5f3ae073e97fecfd6}
       \strng{authorfullhash}{24e19fcb486304b5f3ae073e97fecfd6}
       \strng{authorfullhashraw}{24e19fcb486304b5f3ae073e97fecfd6}
-      \field{sortinit}{1}
-      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Advances in Astrophysics}
@@ -620,28 +620,6 @@
       \field{year}{2003}
       \field{pages}{L19\bibrangedash L23}
       \range{pages}{-1}
-    \endentry
-    \entry{codata}{misc}{}{}
-      \name{author}{1}{}{%
-        {{hash=804e3d2f6a5e63897a4ca68d7996e823}{%
-           family={{CODATA}},
-           familyi={C\bibinitperiod}}}%
-      }
-      \strng{namehash}{804e3d2f6a5e63897a4ca68d7996e823}
-      \strng{fullhash}{804e3d2f6a5e63897a4ca68d7996e823}
-      \strng{fullhashraw}{804e3d2f6a5e63897a4ca68d7996e823}
-      \strng{bibnamehash}{804e3d2f6a5e63897a4ca68d7996e823}
-      \strng{authorbibnamehash}{804e3d2f6a5e63897a4ca68d7996e823}
-      \strng{authornamehash}{804e3d2f6a5e63897a4ca68d7996e823}
-      \strng{authorfullhash}{804e3d2f6a5e63897a4ca68d7996e823}
-      \strng{authorfullhashraw}{804e3d2f6a5e63897a4ca68d7996e823}
-      \field{sortinit}{2}
-      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{howpublished}{The NIST Reference on Constants, Units, and Uncertainty}
-      \field{title}{{Value: Electron Mass}}
-      \field{year}{2018}
     \endentry
   \enddatalist
 \endrefsection

@@ -481,6 +481,17 @@ namespace automaton
     // The winner is identified once, at sowing time, while the payloads
     // are still unique (strict total order via the low-bit code).
     // ============================================================
+#ifdef POLAR_AXIS_FROM_CHARGE
+  // Octant of the charge word: the three colour bits are the three coordinate signs
+  // (c2 -> x, c1 -> y, c0 -> z), the same map the charge-seeded dispersion uses.
+  static void chargeOctant(unsigned ch6, int& sx, int& sy, int& sz)
+  {
+    sx = (ch6 & 4u) ? +1 : -1;
+    sy = (ch6 & 2u) ? +1 : -1;
+    sz = (ch6 & 1u) ? +1 : -1;
+  }
+#endif
+
     static void elect(unsigned w)
     {
       // Hypothesis: select from existing polarization only. No address,
@@ -538,6 +549,41 @@ namespace automaton
 #endif
       PolarizationCandidate candidate;
       int bw[3] = {-1,-1,-1};
+#ifdef POLAR_AXIS_FROM_CHARGE
+      // ======================================================================
+      // Charge-correlated axis (candidate, /D POLAR_AXIS_FROM_CHARGE).  OFF in the
+      // reference build.
+      //
+      // The classic tournament ranks cells by their existing (pol_u,pol_v) alone, and that
+      // field is anchored to the geometry of the cavity, so the axis it elects -- hence m --
+      // is uncorrelated with the layer's charge.  Measured with the movement on (README,
+      // "Multi-era trace"): the clean sector split the dispersion produces is washed out
+      // within two eras and the transport mixes the layers.
+      //
+      // Here the charge word constrains WHICH cells may win: only cells whose offset from
+      // the lattice centre lies in the layer's own octant (c2 -> x sign, c1 -> y, c0 -> z,
+      // the map the dispersion uses).  The tournament itself is unchanged -- the winner is
+      // still the best (pol_u,pol_v) cell -- so the axis, and therefore m, is the charge
+      // direction.  No W address, hash, scan order or RNG enters: the restriction is by
+      // charge and geometry only, which is the stance elect() states for the tie-break.
+      // ======================================================================
+      int ox = 0, oy = 0, oz = 0;
+      chargeOctant(getCell(lattice_curr, lcenters[w][0], lcenters[w][1], lcenters[w][2], w).ch & 0x3Fu,
+                   ox, oy, oz);
+      for (unsigned x=0;x<ELX;++x)
+      for (unsigned y=0;y<ELY;++y)
+      for (unsigned z=0;z<ELZ;++z) {
+        const Cell& c=getCell(lattice_curr,x,y,z,w);
+        if (!c.active) continue;
+        const int dx = (int)x - (int)CENTER;
+        const int dy = (int)y - (int)CENTER;
+        const int dz = (int)z - (int)CENTER;
+        if (dx*ox <= 0 || dy*oy <= 0 || dz*oz <= 0) continue;   // not in the charge octant
+        if (candidate.consider(c.pol_u,c.pol_v)) {
+          bw[0]=x; bw[1]=y; bw[2]=z;
+        }
+      }
+#else
       for (unsigned x=0;x<ELX;++x)
       for (unsigned y=0;y<ELY;++y)
       for (unsigned z=0;z<ELZ;++z) {
@@ -546,7 +592,40 @@ namespace automaton
           bw[0]=x; bw[1]=y; bw[2]=z;
         }
       }
-      if (!candidate.unique()) return;
+#endif
+      if (!candidate.unique())
+      {
+#if defined(POLAR_SEED_FROM_PLACEMENT) || defined(POLAR_AXIS_FROM_CHARGE)
+        // Candidate.  The zero-polarisation seed is a fixed point of the
+        // election -> broadcast -> reconstruction loop, and the classic candidate cannot
+        // leave it: it ranks existing (pol_u,pol_v) only and returns when there is none
+        // (measured in the reference build: pol and m identically zero, so no momentum is
+        // ever elected and the dispersion phase never closes).  Compiled off in the
+        // reference build.
+        if (candidate.present) return;   // a real (tied) candidate existed: keep the classic rule
+#ifdef POLAR_AXIS_FROM_CHARGE
+        // The axis is the charge octant itself -- installAxis normalises it to |m| = RMAX --
+        // so the momentum is charge-correlated whether or not a polarisation candidate
+        // exists, and does not depend on where the transport has carried the centre.
+        bw[0] = (int)CENTER + ox; bw[1] = (int)CENTER + oy; bw[2] = (int)CENTER + oz;
+#else
+        // The source centre is the winner: once the charge-seeded dispersion has moved this
+        // layer's centre off the lattice centre, that displacement is a geometric datum the
+        // layer owns, and the classic path already derives the axis from a cell position
+        // (installAxis(w, cell - CENTER)), so the axis becomes the octant the layer has
+        // already stepped along.  No address, hash, scan order or RNG enters.
+        const auto& p = lcenters[w];
+        if (p[0] == CENTER && p[1] == CENTER && p[2] == CENTER)
+          return;                        // still co-located: nothing geometric to seed from
+        bw[0] = (int)p[0]; bw[1] = (int)p[1]; bw[2] = (int)p[2];
+#endif
+#ifdef S2B_TRACE
+        ++s2bTracePolarSeed;
+#endif
+#else
+        return;
+#endif
+      }
 
       // Displacement from the lattice centre to the winning cell becomes
       // the momentum direction, rescaled to |m| = L/2 (= RMAX).

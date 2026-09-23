@@ -509,6 +509,24 @@ void initCenters(unsigned wDim)
     FRAME     = FLOOD;
 
     // W-island topology: W = 3L^2 is partitioned into 9L islands of L/3 copies.
+    // NOTE (provenance): this 9L x L/3 grouping is a residue of an abandoned line of
+    // research, and it is NOT the ledger partition the paper quotes.  App. A ("The scale of
+    // the lattice") factorises the same ledger as W = N_I * l, with N_I = 192L charge
+    // fragments of l = L/64 addresses each.  The two are different objects at different
+    // scales: l = L/64 is an integer only for L a multiple of 64 (and is below 1 for the
+    // accessible sizes, L <= 31), while this runtime refuses even edges -- an even edge
+    // breaks the unique-centre assumptions (CENTER = (L-1)/2, "every edge must be odd",
+    // see initSim.cpp ~248/314).  Do not reuse this grouping as the model's declared
+    // partition, and do not conflate it with the ledger, without a decision on the parity
+    // of L.  The published reference census (K = 235 at L = 9, K = 667 at L = 15) was
+    // produced with THIS grouping.  Two further points of record: (i) the odd-edge restriction
+    // of this runtime is a convention of the seed, not a requirement of the rule -- the rule is
+    // general in the parity of the edge, and App. A takes the physical ledger to be a multiple
+    // of 64 (which also gives RMAX = L/2 exactly and a unique antipodal cell, measured: the
+    // shells are identical for odd and even L at small radius, and only the end of the
+    // expansion differs, 1 cell versus a 2x2x2 block); (ii) the divisibility-by-3 requirement
+    // implicit here (ISLAND_SIZE = L/3) belongs to the abandoned grouping, and it is already
+    // truncated in the L = 7 runs (W/(9*EL) = 147/63 = 2, not 7/3).
     ISLAND_COUNT = 9 * EL;
     ISLAND_SIZE  = (ISLAND_COUNT > 0) ? (W_USED / ISLAND_COUNT) : 0;
     if (ISLAND_SIZE == 0) ISLAND_SIZE = 1;

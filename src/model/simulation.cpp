@@ -35,6 +35,7 @@ namespace automaton
   unsigned ELX = 0, ELY = 0, ELZ = 0;
   unsigned W_DIM;
   unsigned W_USED;
+  std::vector<ImpulseBooking> g_pendingImpulses;   // see the NOTE in simulation.h
   unsigned L2;
   unsigned L3 = 0;
   unsigned long BLOCK = 0;
@@ -62,6 +63,42 @@ namespace automaton
   // headless runners may lower it to open the s2B gate (manuscript, M1
   // parameter sweep).
   int s2b_target = 16384;
+
+#ifdef S2B_TRACE
+  // Opt-in in-loop instrumentation of the s2B (sieve) channel.  Compiled ONLY with
+  // /DS2B_TRACE; the default build -- GUI and headless -- is unaffected, and nothing
+  // here reads or writes the lattice.  It answers one question: at the instant a cell's
+  // s2B turns on during the FSM cell pass, what happened to that cell's clock (t) and to
+  // its active flag?
+  //   Fired        - cells whose s2B went false -> true in this cell pass
+  //   FiredTOff    - ... whose t did NOT simply advance by one (a clock reset or a skip)
+  //   FiredTChg    - ... whose t changed at all
+  //   FiredActOff  - ... that were active and are no longer
+  //   ActLost      - any cell that left the active set in this pass (firing or not)
+  //   ClockReset   - any cell whose t landed on 0 without the natural wrap (2*RMAX-1 -> 0)
+  unsigned long long s2bTraceFired = 0, s2bTraceFiredTOff = 0, s2bTraceFiredTChanged = 0,
+                     s2bTraceFiredActOff = 0, s2bTraceActLost = 0, s2bTraceClockReset = 0,
+                     s2bTraceReemitResets = 0, s2bTraceCBResets = 0,
+                     s2bTraceFloodPulls = 0, s2bTraceFloodResets = 0, s2bTraceReemitImpulse = 0,
+                     s2bTraceRelocSeen = 0, s2bTraceRelocApplied = 0,
+                     s2bTraceReemitAtCentre = 0, s2bTraceReemitOffCentre = 0,
+                     s2bTraceCommitPending = 0, s2bTraceCommitWiped = 0, s2bTraceImpulseCommitted = 0,
+                     s2bTraceImpulseBooked = 0, s2bTraceImpulseSkipped = 0, s2bTraceRelocSumAtCommit = 0,
+                     s2bTraceTicks = 0, s2bTraceReapplySum = 0, s2bTraceCommitAccSum = 0,
+                     s2bTraceImpulseDrained = 0, s2bTraceCommitCalls = 0, s2bTraceDrainWriteback = 0,
+                     s2bTraceNetLayers = 0, s2bTraceNetMax = 0, s2bTraceChargeDispersion = 0,
+                     s2bTracePolarSeed = 0,
+                     // Relay-shuttle bookers (reseatStepToward / reseatAtContact): the last
+                     // reloc writers that had no counter.  `Aligned` counts the steps whose
+                     // three signs match the layer's own charge octant, `Other` the rest.
+                     s2bTraceReseatSteps = 0, s2bTraceReseatAligned = 0,
+                     s2bTraceReseatOther = 0, s2bTraceReseatAtContact = 0,
+                     s2bTraceReseedCarried = 0;
+  // Per-layer cohesion flag of the current light frame (see simulation.h).
+  std::vector<unsigned char> s2bTraceCohesionFlag;
+  // Per-layer writer mask of the current light frame (see simulation.h).
+  std::vector<unsigned int> s2bTraceWriterMask;
+#endif
 
   // Lattices
   std::vector<Cell> lattice_curr;
@@ -750,6 +787,9 @@ namespace automaton
 
       if (dx == 0 && dy == 0 && dz == 0)
         continue;
+#ifdef S2B_TRACE
+      ++s2bTraceRelocSeen;   // a pending impulse reached the source centre
+#endif
 #ifdef HOMB_PRODUCER_FSM
       ++reloc_moves;   // WP8 probe: a source centre is about to be relocated
 #endif
@@ -781,6 +821,9 @@ namespace automaton
       lcenters[w][0] = (unsigned)nx;
       lcenters[w][1] = (unsigned)ny;
       lcenters[w][2] = (unsigned)nz;
+#ifdef S2B_TRACE
+      ++s2bTraceRelocApplied;   // the bubble was translated by (dx, dy, dz)
+#endif
     }
   }
 
@@ -979,6 +1022,12 @@ namespace automaton
 
             draft = curr;
 
+#ifdef S2B_TRACE
+            const unsigned trTIn  = curr.t;
+            const bool     trS2BIn = curr.s2B;
+            const bool     trActIn  = curr.active != 0;
+#endif
+
             // Ensure correct coordinates
             curr.x[0] = x;
             curr.x[1] = y;
@@ -1019,6 +1068,20 @@ namespace automaton
                 else
                     draft.t = (curr.t + 1) % (2 * RMAX);
             }
+
+#ifdef S2B_TRACE
+            {
+                const unsigned trNext = unsigned((curr.t + 1u) % (2u * RMAX));
+                if (draft.s2B && !trS2BIn) {
+                    ++s2bTraceFired;
+                    if (draft.t != trTIn)     ++s2bTraceFiredTChanged;
+                    if (draft.t != trNext)    ++s2bTraceFiredTOff;
+                    if (trActIn && !draft.active) ++s2bTraceFiredActOff;
+                }
+                if (trActIn && !draft.active) ++s2bTraceActLost;
+                if (draft.t == 0 && trTIn != 0 && trTIn != 2u * RMAX - 1u) ++s2bTraceClockReset;
+            }
+#endif
         }
     }
 

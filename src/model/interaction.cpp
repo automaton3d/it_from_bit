@@ -135,6 +135,39 @@ namespace automaton
   namespace
   {
     std::vector<Cell> sourceBefore, sourceAfter;
+
+    // ---- pending source impulses -----------------------------------------------------
+    //
+    // Where the booking lives matters.  `sourceAfter` is a per-tick working copy: it is
+    // re-seeded from the lattice at every beginSourceTick() (`sourceAfter = sourceBefore`)
+    // and it is discarded at the end of the tick, so a displacement written only there is
+    // gone before the next tick's commitSourceTick() -- and, measured, before the commit of
+    // the SAME tick when the booking happens after it (L=7, sieve open: 1456 non-zero
+    // bookings in one tick, 0 pending at the commit, 0 applied by applyMomentum, 0 sources
+    // moved, occupiedCenters = 1 for the whole era).
+    //
+    // The durable home for a pending displacement is the LATTICE itself: the source-centre
+    // cell of layer w in lattice_curr.  bookImpulse()/reemitSourceAt() write `reloc` there,
+    // and the value then survives every tick boundary by construction -- beginSourceTick()
+    // captures it (sourceBefore = that cell), commitSourceTick() hands it to the draft, and
+    // applyMomentum() consumes it, zeroing the draft; swap_lattices() then copies the zero
+    // back into lattice_curr, so an impulse is applied exactly once.
+    //
+    // NB: the impulse paths that write a source-level `reloc` directly instead of going
+    // through reemitSourceAt()/bookImpulse() are all inside candidate macros that no build
+    // defines (the absorption, exclusion/repulsion and collision rules); they would need
+    // bookImpulse(w, axis, step) applied at the same place if switched on.
+    /// Book a pending displacement of source w for this tick (drained by the commit).
+    void bookImpulse(unsigned w, int dx, int dy, int dz)
+    {
+      if (w >= W_USED) return;
+      if (dx == 0 && dy == 0 && dz == 0) return;
+      g_pendingImpulses.push_back(ImpulseBooking{w, dx, dy, dz});
+#ifdef S2B_TRACE
+      ++s2bTraceImpulseBooked;
+#endif
+    }
+
     std::vector<std::pair<WIndex, WIndex>> internalContacts;
     std::vector<unsigned char> contactSeen;
 #ifdef PARENT_SELECTIVE_FSM
@@ -439,6 +472,15 @@ namespace automaton
     }
 #endif
 
+#ifdef S2B_TRACE
+    // Tag which site contributed a displacement to this layer in the current light frame (the mask
+    // is read by the harness and by the S2B_DUMP_PENDING probe; see simulation.h for the bit list).
+    inline void tagWriter(unsigned w, unsigned bit)
+    {
+      if (w < s2bTraceWriterMask.size()) s2bTraceWriterMask[w] |= bit;
+    }
+#endif
+
     // Add an impulse (dx, dy, dz) to the source-center cell and reemit phase 0.
     // The long-term momentum-direction vector m is preserved; the consumable
     // relocation vector reloc records the pending displacement.  The actual move
@@ -448,8 +490,32 @@ namespace automaton
       srcDraft.reloc[0] += dx;
       srcDraft.reloc[1] += dy;
       srcDraft.reloc[2] += dz;
+#ifdef S2B_TRACE
+      if (dx || dy || dz) tagWriter((unsigned)srcDraft.x[3], 1u);   // walk funnel
+#endif
+      // Book the displacement in the model's impulse queue (see the NOTE in simulation.h):
+      // that queue is the only carrier that survives the per-tick re-seed of the source
+      // working array.  Written here rather than through bookImpulse() on purpose -- the
+      // caller's draft is normally the source cell itself, and the queue must hold the
+      // booking exactly once.
+      if (dx || dy || dz)
+      {
+        const unsigned wi = (unsigned)srcDraft.x[3];
+        if (wi < W_USED)
+        {
+          g_pendingImpulses.push_back(ImpulseBooking{wi, dx, dy, dz});
+#ifdef S2B_TRACE
+          ++s2bTraceImpulseBooked;
+#endif
+        }
+      }
       srcDraft.t = 0;
       srcDraft.f = 0;
+#ifdef S2B_TRACE
+      ++s2bTraceReemitResets;
+      if (dx || dy || dz) ++s2bTraceReemitImpulse;   // non-zero displacement requested
+      if (srcDraft.r2 == 0) ++s2bTraceReemitAtCentre; else ++s2bTraceReemitOffCentre;
+#endif
       // Fatia 1: ledger the reemission — island w just had its clock reset.
       // Every reemission path funnels through here (reemitAtContact,
       // moveOneStep, moveOneStepAway), so this is the single hook.
@@ -457,12 +523,38 @@ namespace automaton
     }
 
     // Move one light-step along the direction from 'from' to 'to'.
+    // --- Re-anchor to the layer's own charge octant (candidate, /D PAIR_OCTANT_REANCHOR) -------
+    // OFF in the reference build.
+    //
+    // Every walk direction here is `sign(shortestDelta(self, other))`, and shortestDelta takes the
+    // short way round the torus.  Measured (README, "Multi-era run with (a)+(b)"): once a layer's
+    // centre has crossed the lattice centre in an axis, that offset inverts and the walk runs
+    // against the layer's charge octant -- off-side layers were octant-aligned in only 1 of 23 and
+    // 8 of 21 steps where on-side layers were 23 of 25 and 9 of 9.
+    //
+    // So when the geometric step disagrees with the layer's own octant (c2,c1,c0 -> x,y,z signs),
+    // take the octant: the interaction still fires, but the displacement always runs along the
+    // direction the layer owns.  A zero component (same cell / same coordinate) is NOT a
+    // disagreement -- a no-op stays a no-op.  No address, hash, scan order or RNG enters.
+    void octantReanchor(const Cell& src, int& dx, int& dy, int& dz)
+    {
+      const unsigned ch6 = src.ch & 0x3Fu;
+      const int sx = sign(dx), sy = sign(dy), sz = sign(dz);
+      const int ox = (ch6 & 4u) ? +1 : -1;
+      const int oy = (ch6 & 2u) ? +1 : -1;
+      const int oz = (ch6 & 1u) ? +1 : -1;
+      if (sx * ox < 0 || sy * oy < 0 || sz * oz < 0) { dx = ox; dy = oy; dz = oz; }
+    }
+
     void moveOneStep(Cell& srcDraft, const std::array<unsigned, 3>& from,
                      const std::array<unsigned, 3>& to)
     {
       int dx = shortestDelta((int)from[0], (int)to[0], (int)ELX);
       int dy = shortestDelta((int)from[1], (int)to[1], (int)ELY);
       int dz = shortestDelta((int)from[2], (int)to[2], (int)ELZ);
+#ifdef PAIR_OCTANT_REANCHOR
+      octantReanchor(srcDraft, dx, dy, dz);
+#endif
       reemitSourceAt(srcDraft, sign(dx), sign(dy), sign(dz));
     }
 
@@ -473,6 +565,9 @@ namespace automaton
       int dx = shortestDelta((int)otherCenter[0], (int)selfCenter[0], (int)ELX);
       int dy = shortestDelta((int)otherCenter[1], (int)selfCenter[1], (int)ELY);
       int dz = shortestDelta((int)otherCenter[2], (int)selfCenter[2], (int)ELZ);
+#ifdef PAIR_OCTANT_REANCHOR
+      octantReanchor(srcDraft, dx, dy, dz);
+#endif
       reemitSourceAt(srcDraft, sign(dx), sign(dy), sign(dz));
     }
 
@@ -484,6 +579,22 @@ namespace automaton
       const int dx = shortestDelta((int)self[0], (int)other[0], (int)ELX);
       const int dy = shortestDelta((int)self[1], (int)other[1], (int)ELY);
       const int dz = shortestDelta((int)self[2], (int)other[2], (int)ELZ);
+#ifdef S2B_TRACE
+      // This was the only reloc writer with no counter.  It steps toward ANOTHER centre, so
+      // its direction is the partner's offset, not the layer's own axis: this is what the
+      // residual non-octant-aligned displacements of the (a)+(b) runs are suspected to be.
+      if (sign(dx) || sign(dy) || sign(dz))
+      {
+        ++s2bTraceReseatSteps;
+        const unsigned ch6 = srcDraft.ch & 0x3Fu;
+        unsigned a = 0;
+        if (sign(dx) * ((ch6 & 4u) ? +1 : -1) > 0) ++a;
+        if (sign(dy) * ((ch6 & 2u) ? +1 : -1) > 0) ++a;
+        if (sign(dz) * ((ch6 & 1u) ? +1 : -1) > 0) ++a;
+        if (a == 3u) ++s2bTraceReseatAligned; else ++s2bTraceReseatOther;
+        tagWriter((unsigned)srcDraft.x[3], 2u);   // relay shuttle
+      }
+#endif
       srcDraft.reloc[0] += sign(dx);
       srcDraft.reloc[1] += sign(dy);
       srcDraft.reloc[2] += sign(dz);
@@ -496,6 +607,13 @@ namespace automaton
       int dx = shortestDelta((int)srcDraft.x[0], (int)contact.x[0], (int)ELX);
       int dy = shortestDelta((int)srcDraft.x[1], (int)contact.x[1], (int)ELY);
       int dz = shortestDelta((int)srcDraft.x[2], (int)contact.x[2], (int)ELZ);
+#ifdef PAIR_OCTANT_REANCHOR
+      // Same re-anchor as moveOneStep/moveOneStepAway: this path writes reloc directly and was the
+      // mover the first re-anchor attempt missed (measured: frames 12 and 14 kept the off-side
+      // misalignments).  Note it books the FULL offset to the contact, so re-anchoring also brings
+      // the step down to one cell along the octant.
+      octantReanchor(srcDraft, dx, dy, dz);
+#endif
       reemitSourceAt(srcDraft, dx, dy, dz);
     }
 
@@ -508,6 +626,12 @@ namespace automaton
       const int dx = shortestDelta((int)srcDraft.x[0], (int)contact.x[0], (int)ELX);
       const int dy = shortestDelta((int)srcDraft.x[1], (int)contact.x[1], (int)ELY);
       const int dz = shortestDelta((int)srcDraft.x[2], (int)contact.x[2], (int)ELZ);
+#ifdef S2B_TRACE
+      // Sibling of reseatStepToward, used by the recruit relay: it books the FULL offset to the
+      // contact point (not one unit step), so it can displace a centre by several cells at once.
+      if (dx || dy || dz) ++s2bTraceReseatAtContact;
+      if (dx || dy || dz) tagWriter((unsigned)srcDraft.x[3], 4u);   // relay contact
+#endif
       srcDraft.reloc[0] += dx;
       srcDraft.reloc[1] += dy;
       srcDraft.reloc[2] += dz;
@@ -551,6 +675,7 @@ namespace automaton
   {
     sourceBefore.clear();
     sourceAfter.clear();
+    g_pendingImpulses.clear();   // a new run never inherits a pending booking
     internalContacts.clear();
 #ifdef PARENT_SELECTIVE_FSM
     parentRepel.clear();
@@ -578,6 +703,41 @@ namespace automaton
       sourceBefore[w] = getCell(lattice_curr, p[0], p[1], p[2], w);
     }
     sourceAfter = sourceBefore;
+    // The pending displacements are NOT re-applied here: they live on the lattice itself
+    // (bookImpulse/reemitSourceAt write reloc on the source-centre cell) and sourceBefore
+    // has just captured them, so the re-seed cannot lose them.  See the NOTE above.
+    //
+    // Candidate (/D IMPULSE_NO_INHERIT).  OFF in the reference build.
+    //
+    // The capture above also *inherits* whatever reloc the lattice cell still carries, and the
+    // commit then copies it into the draft, where applyMomentum applies it a second time.  In the
+    // (a)+(b) runs that showed up as flight displacements with no booker in the frame: at frame 14
+    // the queue held 8 bookings (the cohesion table) while 64 layers carried a reloc at the commit
+    // and 72 impulses were applied (64 + 8) -- and none of the walk funnels had run (their counters
+    // are zero).  This probe counts the inherited ones and, with the macro on, drops them: the
+    // impulse queue is the carrier, so a frame's displacements come from that frame's bookings.
+#ifdef IMPULSE_NO_INHERIT
+    {
+      unsigned carried = 0;
+      for (unsigned w = 0; w < W_USED; ++w)
+        if (sourceBefore[w].reloc[0] || sourceBefore[w].reloc[1] || sourceBefore[w].reloc[2])
+        {
+          ++carried;
+          sourceBefore[w].reloc[0] = sourceBefore[w].reloc[1] = sourceBefore[w].reloc[2] = 0;
+          sourceAfter[w].reloc[0] = sourceAfter[w].reloc[1] = sourceAfter[w].reloc[2] = 0;
+        }
+#ifdef S2B_TRACE
+      s2bTraceReseedCarried += carried;
+#endif
+    }
+#endif
+#ifdef S2B_TRACE
+    ++s2bTraceTicks;
+    for (unsigned w = 0; w < W_USED; ++w)
+      s2bTraceReapplySum += (unsigned long long)(std::abs(sourceAfter[w].reloc[0]) +
+                                                 std::abs(sourceAfter[w].reloc[1]) +
+                                                 std::abs(sourceAfter[w].reloc[2]));
+#endif
 #ifdef MULTIFREQ_RAY_FSM
     mfHitState.assign(W_USED, 0);
     mfDetU.assign(W_USED, 0);
@@ -653,6 +813,20 @@ namespace automaton
       std::sort(internalContacts.begin(), internalContacts.end());
       internalContacts.erase(std::unique(internalContacts.begin(), internalContacts.end()),
                              internalContacts.end());
+#ifdef S2B_TRACE
+      // Cohesion-vs-flight split.  Everything booked here is COHESION: a single-axis face step
+      // (faceStep, line 701) that holds the members of a K-D island together, by design not a
+      // displacement along the layer's diagonal charge octant.  The flag lets the harness report
+      // the two channels' alignment separately instead of mixing them (in the (a)+(b) runs the
+      // cohesion steps were the whole residual: 14 bookings = 14 moved layers, 7/7 in signs).
+      // The vector is rebuilt per call, and this function runs once per light frame.
+      if (s2bTraceCohesionFlag.size() != W_USED) s2bTraceCohesionFlag.assign(W_USED, 0u);
+      // Size the writer mask as well: without this the tagWriter() calls are no-ops (the vector is
+      // empty) and every diagnostic reads a zero mask -- which is how the first masked run reported
+      // "no mixtures" while the pending impulses were in fact accumulated own-octant thrusts.
+      if (s2bTraceWriterMask.size() != W_USED) s2bTraceWriterMask.assign(W_USED, 0u);
+      for (unsigned w = 0; w < W_USED; ++w) s2bTraceCohesionFlag[w] = 0u;
+#endif
       std::vector<std::array<int, 3>> moves(W_USED, {0, 0, 0});
       std::vector<bool> moved(W_USED, false);
 
@@ -718,7 +892,12 @@ namespace automaton
         moved[p] = moved[half] = true;
       }
       for (unsigned w = 0; w < W_USED; ++w)
-        for (int k=0;k<3;++k) sourceAfter[w].reloc[k] += moves[w][k];
+      {
+        bookImpulse(w, moves[w][0], moves[w][1], moves[w][2]);
+#ifdef S2B_TRACE
+        if (moves[w][0] || moves[w][1] || moves[w][2]) { s2bTraceCohesionFlag[w] = 1u; tagWriter(w, 8u); }
+#endif
+      }
       ++transportFrame;
     }
 
@@ -1053,6 +1232,18 @@ namespace automaton
       const int sgn = sep[best] > 0 ? -1 : 1;
       const auto& cA = lcenters[aw];
       const auto& cB = lcenters[bw];
+      // Candidate (/D PAIR_SAME_OCTANT).  This is the default per-tick mediated kick, and it
+      // is the mover that dominates the cascades: its step direction is the partner's offset
+      // (moveOneStep / moveOneStepAway book the sign of shortestDelta), which cuts across both
+      // layers when the two partners sit in different charge octants.  Restricting the kick to
+      // partners that share the colour triplet keeps the step along the octant both layers
+      // already own.  Measured with only the contact handler guarded, the cascade still showed
+      // 0 of 46 displacements matching the octant (0/7/39/0), which is what located the mover
+      // here.  Compiled off in the reference build.
+#ifdef PAIR_SAME_OCTANT
+      if (((sourceAfter[aw].ch ^ sourceAfter[bw].ch) & 7u) != 0u)
+        return;
+#endif
       if (pushSign > 0)
       {
         moveOneStepAway(sourceAfter[aw], cA, cB);
@@ -1068,8 +1259,120 @@ namespace automaton
 
   }
 
+  // Unit step from the charge word: (+/-c2, +/-c1, +/-c0).  The three colour bits are the
+  // three coordinate signs, so the sector bit w1 = c1 IS the y-sign (Orbis -y, Umbra +y)
+  // and the chirality bit w0 = c0 IS the z-sign.  The k <-> 7-k colour-complement classes
+  // therefore get exactly antipodal steps, which keeps the centre of mass of the eight
+  // classes at the origin.  Shared by the charge-seeded dispersion and by the direction
+  // tie-break of the homing producer, so that neither has to read the W address.
+  inline void chargeStep(unsigned ch6, int& dx, int& dy, int& dz)
+  {
+    dx = (ch6 & 4u) ? +1 : -1;   // c2
+    dy = (ch6 & 2u) ? +1 : -1;   // c1 == w1: Orbis -y, Umbra +y
+    dz = (ch6 & 1u) ? +1 : -1;   // c0 == w0: chirality R -z, L +z
+  }
+
+#ifdef CHARGE_STEP_MAGNITUDE
+  // ===========================================================================
+  // Magnitude of the charge step (candidate, /D CHARGE_STEP_MAGNITUDE and
+  // /D CHARGE_STEP_SUBBLOCK).  OFF in the reference build, and OFF by default
+  // inside the dispersion too: with neither macro the step stays one cell.
+  //
+  // The six-bit word fixes the octant but carries no information about HOW FAR a bubble
+  // steps, and -- because the seed's family map makes the word a function of island mod 8
+  // (w1 = bit 1, w0 = bit 0, q = their xor, c2c1c0 = the low three bits) -- it carries no
+  // information that tells the copies of one class apart either.  Two magnitudes are
+  // therefore added, both read from the seed's own structure and neither from the W
+  // address:
+  //
+  //   CHARGE_STEP_MAGNITUDE : mag = 2 for sig in {0,3}, 1 for sig in {1,2}, where
+  //       sig = c2+c1+c0.  The colour complement k <-> 7-k sends sig -> 3-sig, so the
+  //       antipodal partners keep the same magnitude and their steps stay exactly
+  //       opposite: the centre of mass is unmoved by this rule.  The eight classes then
+  //       separate at two different speeds instead of one.
+  //
+  //   CHARGE_STEP_SUBBLOCK : mag += bit 3 of the family index (island).  This is the only
+  //       non-address way to split a class, and the bit is invariant under the exact
+  //       pairing island <-> (island ^ 7) -- the map that flips the low three bits, i.e.
+  //       turns a word into its colour complement -- so the antipodal partners still get
+  //       equal magnitude.  (The pairing is exact only while island ^ 7 is inside the
+  //       family count; beyond it one family of a pair is absent and the centre of mass
+  //       picks up the population imbalance, which is measurable.)
+  // ===========================================================================
+  inline unsigned chargeStepMagnitude(unsigned ch6, unsigned family)
+  {
+    const unsigned sig = ((ch6 >> 2) & 1u) + ((ch6 >> 1) & 1u) + (ch6 & 1u);
+    unsigned mag = (sig == 0u || sig == 3u) ? 2u : 1u;
+#ifdef CHARGE_STEP_SUBBLOCK
+    mag += (family >> 3) & 1u;
+#endif
+    return mag;
+  }
+#endif
+
+#ifdef CHARGE_DISPERSION_FSM
+  // ===========================================================================
+  // Charge-seeded dispersion (candidate, /D CHARGE_DISPERSION_FSM).  OFF in the
+  // reference build.
+  //
+  // Until a layer has an elected momentum direction (m == 0, i.e. the polarisation
+  // election has not published one) the fabric resolves its initial superposition by
+  // stepping each layer along the octant of its own colour triplet:
+  //
+  //     step = ( +1/-1 from c2 , +1/-1 from c1 , +1/-1 from c0 )
+  //
+  // The three colour bits are the three coordinate signs, so the sector bit w1 = c1 IS
+  // the y-sign: Orbis (w1 = 0) steps -y and Umbra (w1 = 1) +y, while matter and
+  // antimatter -- the k <-> 7-k colour-complement classes of the seed, four pairs -- get
+  // exactly antipodal steps, so the centre of mass of the eight classes stays at the
+  // origin.  The diversity therefore comes from the charge word alone: no W address, no
+  // hash, no scan order (the stance elect() states for the polarisation tie-break) and no
+  // random number.
+  //
+  // One unit step per layer per era, while m == 0 and the shell has left the centre
+  // (effective_t(t) >= 1); the latch re-arms at the era edge, so a layer stops dispersing
+  // as soon as a direction is elected for it -- m == 0 is the phase delimiter.
+  // ===========================================================================
+  static void chargeDispersionTick()
+  {
+    static std::vector<unsigned char> latched;
+    if (latched.size() != W_USED) latched.assign(W_USED, 0);
+
+    for (unsigned w = 0; w < W_USED; ++w)
+    {
+      const auto& p = lcenters[w];
+      const Cell& src = getCell(lattice_curr, p[0], p[1], p[2], w);
+      const unsigned r = effective_t(src.t);
+
+      if (r == 0) { latched[w] = 0; continue; }        // era edge: re-arm the latch
+      if (latched[w]) continue;                        // one step per layer per era
+      if (src.m[0] || src.m[1] || src.m[2]) continue;  // inertia exists: phase closed
+      if (r != 1) continue;                            // step as soon as the shell exists
+
+      int dx, dy, dz;
+      chargeStep(src.ch & 0x3Fu, dx, dy, dz);
+#ifdef CHARGE_STEP_MAGNITUDE
+      {
+        const unsigned fam = (ISLAND_SIZE > 0u) ? (w / ISLAND_SIZE) : 0u;
+        const unsigned mag = chargeStepMagnitude(src.ch & 0x3Fu, fam);
+        dx *= (int)mag; dy *= (int)mag; dz *= (int)mag;
+      }
+#endif
+      latched[w] = 1;
+      bookImpulse(w, dx, dy, dz);
+#ifdef S2B_TRACE
+      ++s2bTraceChargeDispersion;
+      tagWriter(w, 16u);   // charge dispersion
+#endif
+    }
+  }
+#endif
+
   void commitSourceTick()
   {
+#ifdef S2B_TRACE
+    ++s2bTraceCommitCalls;
+#endif
     if (!lattice_draft.empty() && lattice_draft.front().k == 0) {
       resolveInternalContacts();
 #ifdef EXCLUSION_FSM
@@ -1103,10 +1406,31 @@ namespace automaton
       const auto& p = lcenters[w];
       Cell& dst = getCell(lattice_draft, p[0], p[1], p[2], w);
       const Cell& s = sourceAfter[w];
+#ifdef S2B_TRACE
+      // A pending impulse in the draft is about to be REPLACED (not accumulated) by the
+      // source-level value: count what arrives and what this assignment erases.
+      if (s.reloc[0] || s.reloc[1] || s.reloc[2]) ++s2bTraceCommitPending;
+      else if (dst.reloc[0] || dst.reloc[1] || dst.reloc[2]) ++s2bTraceCommitWiped;
+#ifdef S2B_DUMP_PENDING
+      // Identification probe (/D S2B_DUMP_PENDING): print each pending impulse with the layer index
+      // and its charge word.  Eleven sites in the model write reloc and the counters leave seven of
+      // them without a hook; the PATTERN of these lines (address-derived axis/sign, diagonal triple,
+      // paired a/b, ...) names the writer without touching any of them.
+      if (s.reloc[0] || s.reloc[1] || s.reloc[2])
+        printf("[pending] w=%u reloc=(%d,%d,%d) ch=%03x kind=%d mask=0x%02x\n",
+               w, s.reloc[0], s.reloc[1], s.reloc[2], s.ch & 0x3Fu, (int)s.kind,
+               (w < s2bTraceWriterMask.size() ? s2bTraceWriterMask[w] : 0u));
+#endif
+#endif
       dst.w = w; dst.ch = s.ch; dst.a = s.a; dst.leader_w = s.leader_w;
       dst.kind = s.kind; dst.parent = s.parent; dst.spin_target = s.spin_target;
       dst.pair_idx = s.pair_idx; dst.pair_count = s.pair_count; dst.bB = s.bB;
       for (int k=0;k<3;++k) { dst.m[k] = s.m[k]; dst.reloc[k] = s.reloc[k]; }
+#ifdef S2B_TRACE
+      s2bTraceRelocSumAtCommit += (unsigned long long)(std::abs(dst.reloc[0]) +
+                                                       std::abs(dst.reloc[1]) +
+                                                       std::abs(dst.reloc[2]));
+#endif
       if (s.t != sourceBefore[w].t) { dst.t = s.t; dst.f = s.f; }
       else if (body(s) || isBoundPropeller(s)
 #ifdef ORPHAN_MEDIATOR_PROPAGATES
@@ -1122,6 +1446,56 @@ namespace automaton
         dst.t = (s.t + (dst.k == 0 ? 1u : 0u)) % (2 * RMAX);
         dst.f = effective_t(dst.t);
       }
+    }
+
+    // Drain this tick's impulse queue into the draft, where applyMomentum() (called right
+    // after this) reads the source-centre reloc.  Done AFTER the loop above on purpose: that
+    // loop ASSIGNS dst.reloc from the source-level copy, so an earlier drain would be
+    // overwritten.  See the NOTE on g_pendingImpulses in simulation.h.
+#ifdef CHARGE_DISPERSION_FSM
+    chargeDispersionTick();   // candidate: books the charge-seeded step, then drained below
+#endif
+    if (!g_pendingImpulses.empty())
+    {
+#ifdef S2B_TRACE
+      {
+        // Net (signed) impulse per layer, and how many layers end up with a non-zero net:
+        // the encounter books opposite steps for the two bubbles of a pair (each walks
+        // toward the other), so a book-keeping counter can be large while the net is zero.
+        std::vector<std::array<long long,3>> net(W_USED, {0,0,0});
+        for (const ImpulseBooking& b : g_pendingImpulses)
+          if (b.w < W_USED)
+          { net[b.w][0] += b.dx; net[b.w][1] += b.dy; net[b.w][2] += b.dz; }
+        unsigned nonzero = 0; long long maxAbs = 0;
+        for (unsigned w = 0; w < W_USED; ++w)
+        {
+          const long long a = std::llabs(net[w][0]) + std::llabs(net[w][1]) + std::llabs(net[w][2]);
+          if (a) ++nonzero;
+          if (a > maxAbs) maxAbs = a;
+        }
+        s2bTraceNetLayers += nonzero;
+        if ((unsigned long long)maxAbs > s2bTraceNetMax) s2bTraceNetMax = (unsigned long long)maxAbs;
+      }
+      s2bTraceImpulseDrained += (unsigned long long)g_pendingImpulses.size();
+#endif
+      for (const ImpulseBooking& b : g_pendingImpulses)
+      {
+        if (b.w >= W_USED) continue;
+        const auto& p = lcenters[b.w];
+        Cell& dst = getCell(lattice_draft, p[0], p[1], p[2], b.w);
+        dst.reloc[0] += b.dx;
+        dst.reloc[1] += b.dy;
+        dst.reloc[2] += b.dz;
+#ifdef S2B_TRACE
+        tagWriter(b.w, 64u);   // impulse-queue drain
+#endif
+#ifdef S2B_TRACE
+        s2bTraceDrainWriteback += (unsigned long long)(std::abs(dst.reloc[0]) +
+                                                       std::abs(dst.reloc[1]) +
+                                                       std::abs(dst.reloc[2]));
+#endif
+      }
+      g_pendingImpulses.clear();
     }
   }
 
@@ -1413,7 +1787,7 @@ namespace automaton
       // election.  This is the reachable reading of "different parents".
       const bool diffParents =
           (ca != NO_PARENT && cb != NO_PARENT) ? (ca != cb)
-                                               : (curr.x[3] / 3u != partner.x[3] / 3u);
+                                               : (islandOf(curr.x[3]) != islandOf(partner.x[3]));
       // DELEGATES only.  Root cause found (see the design note section 8):
       // demoting a CHIEF (K) to S leaves its island's members pointing at a
       // non-chief anchor, and the identity machinery then crashes a few frames
@@ -1482,9 +1856,13 @@ namespace automaton
     // mutates the partner's state (cf. adoptLeader(partnerDraft, ...)).
     // ==================================================================
     {
-      // D3: tie-break on the immutable W address (curr.x[3]) -- never on c[3],
-      // which in this kernel carries a z-offset of the relocation vector.
-      const bool diffFamily = (curr.x[3] / 3u) != (partner.x[3] / 3u);
+      // D3: the grouping is the model's own one -- islandOf() over the runtime
+      // ISLAND_SIZE -- and the manuscript's dispersion condition is the SECTOR (w1), the
+      // middle colour bit.  The hardcoded divide by 3 assumed ISLAND_SIZE == 3, i.e. L == 9;
+      // it belonged to the abandoned L/3 grouping, and it grouped by triples of addresses
+      // at every other lattice size.
+      const bool diffFamily = islandOf(curr.x[3]) != islandOf(partner.x[3]);
+      const bool diffSector = ((curr.ch >> 5) & 1u) != ((partner.ch >> 5) & 1u);
       // The manuscript places the inter-sector interaction at the mid-expansion
       // instant t = RMAX/2, which the single-winner producer below keeps.
       const unsigned mid = (unsigned)(RMAX / 2);
@@ -1560,12 +1938,12 @@ namespace automaton
       // the rigid variant's probe trajectory landed on pol = (4,0) and the whole
       // channel went dark (homb_seen = 0, c_at_center = 0), the same class of
       // failure as the phase-quadrant lottery that POLAR_MAGNITUDE_FSM removed.
-      if (curr.active && (curr.pB || curr.sB) && (curr.x[3] % 3u) == 0u)
+      if (curr.active && (curr.pB || curr.sB) && isIslandChief(curr.x[3]))
       {
         static std::vector<unsigned char> latchedHombFam;
-        const unsigned nFam = (W_USED + 2u) / 3u;
+        const unsigned nFam = (ISLAND_COUNT > 0u) ? ISLAND_COUNT : 1u;
         if (latchedHombFam.size() != nFam) latchedHombFam.assign(nFam, 0);
-        const unsigned fam = curr.x[3] / 3u;
+        const unsigned fam = islandOf(curr.x[3]);
         if (effective_t(curr.t) == (unsigned)(RMAX / 2))
         {
           if (!latchedHombFam[fam])
@@ -1617,13 +1995,22 @@ namespace automaton
         makeDirected(curr.pB);
       // (2) CUDA dev_encounter7 affinity branch: equal phase, different
       //     families -> the W-address order breaks the symmetry.
-      else if (free && diffFamily && (curr.pB == partner.pB) &&
+      else if (free && diffSector && (curr.pB == partner.pB) &&
                (curr.pB || curr.sB) &&
                currSrc.a != W_USED && partnerSrc.a != W_USED)
-        makeDirected(curr.x[3] < partner.x[3]);
+      {
+        // Direction from the CHARGE WORD, not from the W address: elect() refuses
+        // address/hash/scan-order tie-breaks for the polarisation axis, and the W address is
+        // a serial number rather than a species.  The bubble whose colour octant lies
+        // "first" carries; complementary words have antipodal octants.
+        int ax, ay, az, bx, by, bz;
+        chargeStep(curr.ch & 0x3Fu, ax, ay, az);
+        chargeStep(partner.ch & 0x3Fu, bx, by, bz);
+        makeDirected((ax + ay + az) >= (bx + by + bz));
+      }
       // (3) CUDA dev_encounter4: one winner per layer per turnaround, on the
       //     layer-0 source -- the "first directional datum" of SEED_ASYMMETRY.
-      if (curr.active && curr.sB && curr.x[3] == 0u)
+      if (curr.active && curr.sB && isIslandChief(curr.x[3]))
       {
         static std::vector<unsigned char> latchedHomb;
         if (latchedHomb.size() != W_USED) latchedHomb.assign(W_USED, 0);
@@ -1999,6 +2386,22 @@ namespace automaton
     bool electricCollapse  = gCurrPB && gPartPB;
     bool magneticCollapse  = gCurrSB && gPartSB;
     bool collapse          = electricCollapse || magneticCollapse;
+#ifdef PAIR_SAME_OCTANT
+    // Candidate (/D PAIR_SAME_OCTANT), shared by every mover of this handler.  Each of the
+    // displacements below is directed by the partner's offset (moveOneStep books the sign of
+    // shortestDelta toward the partner, moveOneStepAway the sign away from it).  When the two
+    // partners sit in different charge octants that offset cuts across both layers, so the
+    // step matches the layer's own octant in one or two signs and never all three -- measured
+    // on the reference transport (README, "The axis was already charge-correlated"): the era-1
+    // cascade of L=7 gave 0/15/79/0 over 94 displacements and the era-2 cascade 80 of 96 with
+    // no matching sign, which is how the sector split of the dispersal is washed out.
+    //
+    // Restricting every mover to partners that share the colour triplet keeps each walk along
+    // the octant both layers already own, so the ordering the dispersal established is
+    // reinforced instead of scrambled.  The charge word is a property of the layer, so no W
+    // address, hash, scan order or RNG enters.  Compiled off in the reference build.
+    const bool sameOct = ((currSrc.ch ^ partnerSrc.ch) & 7u) == 0u;
+#endif
 
     if (!electricContact && !magneticContact)
       return false;
@@ -2020,8 +2423,28 @@ namespace automaton
       adoptLeader(currDraft, minLeader);
       adoptLeader(partnerDraft, minLeader);
       std::swap(currDraft.t, partnerDraft.t);
-      moveOneStep(currDraft, currCenter, partnerCenter);
-      moveOneStep(partnerDraft, partnerCenter, currCenter);
+      // Candidate (/D PAIR_SAME_OCTANT).  OFF in the reference build.
+      //
+      // The drift below is a displacement, and its direction is the partner's offset
+      // (moveOneStep books the sign of shortestDelta toward the partner).  When the two
+      // partners sit in different charge octants that offset cuts across both, so the step
+      // matches the layer's own octant in one or two signs and never all three -- measured
+      // on the reference transport (README, "The axis was already charge-correlated"):
+      // frame 6 of L=7 gave 0/15/79/0 and the era-2 cascade 80 of 96 with no matching sign,
+      // which is how the sector split of the dispersal is washed out.
+      //
+      // Restricting the drift to partners that share the colour triplet keeps the walk along
+      // the octant both layers already own, so the ordering the dispersal established is
+      // reinforced instead of scrambled.  The charge word is a property of the layer, so no
+      // address, hash, scan order or RNG enters.  Other movers of this handler (the K x K
+      // repulsion and the S x K absorption step) are left untouched by this first test.
+#ifdef PAIR_SAME_OCTANT
+      if (((currSrc.ch ^ partnerSrc.ch) & 7u) == 0u)
+#endif
+      {
+        moveOneStep(currDraft, currCenter, partnerCenter);
+        moveOneStep(partnerDraft, partnerCenter, currCenter);
+      }
       return false;
     }
 
@@ -2029,6 +2452,9 @@ namespace automaton
     if (currSrc.kind == SourceKind::K && partnerSrc.kind == SourceKind::K)
     {
       ++enc_repel;
+#ifdef PAIR_SAME_OCTANT
+      if (sameOct)
+#endif
       moveOneStepAway(currDraft, currCenter, partnerCenter);
       return false;
     }
@@ -2045,6 +2471,9 @@ namespace automaton
       adoptLeader(currDraft, partnerSrc.leader_w == NO_LEADER_W ? partnerSrc.w : partnerSrc.leader_w);
       // S vector direction relative to K is approximated as outward for now.
       currDraft.spin_target = 1;
+#ifdef PAIR_SAME_OCTANT
+      if (sameOct)
+#endif
       moveOneStep(currDraft, currCenter, partnerCenter);
       return false;
     }
@@ -2056,6 +2485,9 @@ namespace automaton
       {
         // Same field sign: repel one light-step.
         ++enc_repel;
+#ifdef PAIR_SAME_OCTANT
+        if (sameOct)
+#endif
         moveOneStepAway(currDraft, currCenter, partnerCenter);
       }
       else
@@ -2090,8 +2522,15 @@ namespace automaton
       adoptLeader(sSrcDraft, leader);
 
       // Both reemit and move one light-step toward each other.
-      moveOneStep(sSrcDraft, sCenter, dCenter);
-      moveOneStep(dSrcDraft, dCenter, sCenter);
+#ifdef PAIR_SAME_OCTANT
+      if (sameOct)
+      {
+#endif
+        moveOneStep(sSrcDraft, sCenter, dCenter);
+        moveOneStep(dSrcDraft, dCenter, sCenter);
+#ifdef PAIR_SAME_OCTANT
+      }
+#endif
       return false;
     }
 
@@ -2102,12 +2541,73 @@ namespace automaton
       {
         // Different tribes: reemit, repel one light-step, exchange momentum.
         ++enc_repel;
+#ifdef PAIR_OWN_AXIS_EXCHANGE
+        // Candidate (/D PAIR_OWN_AXIS_EXCHANGE) -- design (b).  OFF in the reference build.
+        //
+        // Measured on the reference transport (README, "(a) Same-octant pairing"): the D x D
+        // cross-tribe momentum exchange is the WHOLE transport (guarding it leaves moved = 0 in
+        // every frame), and it transfers the PARTNER's m, which is parallel to the partner's
+        // octant -- a ladder pair's two classes usually differ in one colour bit, which is
+        // exactly the measured "two of three signs" signature of the cascade.
+        //
+        // Here the reaction keeps the per-axis magnitude the exchange would have delivered but
+        // takes its DIRECTION from the receiver's own charge octant (c2,c1,c0 -> x,y,z signs,
+        // the map the dispersal uses).  So the interaction still thrusts every layer it
+        // contacts, and every thrust runs along that layer's own axis: the transport stays
+        // alive AND charge-aligned.  No address, hash, scan order or RNG enters.
+        //
+        // The geometric repulsion is kept only for same-octant partners, where "away from the
+        // partner" already lies on the shared axis; across octants the thrust replaces it.
+        if (((currSrc.ch ^ partnerSrc.ch) & 7u) == 0u)
+          moveOneStepAway(currDraft, currCenter, partnerCenter);
+        {
+          // The octant must come from the RECEIVER's own word.  `currSrc` is the source cell the
+          // encounter passes in, and in this branch the pair is evaluated from both W directions
+          // (the rotated partner lattice supplies one half), so its word is not always the
+          // receiver's -- which is how a thrust meant to be own-axis could come out off-octant
+          // (measured: the off-side flight steps, README "Multi-era run").  The draft cell is the
+          // receiver: the commit assigns `dst.ch = s.ch` per layer.
+          const unsigned ch6 = currDraft.ch & 0x3Fu;
+          const int ox = (ch6 & 4u) ? +1 : -1;
+          const int oy = (ch6 & 2u) ? +1 : -1;
+          const int oz = (ch6 & 1u) ? +1 : -1;
+          const int mx = partnerSrc.m[0] < 0 ? -partnerSrc.m[0] : partnerSrc.m[0];
+          const int my = partnerSrc.m[1] < 0 ? -partnerSrc.m[1] : partnerSrc.m[1];
+          const int mz = partnerSrc.m[2] < 0 ? -partnerSrc.m[2] : partnerSrc.m[2];
+          currDraft.reloc[0] += ox * mx;
+          currDraft.reloc[1] += oy * my;
+          currDraft.reloc[2] += oz * mz;
+#ifdef S2B_TRACE
+          tagWriter((unsigned)currDraft.x[3], 32u);   // own-axis exchange thrust
+#endif
+        }
+#else
+#ifdef PAIR_SAME_OCTANT
+        if (sameOct)
+#endif
         moveOneStepAway(currDraft, currCenter, partnerCenter);
         // Momentum exchange via inertia path: add partner's m into reloc.
         // m itself is immutable here; applyMomentum only consumes reloc.
-        currDraft.reloc[0] += partnerSrc.m[0];
-        currDraft.reloc[1] += partnerSrc.m[1];
-        currDraft.reloc[2] += partnerSrc.m[2];
+        //
+        // Candidate (/D PAIR_SAME_OCTANT): the exchange transfers the PARTNER's m, which is
+        // parallel to the partner's charge octant -- so when the two layers sit in different
+        // octants the layer is displaced along an axis that is not its own.  That is exactly
+        // the signature measured on the reference transport: the cascade's steps matched the
+        // layer's own octant in one or two of the three signs and never all three (L=7 era-1
+        // cascade: 0/15/79/0 over 94 displacements; the two classes of a ladder pair usually
+        // differ in one colour bit, hence "two matches").  Restricting the transfer to
+        // same-octant partners keeps every displacement on the layer's own axis.
+#ifdef PAIR_SAME_OCTANT
+        if (sameOct)
+        {
+#endif
+          currDraft.reloc[0] += partnerSrc.m[0];
+          currDraft.reloc[1] += partnerSrc.m[1];
+          currDraft.reloc[2] += partnerSrc.m[2];
+#ifdef PAIR_SAME_OCTANT
+        }
+#endif
+#endif
       }
       else
       {
@@ -2393,6 +2893,9 @@ namespace automaton
         if (curr.a != W_USED && curr.r2 < 4)
         {
           draft.t = 0;
+#ifdef S2B_TRACE
+          ++s2bTraceCBResets;
+#endif
         }
       }
   }
@@ -2402,6 +2905,14 @@ namespace automaton
                Cell &south, Cell &east, Cell &up)
   {
 	if (curr.a != W_USED)
+    {
       draft.t = min({ north.t, south.t, east.t, west.t, down.t, up.t });
+#ifdef S2B_TRACE
+      // The flood operator pulls every non-virgin cell's clock down to the minimum of
+      // its six neighbours: it is the synchronising force, and the carrier of any reset.
+      if (draft.t != curr.t)                   ++s2bTraceFloodPulls;
+      if (draft.t == 0 && curr.t != 0)         ++s2bTraceFloodResets;
+#endif
+    }
   }
 }

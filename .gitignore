@@ -2,6 +2,11 @@
 obj/
 build/
 
+# The `nmake CANDIDATES=1` object tree (README, "Decision pack"): separate from
+# obj/ on purpose, so the two configurations cannot share objects, and ignored
+# for the same reason as obj/.
+obj_candidates/
+
 # Build logs (regenerated on every build; kept in the tree as evidence but not
 # worth a commit each time)
 build_gui.log
