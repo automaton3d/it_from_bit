@@ -849,6 +849,18 @@ no cascade, no transport -- and with a geometry that leaves the seed-centred cav
 The invariant list in `FSM.txt` (section 10) now carries both readings, since "the dispersion fires
 once, at frame 2" is a statement about the DISP + POLAR_SEED build.
 
+**A fifth candidate, added after this pack was written.**  `POLAR_AXIS_FROM_CHARGE` anchors the axis to
+the layer's own charge octant instead of to the centre the transport left it on, and it closes the
+`m == 0` fixed point on its own.  Measured against the four macros together (README, "The
+counterfactual"), it holds the axis alignment at **147/147** where the promoted build walks
+147 -> 119 -> 113 -> 101 over five eras, and the ordering decays more slowly with it: era-4 and era-5
+gaps **1.656** and **0.624** against 1.420 and 0.372, the Umbra mean still on its own side of the
+lattice centre at era 5 (+0.264 against -0.028).  It is *not* one of the four this section promotes,
+and every candidate number above was measured without it -- so "the four, plus this one" is a fifth
+configuration whose evidence has not been taken yet.  What is settled is that the axis decay this file
+lists as an invariant (the `119 at 18`, `113 at 24` row) is avoidable, and that avoiding it is worth
+about 40% of the era-5 gap.
+
 **My read, for what it is worth.**  The promotion costs six re-scoped statements and one
 re-measurement that this repository cannot perform (the population quantum); it buys a default
 simulator that is not frozen -- i.e. the mechanism the paper spends Sect. 8.4 on would be visible
@@ -1117,6 +1129,13 @@ macro changes **nothing**: with it on, the L=7 trajectory is byte-identical to t
 
 The reason is measured, and it falsifies the diagnosis that motivated the macro:
 
+**Scope note, added after the counterfactual below.**  The comparison that follows was taken over
+**frames 10, 11 and 12**, and those frames lie inside the window in which the placement axis and the
+charge octant are the *same vector*: the election probe measures **zero** misaligned layers at frames
+10-15 (the decay only starts at the era-3 turnaround, frame 16).  No difference could appear in that
+window, so the verdict below is about those frames, not about the macro.  Re-tested from frame 16 on
+(with the probe on), the macro is **not** inert: see "The counterfactual" below.
+
 * **`axis-align`** (new harness line: how many of the three signs of a layer's `m` agree with the
   octant of its own charge word): from the first election onwards, **147/147 layers match all three
   signs** -- `m` is exactly parallel to the charge octant of every layer, in every frame, with the
@@ -1206,19 +1225,51 @@ Four things follow, and the first is the one that kills the hypothesis:
 (`build\scale_bothab_L9.out`, 9 frames) has `axis-align` at 243/243 from the first election (frame 5)
 through frame 9 -- every layer parallel to its octant -- while the era's *displacements* peak at
 frame 7 with 33 movers and **none** aligned.  So at both sizes the momentum channel stays
-charge-correlated and the displacement channel is where the octant is lost, which is what the
-`POLAR_AXIS_FROM_CHARGE` experiment above concluded from the other end (the axis macro changed
-nothing because the axis was never the problem).
+charge-correlated and the displacement channel is where the octant is lost -- which is what the
+`POLAR_AXIS_FROM_CHARGE` experiment above concluded from the other end, with the scope noted there:
+that macro is inert in the window that experiment used, and from frame 16 on it does change the
+trajectory (see the counterfactual below).
 
-**The next step this suggests** is no longer "correlate the axis" (measured twice now, from both
-ends) but the placement rule's exposure to the transport: a layer whose centre has been carried off
-its ray re-elects that off-ray direction faithfully.  Three candidate answers, each a macro:
-re-anchor the placement election to the layer's *charge octant* instead of its current centre
-(`POLAR_AXIS_FROM_CHARGE`, which exists and is inert here because the placement path is the only
-path -- it must be combined with the next idea to matter), make the axis decay *slower* by electing
-the octant whenever the centre's ray and the octant disagree, or leave it and accept the measured
-consequence (the sector split decays with the axis).  What the probe settles is which of those is
-being asked for: the axis decay is a *consequence* of the transport, not an independent defect.
+**The counterfactual: elect the charge octant, and both the decay and part of the ordering loss go
+away.**  `POLAR_AXIS_FROM_CHARGE` restricts the tournament to the layer's own octant cells and, when
+no candidate exists, installs the octant itself -- which in these runs is *every* election, since no
+candidate ever wins (measured above).  Built with the probe on and run on the same scenario
+(`build\axisL7_octant.out`, `L = 7`, sieve closed, 30 frames):
+
+* **the control holds**: frames 1-15 are byte-identical to the bothab run once the probe's own lines
+  are excluded (152 lines each), and the first difference between the two logs is the `axis-align`
+  line of frame 16.  So the macro only acts where the two rules differ, which is exactly what the
+  scope note above says the earlier comparison could not see;
+* **the decay disappears**: `axis-align` is `0/0/0/147` in every frame from the first election to
+  frame 30 (`0/0/0/0`, i.e. `m == 0`, in frames 1-3) -- it never decays, where the placement build
+  walks 147 -> 119 -> 113 -> 101.  The owner line says why: `octant=147`, so there is no
+  placement axis left to be pulled off the ray;
+* **the ordering decays more slowly**: era-end gaps **1.923** (era 3), **1.656** (era 4) and
+  **0.624** (era 5), against 1.881, 1.420 and 0.372 for the same scenario without the macro.  At era 5
+  the Umbra mean is still on its own side of the lattice centre (**+0.264**, where the placement build
+  has crossed to -0.028), the era's max |CoM| is 0.303 against 0.367, and the era's flight steps are
+  fewer and better aligned (75 movers, 44 aligned) than the placement build's (90, 48);
+* **caveat, stated because it is measurable**: the macro also changes the *tournament*, so the ties
+  change -- at frame 16 it installs 441 axes against 439, i.e. all 147 layers re-elect there against
+  145.  Two layers cannot explain the gap difference (the axis difference alone is 28 layers at frame
+  16, growing to 46), but the two effects are not separated exactly, and those two extra
+  installations are part of the measured difference.
+
+So the earlier verdict is corrected: the axis was charge-correlated *while the displacements were
+not* -- that part of the old section stands -- but the axis is not causally inert afterwards, and
+`POLAR_AXIS_FROM_CHARGE` is a **live candidate** rather than a falsified one.  It also closes the
+`m == 0` fixed point on its own (the seed path is compiled in under either macro), so it is an
+*alternative* to `POLAR_SEED_FROM_PLACEMENT`, not a rider on it: the axis anchored to the charge
+instead of to wherever the transport left the centre.
+
+**The next step this suggests** is neither "correlate the axis" (done, twice, and the counterfactual
+shows what it buys) nor "leave it" (the same counterfactual shows what that costs).  It is to decide
+where an anchored axis belongs: as a fifth promoted macro beside the four of the decision pack -- in
+which case the promotion's evidence has to be re-read with it on, since every candidate number in this
+file was measured without it -- or as an experimental variant whose result is recorded and left
+switched off.  What is settled is the price of the present rule: four eras of transport cost about a
+third of the axis alignment and about 40% of the era-5 gap, and both losses are avoided by electing
+the octant.
 
 ## Step 3: the magnitude of the charge step
 

@@ -93,6 +93,18 @@ WHAT THIS IS
            at 0% aligned: the two channels are decoupled, and it is the displacement
            channel that loses the octant at both sizes.
 
+           THE COUNTERFACTUAL: electing the charge octant instead (/D
+           POLAR_AXIS_FROM_CHARGE, which in these runs is what every election would do,
+           since no candidate ever wins) removes the decay altogether -- axis-align stays
+           147/147 from the first election to frame 30, the two builds are byte-identical
+           through frame 15 (the rules coincide there) and diverge exactly at the frame-16
+           re-election -- and it slows the ordering's decay with it: era-end gaps 1.656
+           (era 4) and 0.624 (era 5) against 1.420 and 0.372, with the Umbra mean still on
+           its own side of the lattice centre at era 5 (+0.264 against -0.028).  So the
+           axis is not causally inert after frame 16, and the macro is a live candidate
+           rather than a falsified one (README, "The counterfactual"; log
+           build\axisL7_octant.out).
+
   reloc[3] the PENDING displacement of a layer, in cells.  Written by the walk funnels
            and by the cohesion table, consumed once per frame by applyMomentum(), which
            zeroes it on the center cell of any layer it moves.
@@ -551,6 +563,12 @@ WHAT THIS IS
                                 per run, at frame 2
     POLAR_SEED_FROM_PLACEMENT   seeds the axis election from the layer's    [CANDIDATE]
                                 placement, closing the m == 0 fixed point
+    POLAR_AXIS_FROM_CHARGE      anchors the axis to the layer's charge      [CANDIDATE]
+                                octant instead of to the centre the transport
+                                left it on; closes the m == 0 fixed point on
+                                its own, holds axis-align at 147/147 for five
+                                eras and slows the ordering's decay (README,
+                                "The counterfactual")
     PAIR_SAME_OCTANT            gates the encounter movers on the shared    [CANDIDATE]
                                 color triplet
     PAIR_OWN_AXIS_EXCHANGE      replaces the D x D cross-tribe momentum     [CANDIDATE]
@@ -630,7 +648,10 @@ WHAT THIS IS
                               -> 46 after frames 16, 22, 28) and the `base` build reaches
                               58/100/132 at the same frames (README, "Who owns the
                               standing axis"; logs build\axisL7_bothab.out,
-                              build\axisL7_base.out)
+                              build\axisL7_base.out).  The counterfactual, with the
+                              axis anchored to the octant instead: 147/147 to frame
+                              30 and an era-5 gap of 0.624 against 0.372
+                              (build\axisL7_octant.out)
     era-1 cascade (candidate) 32 flight steps, all aligned; 14 cohesion steps (7/7)
     twelve eras (candidate)   gap 3.06 -> 1.42 (era 4) -> floors 0.2-0.75; one negative
                               window, frames 65-67

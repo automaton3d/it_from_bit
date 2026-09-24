@@ -515,6 +515,31 @@ Report-Rule 'axis ownership' 'FSM.txt' `
   Want 'frame 28' 'layers off their octant ray' (Val $owner[28] 'placement=\d+ \(misaligned (\d+)\)') 46
 }
 
+# --- C8: the counterfactual, the axis anchored to the charge octant ---------------------
+Report-Rule 'octant counterfactual' 'FSM.txt' `
+  'The counterfactual, with the axis anchored to the octant instead: 147/147 to frame 30 and an era-5 gap of 0.624 against 0.372' `
+  'axisL7_octant.out' {
+  param($lines)
+  # With the axis anchored, the alignment never decays: every frame after the first
+  # election (frame 4) must have all 147 layers parallel to their octant.
+  $axis = Get-FrameLines $lines 'axis-align'
+  foreach ($f in ($axis.Keys | Where-Object { $_ -ge 4 }))
+  {
+    Want ("frame " + $f) 'layers with all three signs matching' (Val $axis[$f] 'sign-match 0/1/2/3 = \d+/\d+/\d+/(\d+)') 147
+    Want ("frame " + $f) 'layers with m == 0' (Val $axis[$f] 'm==0=(\d+)') 0
+  }
+  # The era-5 gap, and the same frame of the placement build, for the contrast.
+  $own = Get-Gap $lines
+  WantNear 'frame 30 (era 5)' 'gap' $own[30] 0.624 0.005
+  $other = Read-TraceLog 'axisL7_bothab.out'
+  if ($null -eq $other) { $script:ruleBad += 'the contrast log build\axisL7_bothab.out is absent (the placement baseline of this comparison)' }
+  else
+  {
+    $ref = Get-Gap $other
+    WantNear 'frame 30 (era 5), placement baseline' 'gap' $ref[30] 0.372 0.005
+  }
+}
+
 # ======================================================================================
 # verdict
 # ======================================================================================
