@@ -20,6 +20,13 @@ rem The flags go through the FLAGS variable, never through `call` arguments: cmd
 rem of quoted arguments and keeps only %1..%9, which silently drops /D "..." macros.
 set FLAGS=%BASE%
 call :build ref
+rem The dispersion ALONE, without the polar seed: the phase never closes (m == 0 on every
+rem layer in every frame), so nothing ever stops the rule -- the latch re-arms at each era
+rem edge and it fires once per ERA instead of once per run.  This is the variant that
+rem separates "the dispersion" from "the dispersion as the seed of an election"; its logs
+rem are build\disp_L7.out / build\disp_L9.out (README, "The dispersion alone, measured").
+set FLAGS=%BASE% %DISP%
+call :build disp
 set FLAGS=%BASE% %PLC%
 call :build polar
 set FLAGS=%BASE% %DISP% %PLC%

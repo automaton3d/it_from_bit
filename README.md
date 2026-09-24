@@ -752,14 +752,19 @@ become the default):
 ```
 nmake                  # reference build: no macro, the configuration the paper quotes
 nmake CANDIDATES=1     # promoted build: the four macros on CFLAGS
+nmake REFERENCE=1      # the same reference build, named explicitly (obj_reference\)
 ```
 
-Both write the same output names (`build\automaton.exe`, `build\first_era_trace.exe`), because
-promoting *is* replacing the default; object files go to separate trees (`obj\` versus
-`obj_candidates\`) so a configuration can never silently reuse the other's objects (nmake does not
-track flag changes).  Verified end to end: `nmake CANDIDATES=1 trace-first-era` builds, and its
+All three write the same output names (`build\automaton.exe`, `build\first_era_trace.exe`), because
+promoting *is* replacing the default; object files go to separate trees (`obj\`, `obj_candidates\`,
+`obj_reference\`) so a configuration can never silently reuse the other's objects (nmake does not
+track flag changes).  The explicit `REFERENCE=1` is the escape hatch for the day the default is
+flipped: the reference stays buildable *by name* instead of by the absence of a flag, and the two
+switches are mutually exclusive (`nmake CANDIDATES=1 REFERENCE=1` stops at `U1050` instead of
+silently choosing one).  Verified end to end: `nmake CANDIDATES=1 trace-first-era` builds, and its
 frame-2 trace reads `flight=147`, `0/0/0/147` (the candidate signature) with the census still at
-`K = 139`, `D = 8`; `nmake trace-first-era` restores the reference binary.
+`K = 139`, `D = 8`; `nmake trace-first-era` restores the reference binary (`occupiedCenters=1`, no
+displacement at frame 2), and so does `nmake REFERENCE=1 trace-first-era`.
 
 Not implemented, deliberately: inverting the guards in the sources so that the candidate behaviour
 is the default and the reference numbers need a flag.  That has a much larger blast radius (every log
@@ -771,6 +776,77 @@ appear nowhere outside the `#ifdef`s of the model sources -- not in `automaton.c
 code.  Promoting them is therefore a build decision; if the intent is instead "let a user switch the
 transport on", that is a separate and larger change (a configuration key feeding the guards, plus the
 paper's reproducibility statement about the reference build).
+
+### The dispersion alone, measured (the `disp` variant)
+
+The measurement above is of the four macros together, and of the pair (a)+(b).  The decision "promote
+`CHARGE_DISPERSION_FSM` on its own" needs one more configuration, because the rule's gate is `m == 0`
+and `m == 0` is exactly the fixed point that `POLAR_SEED_FROM_PLACEMENT` closes: alone, the macro is
+never switched off by anything.  `experiments\trace_build_variants.bat` now carries a seventh variant,
+`disp` (`/D S2B_TRACE /D CHARGE_DISPERSION_FSM`, no polar seed), and `build\disp_L7.out` is
+`L = 7`, `S = 16384`, 24 frames = 4 eras (about four and a half minutes; `build\frozen_b1_L7.out` is an
+earlier probe of the same configuration, 9 frames, and agrees frame for frame).
+
+| frame | steps | move-align / move-mask | class offsets | ledger (K, D, S, P, dt) | m != 0 · pol != 0 |
+|---|---|---|---|---|---|
+| 2 | 147 | 147/147, one writer (dispersion) | ±1 | 139, 8, 0, 0, 1 | 0/147 · 0 |
+| 8 | 147 | 147/147, one writer | ±2 | 139, 8, 0, 0, 1 | 0/147 · 0 |
+| 14 | 147 | 147/147, one writer | ±3 | 139, 8, 0, 0, 1 | 0/147 · 0 |
+| 20 | 147 | 147/147, one writer, but all 147 read **off side** | **∓3 (the centres wrapped)** | 139, 8, 0, 0, 1 | 0/147 · 0 |
+| the other 20 frames | 0 | -- | unchanged | 139, 8, 0, 0, 1 | 0/147 · 0 |
+
+Folded by the repository's own tool (`experiments\era_summary.ps1 -Log build\disp_L7.out -Era 6`),
+which is the form the other tables in this file use:
+
+| era | end frame | Orbis y | Umbra y | max &#124;CoM&#124; | cascade frame: flight moved / aligned | era sums: flight moved/aligned, cohesion moved/aligned |
+|---|---|---|---|---|---|---|
+| 1 | 6 | -1.000 | +1.000 | 0.029 | f2: 147 / 147 | 147/147, 0/0 |
+| 2 | 12 | -2.000 | +2.000 | 0.060 | f8: 147 / 147 | 147/147, 0/0 |
+| 3 | 18 | -3.000 | +3.000 | 0.089 | f14: 147 / 147 | 147/147, 0/0 |
+| 4 | 24 | **+3.000** | **-3.000** | 0.089 | f20: 147 / 147 | 147/147, 0/0 |
+
+The `cohesion 0/0` column is the second face of the same fact: with `m == 0` the pair rules never
+book a step, so the dispersion is not merely the largest mover, it is the **only** one -- and the
+separation is the exact arithmetic series 1, 2, 3, 4 ... rather than a settling distance.
+
+**It fires once per era, for ever.**  `m != 0` is 0/147 and `pol != 0` is 0 cells in all 24 frames: no
+axis is ever elected, nothing ever stops the rule, the latch re-arms at every era edge (`r == 0` then
+`r == 1`) and the dispersion fires again at f8, f14 and f20.  It is the only mover (one writer,
+writer-mask 16) and the encounter stays completely inert -- `cB = kB = homB = reemit = 0` in every
+frame, as in the reference.
+
+**Everything else the paper quotes survives, exactly.**  The ledger holds at `K = 139`, `D = 8`,
+`S = 0`, `P = 0`, `dt = 1`, and `dev` and the shell counts (147, 3822, 9702, 23226, ...) are
+frame-for-frame the reference values in all 24 frames; the harness still finds the same 6-frame period.
+So this configuration is "the reference, plus eight separated blocks" -- which is precisely why it is
+the cheapest possible way to have movement, and precisely why it cannot stand as the default.
+
+**What does not survive is any bound on the geometry.**  The offsets grow by exactly one cell per era
+(1, 2, 3), so what the rule produces is a *rotation* of the eight blocks around the torus, not a
+dispersion that settles; and at f20 (era 4) the layer centres cross the far face of the region and
+wrap.  Two readings of that frame: the class offsets invert to ∓3 (Orbis reads +3.000, Umbra -3.000 --
+the sector ordering the paper quotes is reversed), and the harness's own side test flips from 147 "on
+its octant side" to 147 "off side" although every step is still 147/147 along the layer's own octant.
+The wrap is a boundary artefact, not dynamics: at era 3 the offsets are already ±3 on a 7-cell torus,
+i.e. the two extreme classes sit one cell apart *across* the boundary, so the separation has closed on
+itself by then.  The useful window of the mechanism at `L = 7` is therefore about `RMAX - 1` eras, and
+it has no stopping condition of its own.
+
+**The same rule at `L = 9`** (`build\disp_L9.out`, `L = 9`, `S = 16384`, 12 frames; here `RMAX = 4`, so
+an era is 8 frames and the run covers era 1 plus the era-2 firing): f2 books 243 steps, 243/243
+aligned, ledger `K = 235`, `D = 8`; f10 books 243 again, 243/243 aligned, the class offsets at ±2, the
+ledger still `235, 8, 0, 0, 1`, `m != 0` 0/243 and `pol != 0` 0 cells.  So the cadence is the era
+(`2 RMAX`), not a frame number particular to `L = 7`, and it is a control at a second size rather than a
+second window: the wrap is an `L/2` effect, so at `L = 9` the offsets must reach 5 (`L/2 = 4.5`) before
+the centres cross the face -- era 5, around frame 34, beyond the frames read here.
+
+**So the two halves are not separable at the level of a decision.**  With the polar seed (`base`) the
+same rule fires once, at frame 2, and the phase closes at frame 4; that is the only configuration in
+which the dispersion is a bounded, self-terminating step, and it is the one the acceptance table at
+the top of this file measures.  Adopting the macro alone buys movement with no dynamics -- no election,
+no cascade, no transport -- and with a geometry that leaves the seed-centred cavity within three eras.
+The invariant list in `FSM.txt` (section 10) now carries both readings, since "the dispersion fires
+once, at frame 2" is a statement about the DISP + POLAR_SEED build.
 
 **My read, for what it is worth.**  The promotion costs six re-scoped statements and one
 re-measurement that this repository cannot perform (the population quantum); it buys a default
@@ -785,7 +861,8 @@ switch above: `nmake` for the text's numbers, `nmake CANDIDATES=1` for the dynam
 `L = 7`, `S = 16384`, 72 frames = 12 eras, ten to twelve minutes (the run shared the CPU with the
 control for part of it).  The control `build\long2ref_L7.out`
 is the same harness with **no** macro defined.  Both binaries come from `experiments\trace_build_variants.bat`
-(one `cl` line per variant, six variants: `ref`, `polar`, `base`, `aonly`, `own`, `bothab`), and the
+(one `cl` line per variant, seven variants: `ref`, `disp` -- the dispersion with **no** polar
+seed, see "The dispersion alone, measured" below -- `polar`, `base`, `aonly`, `own`, `bothab`), and the
 table below is folded out of the log by `experiments\era_summary.ps1 -Log build\long2_L7.out -Era 6`
 (one era = `2 RMAX` = 6 light frames at `L = 7`; the split is read at the end of each era, the counters
 are summed over the era).
@@ -1058,8 +1135,9 @@ and the in-loop `s2B` counters (logs in `build\*.log`).  What it measured:
 **Multi-era and candidate runs.**  The harness is the same source in every candidate measurement on
 this page; only the macros change, and no source is edited.  Two scripts make that reproducible:
 
-* `experiments\trace_build_variants.bat` builds, from a developer prompt, the six variants used here
-  -- `ref` (counters only, the reference transport channel), `polar` (`POLAR_SEED_FROM_PLACEMENT`),
+* `experiments\trace_build_variants.bat` builds, from a developer prompt, the seven variants used here
+  -- `ref` (counters only, the reference transport channel), `disp` (the dispersion with **no** polar
+  seed, the "fires once per era" build of the decision pack), `polar` (`POLAR_SEED_FROM_PLACEMENT`),
   `base` (dispersal + polar seed, the 94-displacement baseline), `aonly`, `own`, `bothab` -- as
   `build\trace_<name>.exe`, one `cl` line each (the flags travel in a variable, never through `call`
   arguments, which would strip the quotes of `/D "..."`);

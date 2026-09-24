@@ -20,16 +20,37 @@ ENABLE_CUDA = 0
 #   nmake CANDIDATES=1    -> build promovida: dispersao de carga + seed polar + as duas
 #                            regras de par (CHARGE_DISPERSION_FSM, POLAR_SEED_FROM_PLACEMENT,
 #                            PAIR_SAME_OCTANT, PAIR_OWN_AXIS_EXCHANGE)
-# Os dois nomes de saida sao os mesmos (build\automaton.exe, build\first_era_trace.exe),
-# porque promover e exatamente substituir o default; objectos vao para obj_candidates\
-# para que uma configuracao nunca reutilize objectos da outra (nmake nao segue flags).
+#   nmake REFERENCE=1     -> a mesma build de referencia, dita explicitamente e com a sua
+#                            propria arvore de objectos (obj_reference\).  Existe para que
+#                            inverter o default seja uma linha: troque os dois ramos abaixo
+#                            de lugar e a referencia continua buildavel por este nome, em
+#                            vez de por ausencia de flag.
+# Os tres nomes de saida sao os mesmos (build\automaton.exe, build\first_era_trace.exe),
+# porque promover e exatamente substituir o default; objectos vao para obj_candidates\ ou
+# obj_reference\ para que uma configuracao nunca reutilize objectos da outra (nmake nao
+# segue flags).
 # ================================================
+
+!IFDEF CANDIDATES
+!IFDEF REFERENCE
+!ERROR CANDIDATES=1 e REFERENCE=1 sao mutuamente exclusivos: escolha um dos dois.
+!ENDIF
+!ENDIF
 
 !IFDEF CANDIDATES
 CANDIDATE_FLAGS = /D "CHARGE_DISPERSION_FSM" /D "POLAR_SEED_FROM_PLACEMENT" /D "PAIR_SAME_OCTANT" /D "PAIR_OWN_AXIS_EXCHANGE"
 OBJ_DIR = obj_candidates
+!MESSAGE [config] candidatos: CHARGE_DISPERSION_FSM POLAR_SEED_FROM_PLACEMENT PAIR_SAME_OCTANT PAIR_OWN_AXIS_EXCHANGE
+!ELSE
+!IFDEF REFERENCE
+CANDIDATE_FLAGS =
+OBJ_DIR = obj_reference
+!MESSAGE [config] referencia explicita (REFERENCE=1), sem macro
 !ELSE
 CANDIDATE_FLAGS =
+OBJ_DIR = obj
+!MESSAGE [config] referencia (default, sem macro -- a que o paper cita)
+!ENDIF
 !ENDIF
 
 # ================================================
