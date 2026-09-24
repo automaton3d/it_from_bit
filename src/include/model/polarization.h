@@ -30,6 +30,37 @@ namespace automaton
     /// first election.  Host-side read-only view for GUI/debug.
     const int* electedAxis(unsigned w);
 
+#ifdef AXIS_ELECTION_TRACE
+    // ---------------------------------------------------------------------------
+    // Measurement probe (/D AXIS_ELECTION_TRACE): it changes no rule.  Every
+    // election that installs an axis is attributed to the path that produced it and
+    // scored against the octant of the layer's own charge word -- the quantity the
+    // harness's axis-align line measures over the whole lattice.  The paths are
+    //
+    //   1 classic     a unique (pol_u, pol_v) candidate won the tournament;
+    //   2 placement   POLAR_SEED_FROM_PLACEMENT: no candidate at all, so the source
+    //                 centre itself was elected, and the axis is the offset from the
+    //                 lattice centre to it -- the octant the dispersal walked along,
+    //                 unless the encounter has since carried the centre elsewhere;
+    //   3 bootstrap   POLAR_BOOTSTRAP_ADDRESS installed the address direction;
+    //   4 charge      POLAR_AXIS_FROM_CHARGE installed the charge octant itself.
+    //
+    // The counters are cumulative (the harness prints the totals each frame) and the
+    // accessors report the LAST installation for a layer, so the standing m of a
+    // layer can be attributed to the election that owns it -- which is what turns a
+    // decay of the alignment into a statement about a path.
+    // ---------------------------------------------------------------------------
+    int      axisTracePath(unsigned w);       // 0 none/untraced, else a path above
+    int      axisTraceSigns(unsigned w);      // 0..3 signs of the installed axis vs the octant
+    unsigned axisTraceElections(unsigned w);  // installations recorded for this layer
+
+    extern long long axisElectTotal;          // installations, all paths
+    extern long long axisElectFirst;          // ... with m == 0 before
+    extern long long axisElectRe;             // ... with m already set (a re-election)
+    extern long long axisElectPath[5];        // ... by path
+    extern long long axisElectAligned3[5];    // ... by path, all three signs matching
+#endif
+
     /// Experimental bootstrap: install axis (ax,ay,az) on layer w and start
     /// its helical broadcast walker immediately, so phase_step() begins to
     /// reconstruct pol_u/pol_v (and thus pB/sB) without waiting for the

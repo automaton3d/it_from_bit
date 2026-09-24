@@ -74,11 +74,24 @@ WHAT THIS IS
            (t == RMAX on the frame edge).  Measured alignment of the three signs of m
            with the layer's own charge octant at L=7, in the candidate build: 147 of 147
            from the first election (frame 4) through the era-2 cascade (frame 14), then
-           119 at frame 18, 113 at 24, 74 at 38, 56 at 54, 39 at 72 -- i.e. the first two
-           eras elect on the octant and the later eras do not, which is consistent with
-           POLAR_SEED_FROM_PLACEMENT seeding the axis from the placement once and the
-           later turnarounds electing out of the W ledger instead.  Not yet probed
-           directly; it is a candidate for the next instrumentation pass.
+           119 at frame 18, 113 at 24, 74 at 38, 56 at 54, 39 at 72.
+
+           WHERE THAT DECAY COMES FROM is now measured (/D AXIS_ELECTION_TRACE, the
+           `axis` variant; README, "Who owns the standing axis"), and it is not what the
+           row above used to guess.  Of 704 installations in five eras, NOT ONE came from
+           the classic (pol_u,pol_v) candidate: every axis is installed by the placement
+           rule, whose axis IS the offset from the lattice centre to the layer's centre.
+           So a layer stops matching its octant exactly when the encounter's transport
+           carries its centre off the octant ray, and the next election installs that
+           off-ray direction faithfully -- the decay is a consequence of the transport,
+           not of the election choosing differently.  It is stepwise (constant inside an
+           era, stepping at the turnaround: 0 -> 28 -> 34 -> 46 misaligned after the
+           re-elections at frames 16, 22, 28) and it is much faster in the `base` build
+           than in `bothab` (58 vs 28 at frame 16; 132 vs 46 by frame 30), so the pair
+           rules protect the axis alignment as well as the sector split.  At L=9 the
+           axis stays 243/243 parallel through era 1 while the era's displacements peak
+           at 0% aligned: the two channels are decoupled, and it is the displacement
+           channel that loses the octant at both sizes.
 
   reloc[3] the PENDING displacement of a layer, in cells.  Written by the walk funnels
            and by the cohesion table, consumed once per frame by applyMomentum(), which
@@ -493,6 +506,17 @@ WHAT THIS IS
     # frame N axis-align: m==0=... sign-match 0/1/2/3 = ...
         over the W layer centers: how many carry m == 0, and how many of the three momentum
         signs agree with the charge octant.
+    # frame N axis-owner: classic=... (misaligned ...)  placement=... (misaligned ...)
+                         bootstrap=...  octant=...  untraced/m==0=...
+    # frame N axis-elect: total=... first=... re=... | classic=... (aligned3=...) |
+                         placement=... (aligned3=...)
+        [PROBE] only in a build with /D AXIS_ELECTION_TRACE, and folded by
+        experiments\axis_summary.ps1: the same alignment attributed to the election that
+        installed each layer's m (`classic` = a (pol_u,pol_v) tournament winner, `placement`
+        = the POLAR_SEED_FROM_PLACEMENT rule, `bootstrap` = the address bootstrap, `octant`
+        = POLAR_AXIS_FROM_CHARGE), with the installations counted per path and per
+        first election against re-election.  With the probe off, neither line is printed
+        and the log is byte-identical to what the check-trace expectations hold.
     # frame N clocks: resets= [reemit= ... reloc-at-centre= ... applied= ... cB= ...
                              flood-to-0= ...]
         the clock and impulse counters: `resets` = clocks set back to 0 (a frame-edge
@@ -545,6 +569,11 @@ WHAT THIS IS
     IMPULSE_NO_INHERIT          probe: stops re-applying inherited          [PROBE]
                                 reloc at the commit
     S2B_TRACE                   the counters the harness reads              measurement
+    AXIS_ELECTION_TRACE         probe: attributes each installed m to the    [PROBE]
+                                election that produced it (classic field
+                                candidate, placement, bootstrap, charge octant)
+                                and scores that axis against the layer's own
+                                octant; folded by experiments\axis_summary.ps1
     S2B_DUMP_PENDING            prints every impulse pending at the commit  [PROBE]
     COLOR_ENCOUNTER_FSM         replaces the whole tick by colorFsmTick()   [CANDIDATE]
 
@@ -559,8 +588,9 @@ WHAT THIS IS
                                           #ifdefs, and the invariants against build\*.out)
            nmake check-trace             (the regression: four configurations, one era at L=7,
                                           against experiments\golden\)
-           experiments\trace_build_variants.bat   (seven single-purpose variants by flags:
-                                                   ref, disp, polar, base, aonly, own, bothab)
+           experiments\trace_build_variants.bat   (eight single-purpose variants by flags:
+                                                   ref, disp, polar, base, aonly, own, bothab,
+                                                   axis -- the election probe of section 9)
   Fold a log into a per-era table:  experiments\era_summary.ps1 -Log <log> -Era <frames>
   Fold several logs into the finite-size table, and read the plateau ratio, the charge-word
   roster and the era-1 dynamics off them:
@@ -593,6 +623,14 @@ WHAT THIS IS
                               the torus (offsets invert to -3/+3, 147/147 read "off side")
     m alignment (candidate)   147/147 from frame 4 to frame 14, then decaying: 119 at 18,
                               113 at 24, 74 at 38, 56 at 54, 39 at 72 (L=7)
+    m alignment, attributed    the decay is the placement rule installing the ray the
+                              transport left the centre on, not a different election:
+                              0 of 704 installations came from the classic path; the
+                              misaligned layers step at the turnarounds (0 -> 28 -> 34
+                              -> 46 after frames 16, 22, 28) and the `base` build reaches
+                              58/100/132 at the same frames (README, "Who owns the
+                              standing axis"; logs build\axisL7_bothab.out,
+                              build\axisL7_base.out)
     era-1 cascade (candidate) 32 flight steps, all aligned; 14 cohesion steps (7/7)
     twelve eras (candidate)   gap 3.06 -> 1.42 (era 4) -> floors 0.2-0.75; one negative
                               window, frames 65-67

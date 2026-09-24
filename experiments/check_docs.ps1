@@ -488,6 +488,33 @@ Report-Rule 'candidate at L=9' 'FSM.txt' `
   }
 }
 
+# --- C7: who owns the standing axis (the election probe) --------------------------------
+Report-Rule 'axis ownership' 'FSM.txt' `
+  'm alignment, attributed the decay is the placement rule installing the ray the transport left the centre on' `
+  'axisL7_bothab.out' {
+  param($lines)
+  $owner = Get-FrameLines $lines 'axis-owner'
+  $elect = Get-FrameLines $lines 'axis-elect'
+  if ($owner.Count -eq 0 -or $elect.Count -eq 0)
+  { $script:ruleBad += "the log carries no axis-owner/axis-elect lines: it was not built with /D AXIS_ELECTION_TRACE"; return }
+
+  # Every election is the placement rule: the classic field candidate never wins one.
+  foreach ($f in ($elect.Keys | Sort-Object))
+  {
+    Want ("frame " + $f) 'installations from the classic path' (Val $elect[$f] '\| classic=(\d+)') 0
+  }
+  # The first election: all 147 layers, none of them a re-election.
+  Want 'frame 4' 'installations (cumulative)' (Val $elect[4] 'total=(\d+)') 147
+  Want 'frame 4' 'first elections' (Val $elect[4] 'first=(\d+)') 147
+  # The era-3 turnaround: 145 re-elections and 28 layers left off their octant ray.
+  Want 'frame 16' 'installations (cumulative)' (Val $elect[16] 'total=(\d+)') 439
+  Want 'frame 16' 'installations landing aligned' (Val $elect[16] 'placement=\d+ \(aligned3=(\d+)\)') 411
+  Want 'frame 16' 'layers off their octant ray' (Val $owner[16] 'placement=\d+ \(misaligned (\d+)\)') 28
+  # The last era read: the same quantity keeps stepping.
+  Want 'frame 28' 'installations (cumulative)' (Val $elect[28] 'total=(\d+)') 704
+  Want 'frame 28' 'layers off their octant ray' (Val $owner[28] 'placement=\d+ \(misaligned (\d+)\)') 46
+}
+
 # ======================================================================================
 # verdict
 # ======================================================================================

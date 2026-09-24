@@ -1033,7 +1033,11 @@ Three trends, each with three points:
    88.1%.  The era's own cascade peak makes the point sharply: none at `L = 5`, 46 movers with 39
    aligned at `L = 7` (85%), and 33 movers with **none** aligned at `L = 9`.  The bigger the lattice,
    the more of the era's displacement is off-octant -- which is the direction the manuscript's own
-   caveat about inherited impulses points at, and it is now a measured trend rather than an aside;
+   caveat about inherited impulses points at, and it is now a measured trend rather than an aside.
+   Note what these percentages are *not*: the momentum channel stays charge-parallel throughout
+   (`axis-align` is 243/243 at `L = 9` from the first election to frame 9, see "Who owns the standing
+   axis" below), so what falls with the lattice size is the alignment of the **displacements**, not
+   the alignment of `m`;
 3. **the freeze breaks earlier**: not inside the six frames read at `L = 5`, at era 3 (f14) at
    `L = 7`, and by the **last frame of era 1** at `L = 9`.  The same direction the `L = 9` control
    above showed for the ordering, and consistent with the ledger leaving its plateau earlier as the
@@ -1144,7 +1148,81 @@ should the sector split survive era 2.  Two candidate designs suggest themselves
 partners of the same charge octant (so pairs walk toward each other along the charge), or bias the
 walk step by the charge octant the way the dispersal does.
 
+## Who owns the standing axis: the decay is the placement rule, and the centres left their rays
+
+The row of `FSM.txt` section 10 that says the alignment decays (147/147 from frame 4 to frame 14,
+then 119 at 18, 113 at 24, 74 at 38, 56 at 54, 39 at 72) carried a hypothesis next to it: that
+`POLAR_SEED_FROM_PLACEMENT` seeds the axis from the placement *once* and the later turnarounds
+"elect out of the W ledger instead".  That hypothesis is now measured, and it is wrong.  The probe
+is `/D AXIS_ELECTION_TRACE` (`experiments\trace_build_variants.bat` builds it as the `axis`
+variant): it records, for every election that installs an axis, **which path** produced it -- the
+classic field candidate, the placement rule, the address bootstrap or the charge-octant install --
+and how many signs of the installed axis agree with the octant of the layer's own charge word.  It
+changes no rule, and `experiments\axis_summary.ps1` folds its logs.
+
+`L = 7`, sieve closed, 30 frames = 5 eras, logs `build\axisL7_bothab.out` and
+`build\axisL7_base.out` (the two configurations, same scenario; the first is the batch's `axis`
+variant, the second the same flags with the two pair rules dropped:
+`/D S2B_TRACE /D AXIS_ELECTION_TRACE /D CHARGE_DISPERSION_FSM /D POLAR_SEED_FROM_PLACEMENT`).
+The table is the bothab one, condensed to one row per era (the values are constant inside an era,
+which is itself a result):
+
+| frames | `m == 0` | axis-align 0/1/2/3 | misaligned layers | elections so far (first/re) | installations by path |
+|---|---|---|---|---|---|
+| 1-3 | 147 | 0/0/0/0 | -- | 0 (0/0) | -- |
+| 4-9 | 0 | 0/0/0/**147** | 0 | 147 (147/0) | placement 147 |
+| 10-15 | 0 | 0/0/0/**147** | 0 | 294 (147/147) | placement 294 |
+| 16-21 | 0 | 25/0/3/**119** | **28** | 439 (147/292) | placement 439 |
+| 22-27 | 0 | 27/3/4/**113** | **34** | 572 (147/425) | placement 572 |
+| 28-30 | 0 | 32/8/6/**101** | **46** | 704 (147/557) | placement 704 |
+
+Four things follow, and the first is the one that kills the hypothesis:
+
+1. **no election ever takes the classic path.**  Of 704 installations in the bothab run -- and 629
+   in the base run -- **not one** came from a `(pol_u, pol_v)` tournament winner; every single axis
+   was installed by the placement rule.  So the later turnarounds do not "elect out of the ledger":
+   they keep electing the placement, and the classic path never fires at all in these runs;
+2. **the placement axis is the centre offset**, by construction (`installAxis(w, lcentres[w] -
+   CENTER)`), so an axis that is not parallel to the octant *means* the transport has carried that
+   layer's centre off its octant ray (or rounded a component to zero, which the sign test also scores
+   as a miss).  The decay is therefore not a property of the election at all -- the election
+   faithfully installs whatever ray the centre is on now.  The probe measures the axis, so this is a
+   derivation from the rule, not an assumption;
+3. **the decay is stepwise and re-election-driven.**  It is constant inside an era and steps at the
+   turnaround: 0 -> 28 -> 34 -> 46 misaligned layers after the re-elections at frames 16, 22 and 28
+   (145, 133 and 132 of the 147 layers re-elected each time).  The step at frame 16 gives 119
+   aligned, which is exactly the `119 at 18` of the invariant row, and the step at frame 22 gives
+   113, the `113 at 24` -- the documented decay is reproduced frame for frame;
+4. **without the pair rules it is far worse, and it does not wait for the turnaround.**  In the base
+   configuration the same table reads 89 aligned / 58 misaligned at frame 16, 70/77 at 17, 58/89 at
+   18, 100 at 22, and by frame 30 only **15 of 147** layers still carry an axis parallel to their
+   octant -- while the bothab run still has 101.  The base run also re-elects *inside* an era: its
+   cumulative re-election count climbs 240 -> 264 -> 284 at frames 16-18, where bothab sits at 292 and
+   does not move again until frame 22 (its era-2 increment alone was 145 of 147 layers).  This is the
+   mirror image of the sector result above: the pair rules protect the axis alignment too, and that is
+   a second reason the ordering survives with them.
+
+**And `m` is not what loses the ordering at either size.**  The `L = 9` run of the finite-size study
+(`build\scale_bothab_L9.out`, 9 frames) has `axis-align` at 243/243 from the first election (frame 5)
+through frame 9 -- every layer parallel to its octant -- while the era's *displacements* peak at
+frame 7 with 33 movers and **none** aligned.  So at both sizes the momentum channel stays
+charge-correlated and the displacement channel is where the octant is lost, which is what the
+`POLAR_AXIS_FROM_CHARGE` experiment above concluded from the other end (the axis macro changed
+nothing because the axis was never the problem).
+
+**The next step this suggests** is no longer "correlate the axis" (measured twice now, from both
+ends) but the placement rule's exposure to the transport: a layer whose centre has been carried off
+its ray re-elects that off-ray direction faithfully.  Three candidate answers, each a macro:
+re-anchor the placement election to the layer's *charge octant* instead of its current centre
+(`POLAR_AXIS_FROM_CHARGE`, which exists and is inert here because the placement path is the only
+path -- it must be combined with the next idea to matter), make the axis decay *slower* by electing
+the octant whenever the centre's ray and the octant disagree, or leave it and accept the measured
+consequence (the sector split decays with the axis).  What the probe settles is which of those is
+being asked for: the axis decay is a *consequence* of the transport, not an independent defect.
+
 ## Step 3: the magnitude of the charge step
+
+
 
 The octant fixes the *direction* of a layer's dispersal but not how far it steps, so every copy of a
 class moved as one block and all eight classes moved one cell. Two candidate magnitudes, both read
@@ -1210,10 +1288,11 @@ and the in-loop `s2B` counters (logs in `build\*.log`).  What it measured:
 **Multi-era and candidate runs.**  The harness is the same source in every candidate measurement on
 this page; only the macros change, and no source is edited.  Five scripts make that reproducible:
 
-* `experiments\trace_build_variants.bat` builds, from a developer prompt, the seven variants used here
+* `experiments\trace_build_variants.bat` builds, from a developer prompt, the eight variants used here
   -- `ref` (counters only, the reference transport channel), `disp` (the dispersion with **no** polar
   seed, the "fires once per era" build of the decision pack), `polar` (`POLAR_SEED_FROM_PLACEMENT`),
-  `base` (dispersal + polar seed, the 94-displacement baseline), `aonly`, `own`, `bothab` -- as
+  `base` (dispersal + polar seed, the 94-displacement baseline), `aonly`, `own`, `bothab`, `axis`
+  (the election probe, measurement only) -- as
   `build\trace_<name>.exe`, one `cl` line each (the flags travel in a variable, never through `call`
   arguments, which would strip the quotes of `/D "..."`);
 * `experiments\era_summary.ps1 -Log <log> [-Era 6]` folds any trace log into the per-era table used

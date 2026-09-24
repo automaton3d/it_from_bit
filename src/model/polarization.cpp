@@ -492,10 +492,73 @@ namespace automaton
   }
 #endif
 
+#ifdef AXIS_ELECTION_TRACE
+    // ---------------------------------------------------------------------------
+    // Probe (/D AXIS_ELECTION_TRACE): the state behind the accessors declared in
+    // polarization.h.  Nothing here is read by any rule -- it only records what the
+    // election just did, so a decay of the standing alignment can be attributed to
+    // the path that produced it instead of to "the elections" in general.
+    // ---------------------------------------------------------------------------
+    static std::vector<unsigned char> g_axPath;    // path that installed the current m
+    static std::vector<signed char>   g_axSigns;   // its sign agreement with the octant
+    static std::vector<unsigned>      g_axCount;   // installations recorded for the layer
+
+    long long axisElectTotal = 0, axisElectFirst = 0, axisElectRe = 0;
+    long long axisElectPath[5]     = {0, 0, 0, 0, 0};
+    long long axisElectAligned3[5] = {0, 0, 0, 0, 0};
+
+    static void axisTraceRecord(unsigned w, int path, const int* ax, int hadM)
+    {
+      if (g_axPath.size() != W_USED)
+      {
+        g_axPath.assign(W_USED, 0);
+        g_axSigns.assign(W_USED, 0);
+        g_axCount.assign(W_USED, 0);
+      }
+      // The layer's own charge octant, read from the same cell the election publishes m
+      // on and with the same bits the harness uses (ch & 0x3F as c2 c1 c0).
+      const Cell& src = getCell(lattice_curr, lcenters[w][0], lcenters[w][1], lcenters[w][2], w);
+      const unsigned ch6 = src.ch & 0x3Fu;
+      const int ox = (ch6 & 4u) ? +1 : -1;
+      const int oy = (ch6 & 2u) ? +1 : -1;
+      const int oz = (ch6 & 1u) ? +1 : -1;
+      int a = 0;
+      if (ax[0] * ox > 0) ++a;
+      if (ax[1] * oy > 0) ++a;
+      if (ax[2] * oz > 0) ++a;
+
+      g_axPath[w]  = (unsigned char)path;
+      g_axSigns[w] = (signed char)a;
+      ++g_axCount[w];
+      ++axisElectTotal;
+      if (hadM) ++axisElectRe; else ++axisElectFirst;
+      if (path > 0 && path < 5)
+      {
+        ++axisElectPath[path];
+        if (a == 3) ++axisElectAligned3[path];
+      }
+    }
+
+    int axisTracePath(unsigned w)
+    { return (g_axPath.size() == W_USED) ? (int)g_axPath[w] : 0; }
+    int axisTraceSigns(unsigned w)
+    { return (g_axSigns.size() == W_USED) ? (int)g_axSigns[w] : 0; }
+    unsigned axisTraceElections(unsigned w)
+    { return (g_axCount.size() == W_USED) ? g_axCount[w] : 0u; }
+#endif
+
     static void elect(unsigned w)
     {
       // Hypothesis: select from existing polarization only. No address,
       // hash, global dial, or scan order may decide a tie.
+#ifdef AXIS_ELECTION_TRACE
+      int axisPath = 1;   // 1 classic, 2 placement, 3 bootstrap, 4 charge octant
+      int prevHadM = 0;
+      {
+        const Cell& pre = getCell(lattice_curr, lcenters[w][0], lcenters[w][1], lcenters[w][2], w);
+        prevHadM = (pre.m[0] || pre.m[1] || pre.m[2]) ? 1 : 0;
+      }
+#endif
 #ifdef POLAR_BOOTSTRAP_ADDRESS
       // --------------------------------------------------------------
       // One-shot deterministic bootstrap (experimental, /D
@@ -523,6 +586,10 @@ namespace automaton
         {
           const int (&d)[3] = kBootDir[w % 26u];
           installAxis(w, d[0], d[1], d[2]);
+#ifdef AXIS_ELECTION_TRACE
+          axisPath = 3;
+          if (const int* axb = electedAxis(w)) axisTraceRecord(w, axisPath, axb, prevHadM);
+#endif
 
           // Publish m on the source centre (same tail as the classic path).
           {
@@ -607,6 +674,9 @@ namespace automaton
         // The axis is the charge octant itself -- installAxis normalises it to |m| = RMAX --
         // so the momentum is charge-correlated whether or not a polarisation candidate
         // exists, and does not depend on where the transport has carried the centre.
+#ifdef AXIS_ELECTION_TRACE
+        axisPath = 4;
+#endif
         bw[0] = (int)CENTER + ox; bw[1] = (int)CENTER + oy; bw[2] = (int)CENTER + oz;
 #else
         // The source centre is the winner: once the charge-seeded dispersion has moved this
@@ -617,6 +687,9 @@ namespace automaton
         const auto& p = lcenters[w];
         if (p[0] == CENTER && p[1] == CENTER && p[2] == CENTER)
           return;                        // still co-located: nothing geometric to seed from
+#ifdef AXIS_ELECTION_TRACE
+        axisPath = 2;
+#endif
         bw[0] = (int)p[0]; bw[1] = (int)p[1]; bw[2] = (int)p[2];
 #endif
 #ifdef S2B_TRACE
@@ -630,6 +703,9 @@ namespace automaton
       // Displacement from the lattice centre to the winning cell becomes
       // the momentum direction, rescaled to |m| = L/2 (= RMAX).
       installAxis(w, bw[0] - (int)CENTER, bw[1] - (int)CENTER, bw[2] - (int)CENTER);
+#ifdef AXIS_ELECTION_TRACE
+      if (const int* axr = electedAxis(w)) axisTraceRecord(w, axisPath, axr, prevHadM);
+#endif
 
       // Dynamic initialisation of Cell::m (inertia): publish the elected
       // axis onto the source-centre cell.  |m| = RMAX.  The inertia path

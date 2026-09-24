@@ -33,6 +33,9 @@
 #include "config.h"
 #include "model/simulation.h"
 #include "model/attractor.h"
+#ifdef AXIS_ELECTION_TRACE
+#include "model/polarization.h"   // the election probe's accessors
+#endif
 
 using namespace automaton;
 
@@ -420,6 +423,35 @@ int main(int argc, char** argv)
                frame, noM, agree[0], agree[1], agree[2], agree[3]);
         fflush(stdout);
       }
+
+#ifdef AXIS_ELECTION_TRACE
+      /* Probe (/D AXIS_ELECTION_TRACE): the same alignment, attributed to the election that
+         installed each layer's m.  `axis-align` says how far the standing m is from the octant;
+         these two lines say who put it there -- the classic field candidate, the placement rule
+         of POLAR_SEED_FROM_PLACEMENT, the address bootstrap, the charge-octant install -- how
+         many of the installations were firsts against re-elections, and how many of each path's
+         installations landed parallel to the octant.  The election counters are cumulative. */
+      {
+        unsigned own[5] = {0,0,0,0,0}, ownBad[5] = {0,0,0,0,0};
+        for (unsigned w = 0; w < W_USED; ++w)
+        {
+          const int p = polarization::axisTracePath(w);
+          if (p < 0 || p > 4) continue;
+          ++own[p];
+          if (polarization::axisTraceSigns(w) < 3) ++ownBad[p];
+        }
+        printf("#   frame %d axis-owner: classic=%u (misaligned %u)  placement=%u (misaligned %u)"
+               "  bootstrap=%u  octant=%u  untraced/m==0=%u\n",
+               frame, own[1], ownBad[1], own[2], ownBad[2], own[3], own[4], own[0]);
+        printf("#   frame %d axis-elect: total=%lld first=%lld re=%lld | classic=%lld (aligned3=%lld)"
+               " | placement=%lld (aligned3=%lld)\n",
+               frame, polarization::axisElectTotal, polarization::axisElectFirst,
+               polarization::axisElectRe, polarization::axisElectPath[1],
+               polarization::axisElectAligned3[1], polarization::axisElectPath[2],
+               polarization::axisElectAligned3[2]);
+        fflush(stdout);
+      }
+#endif
     }
 
 #ifdef S2B_TRACE

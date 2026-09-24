@@ -37,6 +37,13 @@ set FLAGS=%BASE% %DISP% /D "PAIR_OWN_AXIS_EXCHANGE" %PLC%
 call :build own
 set FLAGS=%BASE% %DISP% /D "PAIR_SAME_OCTANT" /D "PAIR_OWN_AXIS_EXCHANGE" %PLC%
 call :build bothab
+rem The election probe: the bothab configuration plus /D AXIS_ELECTION_TRACE, which records
+rem which path installed each layer's m -- the classic field candidate, the placement rule, the
+rem address bootstrap or the charge-octant install -- and how many signs of the installed axis
+rem agree with the octant of the layer's own charge word.  Measurement only, no rule change;
+rem folded by experiments\axis_summary.ps1 (README, "Who owns the standing axis").
+set FLAGS=%BASE% %DISP% %PAIRS% %PLC% /D "AXIS_ELECTION_TRACE"
+call :build axis
 goto :eof
 
 :build
