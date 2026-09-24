@@ -13,7 +13,7 @@
 # is pinned below because a pt-BR host would print the decimal separator as a comma.
 param([Parameter(Mandatory=$true)][string]$Log, [int]$Era = 6)
 [System.Threading.Thread]::CurrentThread.CurrentCulture = [System.Globalization.CultureInfo]::InvariantCulture
-$pos = @{}; $ms = @{}; $dr = @{}; $mk = @{}; $cr = @{}; $wr = @{}
+$pos = @{}; $ms = @{}; $dr = @{}; $mk = @{}; $cr = @{}; $wr = @{}; $tw2 = @{}
 foreach ($line in Get-Content -LiteralPath $Log) {
   if ($line -match '^#\s+frame (\d+) positions: Orbis n=(\d+) mean=\(([-\d.]+),([-\d.]+),([-\d.]+)\) \| Umbra n=(\d+) mean=\(([-\d.]+),([-\d.]+),([-\d.]+)\) \| CoM-\(centre\)=\(([-\d.]+),([-\d.]+),([-\d.]+)\)') {
     $pos[[int]$Matches[1]] = [pscustomobject]@{ oy=[double]$Matches[4]; uy=[double]$Matches[8]
@@ -44,6 +44,12 @@ foreach ($line in Get-Content -LiteralPath $Log) {
                                                c=[int]$Matches[8]; cA=[int]$Matches[9]
                                                d=[int]$Matches[10]; dA=[int]$Matches[11]
                                                t=[int]$Matches[12]; tA=[int]$Matches[13] }
+  }
+  elseif ($line -match '^#\s+frame (\d+) move-thrust: word verified = (\d+) \(octant-aligned (\d+)\)\s+\|\s+word differs = (\d+) \(octant-aligned (\d+)\)(?:\s+\|\s+bookings, cumulative: calls = (\d+) \(aligned (\d+), partial (\d+), against (\d+)\))?') {
+    $tw2[[int]$Matches[1]] = [pscustomobject]@{ v=[int]$Matches[2]; vA=[int]$Matches[3]
+                                                x=[int]$Matches[4]; xA=[int]$Matches[5]
+                                                calls=[int]$Matches[6]; bAl=[int]$Matches[7]
+                                                bPa=[int]$Matches[8]; bAg=[int]$Matches[9] }
   }
 }
 $frames = ($pos.Keys | Sort-Object)
@@ -151,3 +157,30 @@ foreach ($cls in @(@('walk funnel', 'w'), @('relay', 'r'), @('relay contact', 'r
   Write-Output ("  {0,-16} {1,5} / {2,5} / {3,5}   aligned share {4,5:N1}%" -f `
     $cls[0], $moved, $aligned, ($moved - $aligned), $pct)
 }
+
+# Fifth summary: the thrust word probe (harness line `move-thrust`).  Of the flight movers the own-axis
+# thrust booked, how many were thrust with the word the commit installs for that layer and how many
+# with a different one.  If the off-octant steps are the second group, the residual is a word mismatch
+# at the decision point rather than a wrong direction.
+Write-Output ""
+if ($tw2.Count -eq 0) {
+  Write-Output ("no move-thrust lines in " + $Log + ": the harness predates the thrust word probe")
+  exit 0
+}
+$tv = 0; $tvA = 0; $tx = 0; $txA = 0
+foreach ($f in ($tw2.Keys | Sort-Object))
+{
+  $tv += $tw2[$f].v; $tvA += $tw2[$f].vA; $tx += $tw2[$f].x; $txA += $tw2[$f].xA
+}
+$tvUn = $tv - $tvA; $txUn = $tx - $txA
+$tvPct = if ($tv -gt 0) { 100.0 * $tvA / $tv } else { 0.0 }
+$txPct = if ($tx -gt 0) { 100.0 * $txA / $tx } else { 0.0 }
+Write-Output ("thrust movers by the word the thrust READ (moved / octant-aligned / unaligned):")
+Write-Output ("  word verified {0,6} / {1,6} / {2,6}   aligned share {3,5:N1}%" -f $tv, $tvA, $tvUn, $tvPct)
+Write-Output ("  word differs  {0,6} / {1,6} / {2,6}   aligned share {3,5:N1}%" -f $tx, $txA, $txUn, $txPct)
+Write-Output ("  of the {0} unaligned thrust movers, {1} read the committed word and {2} read a different one" -f `
+  ($tvUn + $txUn), $tvUn, $txUn)
+$lastFrame = ($tw2.Keys | Sort-Object | Select-Object -Last 1)
+Write-Output ("thrust bookings, scored at the decision point against the COMMITTED word (cumulative to frame {0}):" -f $lastFrame)
+Write-Output ("  calls {0} = aligned {1} + partial {2} + against {3}" -f `
+  $tw2[$lastFrame].calls, $tw2[$lastFrame].bAl, $tw2[$lastFrame].bPa, $tw2[$lastFrame].bAg)

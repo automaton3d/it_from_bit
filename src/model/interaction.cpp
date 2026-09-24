@@ -830,6 +830,11 @@ namespace automaton
       // empty) and every diagnostic reads a zero mask -- which is how the first masked run reported
       // "no mixtures" while the pending impulses were in fact accumulated own-octant thrusts.
       if (s2bTraceWriterMask.size() != W_USED) s2bTraceWriterMask.assign(W_USED, 0u);
+      // ... and the thrust-word flag: same sizing rule, or the probe silently reads zeros.  It is
+      // cleared by the harness after each frame has been read, like the writer mask (the thrusts of a
+      // frame are set by the encounter pass, which runs before this function).
+      if (s2bTraceThrustWordFlag.size() != W_USED) s2bTraceThrustWordFlag.assign(W_USED, 0u);
+      if (s2bTraceThrustVec.size() != 3u * W_USED) s2bTraceThrustVec.assign(3u * W_USED, 0);
       for (unsigned w = 0; w < W_USED; ++w) s2bTraceCohesionFlag[w] = 0u;
 #endif
       std::vector<std::array<int, 3>> moves(W_USED, {0, 0, 0});
@@ -2584,6 +2589,55 @@ namespace automaton
           currDraft.reloc[2] += oz * mz;
 #ifdef S2B_TRACE
           tagWriter((unsigned)currDraft.x[3], 32u);   // own-axis exchange thrust
+          // Thrust word probe: compare the word this thrust READ (the draft's ch, above) with the word
+          // the commit will INSTALL for the same layer (sourceAfter[w].ch, captured at the start of the
+          // tick).  The rules can rewrite the draft's ch between the two -- the S x K promotion, the
+          // annihilation and the S x S opposite-field branch all touch the draft -- and then the thrust
+          // is aimed along an octant the layer does not end the frame with, which is exactly a
+          // displacement that reads off-octant without any writer being wrong.  Counted always; the
+          // harness splits the thrust movers by this flag (line `move-thrust`) and the print below shows
+          // each case with both words when /D THRUST_WORD_TRACE is on.
+          {
+            const unsigned wThrust = (unsigned)currDraft.x[3];
+            const unsigned readWord = ch6;
+            const unsigned commitWord = (wThrust < sourceAfter.size())
+                                          ? (sourceAfter[wThrust].ch & 0x3Fu) : readWord;
+            ++s2bTraceThrustCalls;
+            // Booking-side score of the thrust about to be written, against the COMMITTED word: how many
+            // axes it touches and whether the signs match.  This is the harness's 3-of-3 test applied at
+            // the decision point, where the position cannot interfere -- if every thrust scores
+            // "aligned" here, no thrust is aimed wrong and an off-octant *measurement* has another cause.
+            unsigned nz = 0, agree = 0;
+            if (ox * mx != 0) { ++nz; if ((ox > 0) == ((commitWord & 4u) != 0u)) ++agree; }
+            if (oy * my != 0) { ++nz; if ((oy > 0) == ((commitWord & 2u) != 0u)) ++agree; }
+            if (oz * mz != 0) { ++nz; if ((oz > 0) == ((commitWord & 1u) != 0u)) ++agree; }
+            if (nz == 3u && agree == 3u) ++s2bTraceThrustBookingAligned;
+            else if (nz < 3u)            ++s2bTraceThrustBookingPartial;
+            else                         ++s2bTraceThrustBookingAgainst;
+            // Accumulate the vector this thrust wrote (per layer), so the harness can compare it with the
+            // centre displacement it measures: if a mover's displacement does not follow this vector, that
+            // displacement is not the impulse.
+            if (wThrust < W_USED && s2bTraceThrustVec.size() == 3u * W_USED)
+            {
+              s2bTraceThrustVec[3u * wThrust]     += ox * mx;
+              s2bTraceThrustVec[3u * wThrust + 1] += oy * my;
+              s2bTraceThrustVec[3u * wThrust + 2] += oz * mz;
+            }
+            if (readWord != commitWord)
+            {
+              ++s2bTraceThrustWordDiff;
+              if (wThrust < s2bTraceThrustWordFlag.size()) s2bTraceThrustWordFlag[wThrust] = 1u;
+#ifdef THRUST_WORD_TRACE
+              const unsigned beforeWord = (wThrust < sourceBefore.size())
+                                            ? (sourceBefore[wThrust].ch & 0x3Fu) : readWord;
+              printf("[thrust-word] w=%u read=%03x committed=%03x frame-start=%03x"
+                     " thrust=(%d,%d,%d) partner-m=(%d,%d,%d) curr.w=%u partner.w=%u\n",
+                     wThrust, readWord, commitWord, beforeWord,
+                     ox * mx, oy * my, oz * mz, mx, my, mz,
+                     (unsigned)curr.x[3], (unsigned)partner.x[3]);
+#endif
+            }
+          }
 #endif
         }
 #else

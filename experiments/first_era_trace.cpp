@@ -286,6 +286,20 @@ int main(int argc, char** argv)
          touched it).  Bits, in order: 1 walk funnel, 2 relay, 4 relay contact, 8 cohesion (structurally
          absent here, the cohesion movers are not flight), 16 charge dispersion, 32 own-axis thrust. */
       unsigned bitN[6] = {0,0,0,0,0,0}, bitAl[6] = {0,0,0,0,0,0};
+      /* Thrust word probe (model side, `s2bTraceThrustWordFlag`): among the flight movers the own-axis
+         thrust booked, those it thrust while reading the word the commit installs ("verified") and
+         those it thrust while reading a different one.  This is the direct test of whether the
+         off-octant thrust steps are displacements aimed along an octant the layer does not end the
+         frame with. */
+      unsigned thrSameN = 0, thrSameAl = 0, thrDiffN = 0, thrDiffAl = 0;
+#ifdef THRUST_VEC_TRACE
+      /* Probe (/D THRUST_VEC_TRACE): the last gap.  For every mover the own-axis thrust booked, does the
+         centre displacement the harness MEASURES follow the vector that thrust WROTE?  Sign test on every
+         axis the impulse touches (the magnitudes differ by design: applyMomentum chooses the step size),
+         plus the axis count of the impulse and the case of a thrust bit with an empty vector. */
+      unsigned vecSame = 0, vecSameAl = 0, vecDiff = 0, vecDiffAl = 0, vecEmpty = 0,
+               vecAx3 = 0, vecAx2 = 0, vecAx1 = 0;
+#endif
       for (const Cell& c : lattice_curr)
         if (c.r2 == 0 && c.w < W_USED)
         {
@@ -340,6 +354,30 @@ int main(int argc, char** argv)
               else                       { ++carNoneN;  if (a == 3u) ++carNoneAl; }
               for (unsigned b = 0; b < 6u; ++b)
                 if (carMask & (1u << b)) { ++bitN[b]; if (a == 3u) ++bitAl[b]; }
+              if (carMask & 0x20u)   // the own-axis thrust booked this layer's displacement
+              {
+                const bool wordDiff = (c.w < s2bTraceThrustWordFlag.size() && s2bTraceThrustWordFlag[c.w]);
+                if (wordDiff) { ++thrDiffN; if (a == 3u) ++thrDiffAl; }
+                else          { ++thrSameN; if (a == 3u) ++thrSameAl; }
+#ifdef THRUST_VEC_TRACE
+                if (3u * (size_t)c.w + 2u < s2bTraceThrustVec.size())
+                {
+                  const int vx = s2bTraceThrustVec[3u * c.w];
+                  const int vy = s2bTraceThrustVec[3u * c.w + 1];
+                  const int vz = s2bTraceThrustVec[3u * c.w + 2];
+                  unsigned axes = 0, ok = 0;
+                  if (vx) { ++axes; if ((vx > 0) == (dx > 0)) ++ok; }
+                  if (vy) { ++axes; if ((vy > 0) == (dy > 0)) ++ok; }
+                  if (vz) { ++axes; if ((vz > 0) == (dz > 0)) ++ok; }
+                  if (axes == 0u)      { ++vecEmpty; }
+                  else if (ok == axes) { ++vecSame; if (a == 3u) ++vecSameAl; }
+                  else                 { ++vecDiff; if (a == 3u) ++vecDiffAl; }
+                  if (axes == 3u)      ++vecAx3;
+                  else if (axes == 2u) ++vecAx2;
+                  else if (axes == 1u) ++vecAx1;
+                }
+#endif
+              }
             }
 #endif
           }
@@ -368,10 +406,24 @@ int main(int argc, char** argv)
              " moved (octant-aligned); a mover can carry more than one bit]\n",
              frame, bitN[0], bitAl[0], bitN[1], bitAl[1], bitN[2], bitAl[2],
              bitN[3], bitAl[3], bitN[4], bitAl[4], bitN[5], bitAl[5]);
+      printf("#   frame %d move-thrust: word verified = %u (octant-aligned %u)  |  word differs = %u"
+             " (octant-aligned %u)  |  bookings, cumulative: calls = %llu (aligned %llu, partial %llu,"
+             " against %llu)\n",
+             frame, thrSameN, thrSameAl, thrDiffN, thrDiffAl,
+             s2bTraceThrustCalls, s2bTraceThrustBookingAligned, s2bTraceThrustBookingPartial,
+             s2bTraceThrustBookingAgainst);
+#ifdef THRUST_VEC_TRACE
+      printf("#   frame %d move-thrustvec: follows the impulse = %u (octant-aligned %u)  |  differs = %u"
+             " (octant-aligned %u)  |  thrust bit with no impulse = %u  |  impulse axes 3/2/1 = %u/%u/%u\n",
+             frame, vecSame, vecSameAl, vecDiff, vecDiffAl, vecEmpty, vecAx3, vecAx2, vecAx1);
+#endif
 #ifdef S2B_TRACE
       /* The mask is per frame: clear it now that this frame has been read, so the next frame's
-         writers start from zero.  (The model's writers only set bits.) */
+         writers start from zero.  (The model's writers only set bits.)  The thrust-word flag is
+         cleared here as well, for the same reason. */
       for (unsigned w = 0; w < s2bTraceWriterMask.size(); ++w) s2bTraceWriterMask[w] = 0u;
+      for (unsigned w = 0; w < s2bTraceThrustWordFlag.size(); ++w) s2bTraceThrustWordFlag[w] = 0u;
+      for (unsigned w = 0; w < s2bTraceThrustVec.size(); ++w) s2bTraceThrustVec[w] = 0;
 #endif
       fflush(stdout);
       printf("#   frame %d separation: occupiedCenters=%u sources=%u moved-this-frame=%u"

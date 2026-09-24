@@ -709,6 +709,87 @@ measuring a net centre displacement that includes movement no writer tagged.  Th
 separates them is one more reporting change at the thrust site -- how often the word it reads differs from
 the word the commit installs, and how the `a = 0` population splits between the two cases.
 
+## The thrust's decision point: the impulse is octant-clean, and the measurement is not the impulse
+
+The carrier line says the off-octant steps are booked by the own-axis thrust.  That left two ways for the
+thrust to be implicated: it fires *along the wrong octant* (aiming by a word other than the one the layer
+ends the frame with), or it fires correctly and the displacement the harness measures is not the impulse
+it wrote.  Both are now measured, at the decision point itself.
+
+**The word it reads.**  The rules can in principle rewrite a draft cell's charge word during a tick while
+the commit installs `sourceAfter[w].ch`, captured at the start of it, so the thrust site now compares the
+two: `s2bTraceThrustWordFlag` marks the layer when they differ, `/D THRUST_WORD_TRACE` prints each case
+with both words (and the frame-start word), and the harness reports the split as `move-thrust`.  Measured
+at `L = 7`, 20 frames (`build\thrustword_L7_20.out`): **`word differs = 0` in every frame** -- in the
+frames that matter (6, 12, 14, 18) as well as the quiet ones.  The thrust never aims by a word the commit
+discards.
+
+**The vector it writes.**  The same site scores the thrust it is about to write against the committed
+word's octant -- all three axes touched and every sign matching ("aligned", which is what the 3-of-3 test
+accepts), fewer than three axes ("partial"), or a sign against the octant ("against").  Measured
+(cumulative, same log):
+
+| frame | thrust calls | aligned | partial | against |
+|---|---|---|---|---|
+| 6 | 39 | 39 | 0 | 0 |
+| 12 | 85 | 85 | 0 | 0 |
+| 14 | **256** | **256** | **0** | **0** |
+
+So at the decision point the transport is not merely *mostly* aligned: **every thrust call through frame
+14 -- 256 of them, in the eras where the flight channel reads 49 % aligned -- is a three-axis step along
+the octant of the word the layer keeps.**  Whatever the off-octant bucket is measuring, it is not a
+thrust aimed wrong.
+
+**Over the whole twelve eras one component of it is named exactly** (same line, log
+`build\thrustword_L7_72.out`): of **2129 thrust calls, 1763 are aligned and 366 are partial, and 0 are
+against** -- and `word differs = 0` in all 72 frames.  A "partial" call is a thrust whose
+per-axis magnitudes have zero components (the partner's `m` is zero on an axis), so it steps along *some*
+of the octant's axes; the harness's 3-of-3 test cannot accept such a step whatever its direction.  So the
+twelve-era residual has (at least) two named components: **partial-axis thrusts** (366 calls, in the later
+eras -- the first three eras have none: the 20-frame log reads `aligned 372, partial 0, against 0`) and the
+relocations measured below.  The impulse is never *aimed* wrong: `against = 0` over all 2129 calls.
+
+**So what is it measuring?**  One instrument later the answer is exact.  `/D THRUST_VEC_TRACE` records the
+vector each thrust wrote, per layer and per frame (`s2bTraceThrustVec`), and the harness compares it with
+the centre displacement it measures -- a sign test on every axis the impulse touches (magnitudes differ by
+design: `applyMomentum` chooses the step size).  Log `build\thrustvec_L7_20.out`:
+
+| frame | flight movers | displacement follows the impulse (aligned) | displacement differs (aligned) | impulse axes 3/2/1 |
+|---|---|---|---|---|
+| 6 | 32 | 32 (32) | 0 (0) | 32/0/0 |
+| 12 | 6 | 3 (**3**) | 3 (**0**) | 6/0/0 |
+| 14 | 48 | 41 (**41**) | 7 (**0**) | 48/0/0 |
+| 18 | 30 | 19 (**19**) | 11 (**0**) | 30/0/0 |
+
+The correspondence is exact and quantitative: **every mover whose measured displacement follows its
+impulse is octant-aligned, and every mover whose displacement disagrees with its impulse is one of the
+unaligned ones** -- 3 of 3 at frame 12, 7 of 7 at frame 14, 11 of 11 at frame 18, with a three-axis
+impulse in all of them.  The off-octant "flight displacement" is therefore not a transport step at all:
+it is a **relocation of the layer's centre that no impulse explains**, and the harness -- which measures
+the centre's position across frames -- counts it as a displacement of the layer.
+
+Two things this settles, and one consequence:
+
+* **the transport is charge-aligned.**  The claim "every flight displacement is octant-aligned" is false
+  as stated, but the transport it was about is stronger than the claim: at the decision point, every
+  impulse the encounter books is a three-axis step along the octant of the layer's own committed word;
+* **the drift bucket was measuring relocation, not direction.**  84 % of the off-octant steps being
+  "off side" (the layer's centre having crossed the lattice centre) says that a centre that has crossed
+  keeps being *re-selected* on the other side -- a statement about where the layer's centre is re-derived,
+  not about where anything is pushed;
+* **and the consequence for every table above**: the era tables' "aligned share of the flight steps"
+  (58.6 % over twelve eras, 88.1 % era-1 at `L = 9`) is a property of *centre relocation*, so it should be
+  read as a measure of how much of the layer movement the impulse channel accounts for -- 100 % at the
+  cascade frames, less than half in the later eras -- and not as a measure of transport alignment.
+
+**What is left, precisely.**  Why a centre is re-derived at all without an impulse: the layer's source
+centre is re-chosen every tick (the census of chiefs and delegates, README "Included in the paper:
+subsection 8.4"), and the relay's own reseat counters (`reseat-step`, `reseat-at-contact`) are zero in
+these frames, so the movement does not come from the relay either.  The instrument that would name it is a
+per-frame record of which cell a layer's centre *is* (its identity, not its position), which is a small
+harness-side addition to the same trace block; until then, the honest statement is that the impulse
+channel is octant-clean and the remaining movement is centre re-selection.
+
 ## Multi-era run with (a)+(b): the split holds its sign, not its size
 
 `build\long_L7.log`, `L = 7`, 40 frames (6.6 eras) launched, read to frame 27 (4.5 eras; the run was

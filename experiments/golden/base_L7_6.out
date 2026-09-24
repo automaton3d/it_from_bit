@@ -780,6 +780,7 @@ DEBUG phase tick 500: center u=132 v=6 active=1 pB=0 sB=0 pol=(0,0) bstamp=0
 #   frame 1 move-mask: one writer = 0 (octant-aligned 0)  |  two or more writers = 0 (octant-aligned 0)
 #   frame 1 move-carrier: queue-carried = 0 (octant-aligned 0)  |  booked this frame = 0 (octant-aligned 0)  |  both = 0 (octant-aligned 0)  |  no writer = 0 (octant-aligned 0)
 #   frame 1 move-writer: walk = 0 (0)  |  relay = 0 (0)  |  relay-contact = 0 (0)  |  cohesion = 0 (0)  |  dispersion = 0 (0)  |  thrust = 0 (0)   [flight movers, moved (octant-aligned); a mover can carry more than one bit]
+#   frame 1 move-thrust: word verified = 0 (octant-aligned 0)  |  word differs = 0 (octant-aligned 0)  |  bookings, cumulative: calls = 0 (aligned 0, partial 0, against 0)
 #   frame 1 separation: occupiedCenters=1 sources=147 moved-this-frame=0  cB=0 kB=0 homB=0 reloc!=0(sources)=0  m!=0(sources)=0/147 m!=0(cells)=0  pol!=0(cells)=0
 #   frame 1 positions: Orbis n=75 mean=(0.000,0.000,0.000) | Umbra n=72 mean=(0.000,0.000,0.000) | CoM-(centre)=(0.000,0.000,0.000)
 #   frame 1 classes:  k0(n=20)d=(+0.00,+0.00,+0.00)  k1(n=19)d=(+0.00,+0.00,+0.00)  k2(n=18)d=(+0.00,+0.00,+0.00)  k3(n=18)d=(+0.00,+0.00,+0.00)  k4(n=18)d=(+0.00,+0.00,+0.00)  k5(n=18)d=(+0.00,+0.00,+0.00)  k6(n=18)d=(+0.00,+0.00,+0.00)  k7(n=18)d=(+0.00,+0.00,+0.00)
@@ -1101,6 +1102,7 @@ DEBUG phase tick 1100: center u=76 v=12 active=1 pB=0 sB=0 pol=(0,0) bstamp=0
 #   frame 2 move-mask: one writer = 147 (octant-aligned 147)  |  two or more writers = 0 (octant-aligned 0)
 #   frame 2 move-carrier: queue-carried = 0 (octant-aligned 0)  |  booked this frame = 0 (octant-aligned 0)  |  both = 147 (octant-aligned 147)  |  no writer = 0 (octant-aligned 0)
 #   frame 2 move-writer: walk = 0 (0)  |  relay = 0 (0)  |  relay-contact = 0 (0)  |  cohesion = 0 (0)  |  dispersion = 147 (147)  |  thrust = 0 (0)   [flight movers, moved (octant-aligned); a mover can carry more than one bit]
+#   frame 2 move-thrust: word verified = 0 (octant-aligned 0)  |  word differs = 0 (octant-aligned 0)  |  bookings, cumulative: calls = 0 (aligned 0, partial 0, against 0)
 #   frame 2 separation: occupiedCenters=8 sources=147 moved-this-frame=147  cB=0 kB=0 homB=0 reloc!=0(sources)=0  m!=0(sources)=0/147 m!=0(cells)=0  pol!=0(cells)=0
 #   frame 2 positions: Orbis n=75 mean=(-0.040,-1.000,-0.013) | Umbra n=72 mean=(0.000,1.000,0.000) | CoM-(centre)=(-0.020,-0.020,-0.007)
 #   frame 2 classes:  k0(n=20)d=(-1.00,-1.00,-1.00)  k1(n=19)d=(-1.00,-1.00,+1.00)  k2(n=18)d=(-1.00,+1.00,-1.00)  k3(n=18)d=(-1.00,+1.00,+1.00)  k4(n=18)d=(+1.00,-1.00,-1.00)  k5(n=18)d=(+1.00,-1.00,+1.00)  k6(n=18)d=(+1.00,+1.00,-1.00)  k7(n=18)d=(+1.00,+1.00,+1.00)
@@ -1420,6 +1422,7 @@ DEBUG phase tick 1600: center u=72 v=11 active=0 pB=0 sB=0 pol=(0,0) bstamp=0
 #   frame 3 move-mask: one writer = 0 (octant-aligned 0)  |  two or more writers = 0 (octant-aligned 0)
 #   frame 3 move-carrier: queue-carried = 0 (octant-aligned 0)  |  booked this frame = 0 (octant-aligned 0)  |  both = 0 (octant-aligned 0)  |  no writer = 0 (octant-aligned 0)
 #   frame 3 move-writer: walk = 0 (0)  |  relay = 0 (0)  |  relay-contact = 0 (0)  |  cohesion = 0 (0)  |  dispersion = 0 (0)  |  thrust = 0 (0)   [flight movers, moved (octant-aligned); a mover can carry more than one bit]
+#   frame 3 move-thrust: word verified = 0 (octant-aligned 0)  |  word differs = 0 (octant-aligned 0)  |  bookings, cumulative: calls = 0 (aligned 0, partial 0, against 0)
 #   frame 3 separation: occupiedCenters=8 sources=147 moved-this-frame=0  cB=0 kB=0 homB=0 reloc!=0(sources)=0  m!=0(sources)=0/147 m!=0(cells)=0  pol!=0(cells)=0
 #   frame 3 positions: Orbis n=75 mean=(-0.040,-1.000,-0.013) | Umbra n=72 mean=(0.000,1.000,0.000) | CoM-(centre)=(-0.020,-0.020,-0.007)
 #   frame 3 classes:  k0(n=20)d=(-1.00,-1.00,-1.00)  k1(n=19)d=(-1.00,-1.00,+1.00)  k2(n=18)d=(-1.00,+1.00,-1.00)  k3(n=18)d=(-1.00,+1.00,+1.00)  k4(n=18)d=(+1.00,-1.00,-1.00)  k5(n=18)d=(+1.00,-1.00,+1.00)  k6(n=18)d=(+1.00,+1.00,-1.00)  k7(n=18)d=(+1.00,+1.00,+1.00)
@@ -1886,6 +1889,7 @@ DEBUG phase tick 2200: center u=72 v=11 active=0 pB=1 sB=0 pol=(1,0) bstamp=1661
 #   frame 4 move-mask: one writer = 0 (octant-aligned 0)  |  two or more writers = 0 (octant-aligned 0)
 #   frame 4 move-carrier: queue-carried = 0 (octant-aligned 0)  |  booked this frame = 0 (octant-aligned 0)  |  both = 0 (octant-aligned 0)  |  no writer = 0 (octant-aligned 0)
 #   frame 4 move-writer: walk = 0 (0)  |  relay = 0 (0)  |  relay-contact = 0 (0)  |  cohesion = 0 (0)  |  dispersion = 0 (0)  |  thrust = 0 (0)   [flight movers, moved (octant-aligned); a mover can carry more than one bit]
+#   frame 4 move-thrust: word verified = 0 (octant-aligned 0)  |  word differs = 0 (octant-aligned 0)  |  bookings, cumulative: calls = 0 (aligned 0, partial 0, against 0)
 #   frame 4 separation: occupiedCenters=8 sources=147 moved-this-frame=0  cB=0 kB=0 homB=0 reloc!=0(sources)=0  m!=0(sources)=147/147 m!=0(cells)=147  pol!=0(cells)=13671
 #   frame 4 positions: Orbis n=75 mean=(-0.040,-1.000,-0.013) | Umbra n=72 mean=(0.000,1.000,0.000) | CoM-(centre)=(-0.020,-0.020,-0.007)
 #   frame 4 classes:  k0(n=20)d=(-1.00,-1.00,-1.00)  k1(n=19)d=(-1.00,-1.00,+1.00)  k2(n=18)d=(-1.00,+1.00,-1.00)  k3(n=18)d=(-1.00,+1.00,+1.00)  k4(n=18)d=(+1.00,-1.00,-1.00)  k5(n=18)d=(+1.00,-1.00,+1.00)  k6(n=18)d=(+1.00,+1.00,-1.00)  k7(n=18)d=(+1.00,+1.00,+1.00)
@@ -2204,6 +2208,7 @@ DEBUG phase tick 2700: center u=75 v=10 active=0 pB=1 sB=0 pol=(1,0) bstamp=1661
 #   frame 5 move-mask: one writer = 0 (octant-aligned 0)  |  two or more writers = 0 (octant-aligned 0)
 #   frame 5 move-carrier: queue-carried = 0 (octant-aligned 0)  |  booked this frame = 0 (octant-aligned 0)  |  both = 0 (octant-aligned 0)  |  no writer = 0 (octant-aligned 0)
 #   frame 5 move-writer: walk = 0 (0)  |  relay = 0 (0)  |  relay-contact = 0 (0)  |  cohesion = 0 (0)  |  dispersion = 0 (0)  |  thrust = 0 (0)   [flight movers, moved (octant-aligned); a mover can carry more than one bit]
+#   frame 5 move-thrust: word verified = 0 (octant-aligned 0)  |  word differs = 0 (octant-aligned 0)  |  bookings, cumulative: calls = 0 (aligned 0, partial 0, against 0)
 #   frame 5 separation: occupiedCenters=8 sources=147 moved-this-frame=0  cB=0 kB=0 homB=0 reloc!=0(sources)=0  m!=0(sources)=147/147 m!=0(cells)=147  pol!=0(cells)=13671
 #   frame 5 positions: Orbis n=75 mean=(-0.040,-1.000,-0.013) | Umbra n=72 mean=(0.000,1.000,0.000) | CoM-(centre)=(-0.020,-0.020,-0.007)
 #   frame 5 classes:  k0(n=20)d=(-1.00,-1.00,-1.00)  k1(n=19)d=(-1.00,-1.00,+1.00)  k2(n=18)d=(-1.00,+1.00,-1.00)  k3(n=18)d=(-1.00,+1.00,+1.00)  k4(n=18)d=(+1.00,-1.00,-1.00)  k5(n=18)d=(+1.00,-1.00,+1.00)  k6(n=18)d=(+1.00,+1.00,-1.00)  k7(n=18)d=(+1.00,+1.00,+1.00)
@@ -2523,6 +2528,7 @@ DEBUG phase tick 3300: center u=0 v=0 active=0 pB=0 sB=0 pol=(0,0) bstamp=1661
 #   frame 6 move-mask: one writer = 94 (octant-aligned 0)  |  two or more writers = 0 (octant-aligned 0)
 #   frame 6 move-carrier: queue-carried = 0 (octant-aligned 0)  |  booked this frame = 0 (octant-aligned 0)  |  both = 94 (octant-aligned 0)  |  no writer = 0 (octant-aligned 0)
 #   frame 6 move-writer: walk = 94 (0)  |  relay = 0 (0)  |  relay-contact = 0 (0)  |  cohesion = 0 (0)  |  dispersion = 0 (0)  |  thrust = 0 (0)   [flight movers, moved (octant-aligned); a mover can carry more than one bit]
+#   frame 6 move-thrust: word verified = 0 (octant-aligned 0)  |  word differs = 0 (octant-aligned 0)  |  bookings, cumulative: calls = 0 (aligned 0, partial 0, against 0)
 #   frame 6 separation: occupiedCenters=29 sources=147 moved-this-frame=94  cB=0 kB=0 homB=0 reloc!=0(sources)=0  m!=0(sources)=147/147 m!=0(cells)=147  pol!=0(cells)=13671
 #   frame 6 positions: Orbis n=75 mean=(-0.093,-1.853,-0.280) | Umbra n=72 mean=(-0.083,1.931,-0.028) | CoM-(centre)=(-0.088,0.000,-0.156)
 #   frame 6 classes:  k0(n=20)d=(-1.90,-1.90,-2.00)  k1(n=19)d=(-1.42,-1.95,+1.53)  k2(n=18)d=(-1.67,+1.61,-2.11)  k3(n=18)d=(-1.11,+2.11,+2.00)  k4(n=18)d=(+1.89,-1.78,-2.00)  k5(n=18)d=(+1.33,-1.78,+1.44)  k6(n=18)d=(+1.44,+1.78,-2.00)  k7(n=18)d=(+1.00,+2.22,+2.00)

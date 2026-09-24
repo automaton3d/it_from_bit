@@ -98,6 +98,12 @@ namespace automaton
   std::vector<unsigned char> s2bTraceCohesionFlag;
   // Per-layer writer mask of the current light frame (see simulation.h).
   std::vector<unsigned int> s2bTraceWriterMask;
+  // Thrust word probe counters and flag of the current light frame (see simulation.h).
+  unsigned long long s2bTraceThrustCalls = 0, s2bTraceThrustWordDiff = 0;
+  std::vector<unsigned char> s2bTraceThrustWordFlag;
+  std::vector<int> s2bTraceThrustVec;
+  unsigned long long s2bTraceThrustBookingAligned = 0, s2bTraceThrustBookingPartial = 0,
+                     s2bTraceThrustBookingAgainst = 0;
 #endif
 
   // Lattices

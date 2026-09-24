@@ -526,6 +526,14 @@ WHAT THIS IS
         columns do not partition the movers (the move-carrier line above does).  Cohesion is
         structurally 0 here: a layer flagged by the cohesion table is counted as cohesion and not as
         flight, so its rows never reach this line.
+    # frame N move-thrust: word verified = ... (octant-aligned ...) | word differs = ... (octant-aligned ...)
+        among the flight movers the own-axis thrust booked (bit 32), those whose thrust read the word
+        the commit installs for that layer ("verified") and those whose thrust read a different one.
+        The rules can rewrite the draft's ch during a tick while the commit copies sourceAfter[w].ch,
+        captured at its start, so a thrust can be aimed along an octant the layer does not end the
+        frame with -- which reads off-octant without any writer being wrong.  The model sets
+        s2bTraceThrustWordFlag per layer for exactly that case; the harness clears it per frame like
+        the writer mask.
     # frame N separation: occupiedCenters=... sources=... moved-this-frame=...
                           cB= kB= homB= reloc!=0(sources)= m!=0(sources)=.../... 
                           m!=0(cells)=... pol!=0(cells)=...
@@ -622,6 +630,17 @@ WHAT THIS IS
                                 and scores that axis against the layer's own
                                 octant; folded by experiments\axis_summary.ps1
     S2B_DUMP_PENDING            prints every impulse pending at the commit  [PROBE]
+    THRUST_WORD_TRACE           prints each own-axis thrust whose READ word [PROBE]
+                                differs from the word the commit INSTALLS,
+                                with both words (needs S2B_TRACE; the counter
+                                behind it is always on, so the harness line
+                                `move-thrust` works without this macro)
+    THRUST_VEC_TRACE            probe: prints, per mover, whether the centre [PROBE]
+                                displacement the harness measures follows the
+                                vector the thrust actually wrote (sign test on
+                                every axis the impulse touches), plus the
+                                impulse's axis count (needs S2B_TRACE; reads
+                                s2bTraceThrustVec, maintained always)
     COLOR_ENCOUNTER_FSM         replaces the whole tick by colorFsmTick()   [CANDIDATE]
 
   Build:   nmake                        (DEFAULT since 2026-09-24: the four macros together)
@@ -709,6 +728,19 @@ WHAT THIS IS
                                336 unaligned, and 336 is the whole unaligned
                                population of the flight channel
                                (build\carrier_L7_20.out, build\carrier_L7_72.out)
+    thrust decision point      the impulse is octant-clean: the thrust never
+                               aims by a word the commit discards (word differs
+                               = 0 in all 20 frames at L=7) and every one of its
+                               256 calls through frame 14 is a three-axis step
+                               along the committed octant (aligned 256, partial
+                               0, against 0); the off-octant steps are the
+                               movers whose measured displacement does not
+                               follow the impulse they were given (3 of 6 at
+                               frame 12, 7 of 48 at 14, 11 of 30 at 18 -- and
+                               exactly the unaligned ones), so the residual is
+                               centre relocation, not transport direction
+                               (build\thrustword_L7_20.out,
+                               build\thrustvec_L7_20.out)
     era-1 cascade (candidate) 32 flight steps, all aligned; 14 cohesion steps (7/7)
     displacement channel       not inherited: the probe log is byte-identical to
                                the promoted run over 20 frames at L=7 and

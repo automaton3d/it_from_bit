@@ -872,6 +872,110 @@ Report-Rule 'the carrier instrument is reporting only' 'README.md' `
   }
 }
 
+# --- C16: the thrust decision point (the word it reads, the vector it writes) --------------
+Report-Rule 'the thrust decision point' 'README.md' `
+  'every thrust call through frame 14 -- 256 of them, in the eras where the flight channel reads 49 % aligned -- is a three-axis step along the octant of the word the layer keeps' `
+  'thrustword_L7_20.out' {
+  param($lines)
+  $thr = Get-FrameLines $lines 'move-thrust'
+  if ($thr.Count -ne 20) { $script:ruleBad += ("20 frames documented, the log has " + $thr.Count) }
+  foreach ($f in ($thr.Keys | Sort-Object))
+  {
+    # The word comparison: the thrust never aims by a word the commit discards.
+    Want ("frame " + $f) 'thrusts booked by a word other than the committed one' (Val $thr[$f] 'word differs = (\d+)') 0
+    # The booking-side score, and the invariant that ties the three classes to the call count.
+    $calls = Val $thr[$f] 'calls = (\d+)'
+    $al = Val $thr[$f] 'calls = \d+ \(aligned (\d+)'
+    $pa = Val $thr[$f] 'aligned \d+, partial (\d+)'
+    $ag = Val $thr[$f] 'partial \d+, against (\d+)'
+    if ($null -eq $calls -or $null -eq $al -or $null -eq $pa -or $null -eq $ag)
+      { $script:ruleBad += ("frame " + $f + ": the move-thrust line does not carry the booking score"); continue }
+    if ($al + $pa + $ag -ne $calls)
+      { $script:ruleBad += ("frame " + $f + ": aligned+partial+against (" + ($al + $pa + $ag) + ") is not the call count (" + $calls + ")") }
+    if ($pa -ne 0 -or $ag -ne 0)
+      { $script:ruleBad += ("frame " + $f + ": " + $pa + " partial and " + $ag + " against bookings, documented none") }
+  }
+  # The cumulative row the README quotes.
+  $x = $thr[14]
+  if ($null -eq $x) { $script:ruleBad += 'the log has no frame 14 move-thrust line' }
+  else
+  {
+    Want 'frame 14 (cumulative)' 'thrust calls' (Val $x 'calls = (\d+)') 256
+    Want 'frame 14 (cumulative)' 'aligned' (Val $x 'calls = \d+ \(aligned (\d+)') 256
+    Want 'frame 14 (cumulative)' 'partial' (Val $x 'aligned \d+, partial (\d+)') 0
+    Want 'frame 14 (cumulative)' 'against' (Val $x 'partial \d+, against (\d+)') 0
+  }
+  # The twelve-era half of the claim, when that log is present: the thrust still never aims AGAINST the
+  # octant, but in the later eras a share of its calls is partial -- a step along fewer than three of the
+  # octant's axes, which no 3-of-3 test can accept whatever the direction.  That is the first of the two
+  # components the README names.
+  $long = Read-TraceLog 'thrustword_L7_72.out'
+  if ($null -eq $long)
+    { Report 'INFO' 'C. the thrust decision point: build\thrustword_L7_72.out is not built here, so the twelve-era half of the claim is not checked' }
+  else
+  {
+    $lthr = Get-FrameLines $long 'move-thrust'
+    if ($lthr.Count -ne 72) { $script:ruleBad += ("72 frames documented for the twelve-era log, it has " + $lthr.Count) }
+    foreach ($f in ($lthr.Keys | Sort-Object))
+    {
+      Want ("twelve eras, frame " + $f) 'thrusts booked by a word other than the committed one' (Val $lthr[$f] 'word differs = (\d+)') 0
+      $lc = Val $lthr[$f] 'calls = (\d+)'; $la = Val $lthr[$f] 'calls = \d+ \(aligned (\d+)'
+      $lp = Val $lthr[$f] 'aligned \d+, partial (\d+)'; $lg = Val $lthr[$f] 'partial \d+, against (\d+)'
+      if ($null -eq $lc -or $null -eq $la -or $null -eq $lp -or $null -eq $lg) { continue }
+      if ($la + $lp + $lg -ne $lc)
+        { $script:ruleBad += ("twelve eras, frame " + $f + ": aligned+partial+against is not the call count") }
+      if ($lg -ne 0)
+        { $script:ruleBad += ("twelve eras, frame " + $f + ": " + $lg + " bookings aimed against the octant, documented none") }
+    }
+    $z = $lthr[72]
+    if ($null -eq $z) { $script:ruleBad += 'the twelve-era log has no frame 72 move-thrust line' }
+    else
+    {
+      Want 'twelve eras (cumulative)' 'thrust calls' (Val $z 'calls = (\d+)') 2129
+      Want 'twelve eras (cumulative)' 'aligned' (Val $z 'calls = \d+ \(aligned (\d+)') 1763
+      Want 'twelve eras (cumulative)' 'partial' (Val $z 'aligned \d+, partial (\d+)') 366
+      Want 'twelve eras (cumulative)' 'against' (Val $z 'partial \d+, against (\d+)') 0
+    }
+  }
+}
+
+# --- C17: the impulse is not the displacement --------------------------------------------
+Report-Rule 'the impulse is not the displacement' 'README.md' `
+  'every mover whose measured displacement follows its impulse is octant-aligned, and every mover whose displacement disagrees with its impulse is one of the unaligned ones' `
+  'thrustvec_L7_20.out' {
+  param($lines)
+  $vec = Get-FrameLines $lines 'move-thrustvec'
+  $split = Get-FrameLines $lines 'move-split'
+  if ($vec.Count -ne 20) { $script:ruleBad += ("20 frames documented, the log has " + $vec.Count) }
+  foreach ($f in ($vec.Keys | Sort-Object))
+  {
+    # Every mover that follows its impulse is aligned, every mover that does not is one of the
+    # unaligned ones -- the claim, frame by frame.
+    $same = Val $vec[$f] 'follows the impulse = (\d+)'
+    $sameAl = Val $vec[$f] 'follows the impulse = \d+ \(octant-aligned (\d+)\)'
+    $diff = Val $vec[$f] 'differs = (\d+)'
+    $diffAl = Val $vec[$f] 'differs = \d+ \(octant-aligned (\d+)\)'
+    if ($null -eq $same -or $null -eq $diff) { $script:ruleBad += ("frame " + $f + ": the move-thrustvec line does not parse"); continue }
+    if ($same -ne $sameAl) { $script:ruleBad += ("frame " + $f + ": " + ($same - $sameAl) + " mover(s) follow their impulse and are still unaligned") }
+    if ($diffAl -ne 0) { $script:ruleBad += ("frame " + $f + ": " + $diffAl + " mover(s) disagree with their impulse and are aligned after all") }
+    # And the sharp cross-check: the movers that disagree with their impulse ARE the unaligned ones.
+    $fl = Val $split[$f] 'flight=(\d+)'
+    $flA = Val $split[$f] 'flight=\d+\s+0/1/2/3 = \d+/\d+/\d+/(\d+)'
+    if ($diff -ne ($fl - $flA))
+      { $script:ruleBad += ("frame " + $f + ": " + $diff + " mover(s) disagree with their impulse against " + ($fl - $flA) + " unaligned flight movers") }
+  }
+  # The frames the README tabulates.
+  foreach ($case in @(@(6, 32, 32, 0, 0), @(12, 3, 3, 3, 0), @(14, 41, 41, 7, 0), @(18, 19, 19, 11, 0)))
+  {
+    $x = $vec[$case[0]]
+    if ($null -eq $x) { $script:ruleBad += ("the log has no frame " + $case[0] + " move-thrustvec line"); continue }
+    Want ("frame " + $case[0]) 'movers following their impulse' (Val $x 'follows the impulse = (\d+)') $case[1]
+    Want ("frame " + $case[0]) 'of those, aligned' (Val $x 'follows the impulse = \d+ \(octant-aligned (\d+)\)') $case[2]
+    Want ("frame " + $case[0]) 'movers disagreeing with their impulse' (Val $x 'differs = (\d+)') $case[3]
+    Want ("frame " + $case[0]) 'of those, aligned' (Val $x 'differs = \d+ \(octant-aligned (\d+)\)') $case[4]
+  }
+}
+
 # ======================================================================================
 # verdict
 # ======================================================================================

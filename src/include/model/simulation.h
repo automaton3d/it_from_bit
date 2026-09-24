@@ -385,6 +385,28 @@ struct NeighborResult
   // reseatAtContact (relay contact), 8 cohesion table, 16 charge dispersion, 32 the own-axis
   // exchange thrust, 64 the impulse-queue drain (draft).  See S2B_DUMP_PENDING.
   extern std::vector<unsigned int> s2bTraceWriterMask;
+  // Thrust word probe (same frame, per layer): set when the own-axis exchange thrust booked this
+  // layer's displacement while reading a charge word that is NOT the one the commit installs for it
+  // (the rules can rewrite the draft's ch during the tick; the commit copies sourceAfter[w].ch, which
+  // was captured at the start of it).  s2bTraceThrustCalls counts the thrust applications and
+  // s2bTraceThrustWordDiff the subset that read a different word.  The harness cross-tabulates the
+  // flag against the octant alignment (line `move-thrust`); /D THRUST_WORD_TRACE prints each case.
+  extern unsigned long long s2bTraceThrustCalls, s2bTraceThrustWordDiff;
+  extern std::vector<unsigned char> s2bTraceThrustWordFlag;
+  // The thrust vector actually written for each layer in the current light frame (3 ints per layer), so
+  // the harness can compare it with the centre displacement it measures -- the last gap in the chain:
+  // the decision point is provably octant-clean, so if a mover's measured displacement does NOT follow
+  // this vector, that displacement is not the impulse.  Maintained always (bookkeeping only, no print);
+  // the comparison is printed under /D THRUST_VEC_TRACE and is cleared by the harness per frame.
+  extern std::vector<int> s2bTraceThrustVec;
+  // Booking-side score of the same thrusts (cumulative): the thrust vector the site is about to write,
+  // scored against the COMMITTED word's octant -- all three axes touched and every sign matching
+  // ("aligned", what the harness's 3-of-3 test would accept), fewer than three axes touched
+  // ("partial": a step along two of the octant's axes can never pass a 3-of-3 test, whatever the
+  // direction), or at least one sign against the octant ("against").  Calls = aligned + partial +
+  // against, by construction.
+  extern unsigned long long s2bTraceThrustBookingAligned, s2bTraceThrustBookingPartial,
+                            s2bTraceThrustBookingAgainst;
 #endif
 
   // Tests
