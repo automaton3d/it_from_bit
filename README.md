@@ -1023,10 +1023,11 @@ same runs, era 1 = frames `1..L-1`:
 
 Three trends, each with three points:
 
-1. **the election lands at `RMAX + 1`** (f3, f4, f5 for `RMAX = 2, 3, 4`), one frame after the shell
-   passes the half radius.  `RMAX + 1` is also the first frame on which the polarisation the
-   election reads has had time to be rebuilt from the placement, so this is a relation rather than a
-   coincidence of the three sizes;
+1. **the election lands at `RMAX + 1`** (f3, f4, f5 for `RMAX = 2, 3, 4`).  At `L = 7` that is frame 4,
+   the frame the earlier table above already identifies as the turnaround, where the
+   placement-seeded election publishes `m != 0` on all 147 layers; with three sizes agreeing, the
+   election looks tied to the turnaround rather than to any frame special to one size -- which is a
+   consistency reading of the three points, not a mechanism measured here;
 2. **the era's transport grows faster than the dispersal and its alignment collapses**: era-1 movers
    over the dispersal are 100%, 131%, 117%, and the aligned share of the era falls 100% -> 96.4% ->
    88.1%.  The era's own cascade peak makes the point sharply: none at `L = 5`, 46 movers with 39
