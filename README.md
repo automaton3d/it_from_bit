@@ -1134,7 +1134,7 @@ halves), the number of distinct charge words, the structurally pairable addresse
 and the in-loop `s2B` counters (logs in `build\*.log`).  What it measured:
 
 **Multi-era and candidate runs.**  The harness is the same source in every candidate measurement on
-this page; only the macros change, and no source is edited.  Three scripts make that reproducible:
+this page; only the macros change, and no source is edited.  Four scripts make that reproducible:
 
 * `experiments\trace_build_variants.bat` builds, from a developer prompt, the seven variants used here
   -- `ref` (counters only, the reference transport channel), `disp` (the dispersion with **no** polar
@@ -1159,6 +1159,15 @@ this page; only the macros change, and no source is edited.  Three scripts make 
   lint instead of passing silently.  It is the in-tree successor of the retired claims lint
   (`nmake check-claims` still answers, as an alias).  Its first run is what tightened the frame-1
   wording of "The dispersion alone, measured";
+
+* `experiments\check_trace.bat` (`nmake check-trace`) is the regression over the dynamics: it builds
+  four configurations -- the reference and the three of the promotion decision -- runs each at `L = 7`
+  with the sieve closed for one era (`6` frames, ending on the era-1 cascade frame) and compares the
+  log, line by line, with the expectation committed in `experiments\golden\`.  That scenario is what
+  separates the four (`ref` moves nothing, `disp` the 147-step dispersal at f2, `base` the 94-step
+  cascade at f6, `bothab` 46), and the comparison can be exact because the model is deterministic.
+  An intended difference is accepted with `nmake refresh-trace-golden`, and the report quotes the light
+  frame of the first difference, so a failure says where the dynamics moved.
 * the shell advances **one cell per light frame** from radius 0 to RMAX and back, and the
   per-layer shell counts are the exact lattice counts 1, 26, 66, 158, 234 for radii 0..4, so one
   era is `2 RMAX` frames (6 at `L = 7`, 8 at `L = 9`, i.e. `L - 1` on the odd lattices the seed

@@ -1,0 +1,2527 @@
+[Config] Loading: automaton.cfg
+[Config] scenario = 0, lattice L = 21, layers W = 10, region x 0..20 y 0..20 z 0..20
+configureLatticeFromRegion: region 7 x 7 x 7 (from x 0..6 y 0..6 z 0..6), W = 147
+calculateParameters: EL=7, W_USED=147, RMAX=3, CENTER=3, FRAME=553, ISLAND_SIZE=2, ISLAND_COUNT=63
+initCenters: w=0, center=(3,3,3)
+initCenters: w=1, center=(3,3,3)
+initCenters: w=2, center=(3,3,3)
+initCenters: w=3, center=(3,3,3)
+initCenters: w=4, center=(3,3,3)
+initCenters: w=5, center=(3,3,3)
+initCenters: w=6, center=(3,3,3)
+initCenters: w=7, center=(3,3,3)
+initCenters: w=8, center=(3,3,3)
+initCenters: w=9, center=(3,3,3)
+initCenters: w=10, center=(3,3,3)
+initCenters: w=11, center=(3,3,3)
+initCenters: w=12, center=(3,3,3)
+initCenters: w=13, center=(3,3,3)
+initCenters: w=14, center=(3,3,3)
+initCenters: w=15, center=(3,3,3)
+initCenters: w=16, center=(3,3,3)
+initCenters: w=17, center=(3,3,3)
+initCenters: w=18, center=(3,3,3)
+initCenters: w=19, center=(3,3,3)
+initCenters: w=20, center=(3,3,3)
+initCenters: w=21, center=(3,3,3)
+initCenters: w=22, center=(3,3,3)
+initCenters: w=23, center=(3,3,3)
+initCenters: w=24, center=(3,3,3)
+initCenters: w=25, center=(3,3,3)
+initCenters: w=26, center=(3,3,3)
+initCenters: w=27, center=(3,3,3)
+initCenters: w=28, center=(3,3,3)
+initCenters: w=29, center=(3,3,3)
+initCenters: w=30, center=(3,3,3)
+initCenters: w=31, center=(3,3,3)
+initCenters: w=32, center=(3,3,3)
+initCenters: w=33, center=(3,3,3)
+initCenters: w=34, center=(3,3,3)
+initCenters: w=35, center=(3,3,3)
+initCenters: w=36, center=(3,3,3)
+initCenters: w=37, center=(3,3,3)
+initCenters: w=38, center=(3,3,3)
+initCenters: w=39, center=(3,3,3)
+initCenters: w=40, center=(3,3,3)
+initCenters: w=41, center=(3,3,3)
+initCenters: w=42, center=(3,3,3)
+initCenters: w=43, center=(3,3,3)
+initCenters: w=44, center=(3,3,3)
+initCenters: w=45, center=(3,3,3)
+initCenters: w=46, center=(3,3,3)
+initCenters: w=47, center=(3,3,3)
+initCenters: w=48, center=(3,3,3)
+initCenters: w=49, center=(3,3,3)
+initCenters: w=50, center=(3,3,3)
+initCenters: w=51, center=(3,3,3)
+initCenters: w=52, center=(3,3,3)
+initCenters: w=53, center=(3,3,3)
+initCenters: w=54, center=(3,3,3)
+initCenters: w=55, center=(3,3,3)
+initCenters: w=56, center=(3,3,3)
+initCenters: w=57, center=(3,3,3)
+initCenters: w=58, center=(3,3,3)
+initCenters: w=59, center=(3,3,3)
+initCenters: w=60, center=(3,3,3)
+initCenters: w=61, center=(3,3,3)
+initCenters: w=62, center=(3,3,3)
+initCenters: w=63, center=(3,3,3)
+initCenters: w=64, center=(3,3,3)
+initCenters: w=65, center=(3,3,3)
+initCenters: w=66, center=(3,3,3)
+initCenters: w=67, center=(3,3,3)
+initCenters: w=68, center=(3,3,3)
+initCenters: w=69, center=(3,3,3)
+initCenters: w=70, center=(3,3,3)
+initCenters: w=71, center=(3,3,3)
+initCenters: w=72, center=(3,3,3)
+initCenters: w=73, center=(3,3,3)
+initCenters: w=74, center=(3,3,3)
+initCenters: w=75, center=(3,3,3)
+initCenters: w=76, center=(3,3,3)
+initCenters: w=77, center=(3,3,3)
+initCenters: w=78, center=(3,3,3)
+initCenters: w=79, center=(3,3,3)
+initCenters: w=80, center=(3,3,3)
+initCenters: w=81, center=(3,3,3)
+initCenters: w=82, center=(3,3,3)
+initCenters: w=83, center=(3,3,3)
+initCenters: w=84, center=(3,3,3)
+initCenters: w=85, center=(3,3,3)
+initCenters: w=86, center=(3,3,3)
+initCenters: w=87, center=(3,3,3)
+initCenters: w=88, center=(3,3,3)
+initCenters: w=89, center=(3,3,3)
+initCenters: w=90, center=(3,3,3)
+initCenters: w=91, center=(3,3,3)
+initCenters: w=92, center=(3,3,3)
+initCenters: w=93, center=(3,3,3)
+initCenters: w=94, center=(3,3,3)
+initCenters: w=95, center=(3,3,3)
+initCenters: w=96, center=(3,3,3)
+initCenters: w=97, center=(3,3,3)
+initCenters: w=98, center=(3,3,3)
+initCenters: w=99, center=(3,3,3)
+initCenters: w=100, center=(3,3,3)
+initCenters: w=101, center=(3,3,3)
+initCenters: w=102, center=(3,3,3)
+initCenters: w=103, center=(3,3,3)
+initCenters: w=104, center=(3,3,3)
+initCenters: w=105, center=(3,3,3)
+initCenters: w=106, center=(3,3,3)
+initCenters: w=107, center=(3,3,3)
+initCenters: w=108, center=(3,3,3)
+initCenters: w=109, center=(3,3,3)
+initCenters: w=110, center=(3,3,3)
+initCenters: w=111, center=(3,3,3)
+initCenters: w=112, center=(3,3,3)
+initCenters: w=113, center=(3,3,3)
+initCenters: w=114, center=(3,3,3)
+initCenters: w=115, center=(3,3,3)
+initCenters: w=116, center=(3,3,3)
+initCenters: w=117, center=(3,3,3)
+initCenters: w=118, center=(3,3,3)
+initCenters: w=119, center=(3,3,3)
+initCenters: w=120, center=(3,3,3)
+initCenters: w=121, center=(3,3,3)
+initCenters: w=122, center=(3,3,3)
+initCenters: w=123, center=(3,3,3)
+initCenters: w=124, center=(3,3,3)
+initCenters: w=125, center=(3,3,3)
+initCenters: w=126, center=(3,3,3)
+initCenters: w=127, center=(3,3,3)
+initCenters: w=128, center=(3,3,3)
+initCenters: w=129, center=(3,3,3)
+initCenters: w=130, center=(3,3,3)
+initCenters: w=131, center=(3,3,3)
+initCenters: w=132, center=(3,3,3)
+initCenters: w=133, center=(3,3,3)
+initCenters: w=134, center=(3,3,3)
+initCenters: w=135, center=(3,3,3)
+initCenters: w=136, center=(3,3,3)
+initCenters: w=137, center=(3,3,3)
+initCenters: w=138, center=(3,3,3)
+initCenters: w=139, center=(3,3,3)
+initCenters: w=140, center=(3,3,3)
+initCenters: w=141, center=(3,3,3)
+initCenters: w=142, center=(3,3,3)
+initCenters: w=143, center=(3,3,3)
+initCenters: w=144, center=(3,3,3)
+initCenters: w=145, center=(3,3,3)
+initCenters: w=146, center=(3,3,3)
+tryAllocate: allocated 50421 cells (7^3 * 147)
+initGeneral: EL=7, RMAX=3
+  Layer 0: center=(3,3,3)
+  Layer 1: center=(3,3,3)
+  Layer 2: center=(3,3,3)
+  Layer 3: center=(3,3,3)
+  Layer 4: center=(3,3,3)
+  Layer 5: center=(3,3,3)
+  Layer 6: center=(3,3,3)
+  Layer 7: center=(3,3,3)
+  Layer 8: center=(3,3,3)
+  Layer 9: center=(3,3,3)
+  Layer 10: center=(3,3,3)
+  Layer 11: center=(3,3,3)
+  Layer 12: center=(3,3,3)
+  Layer 13: center=(3,3,3)
+  Layer 14: center=(3,3,3)
+  Layer 15: center=(3,3,3)
+  Layer 16: center=(3,3,3)
+  Layer 17: center=(3,3,3)
+  Layer 18: center=(3,3,3)
+  Layer 19: center=(3,3,3)
+  Layer 20: center=(3,3,3)
+  Layer 21: center=(3,3,3)
+  Layer 22: center=(3,3,3)
+  Layer 23: center=(3,3,3)
+  Layer 24: center=(3,3,3)
+  Layer 25: center=(3,3,3)
+  Layer 26: center=(3,3,3)
+  Layer 27: center=(3,3,3)
+  Layer 28: center=(3,3,3)
+  Layer 29: center=(3,3,3)
+  Layer 30: center=(3,3,3)
+  Layer 31: center=(3,3,3)
+  Layer 32: center=(3,3,3)
+  Layer 33: center=(3,3,3)
+  Layer 34: center=(3,3,3)
+  Layer 35: center=(3,3,3)
+  Layer 36: center=(3,3,3)
+  Layer 37: center=(3,3,3)
+  Layer 38: center=(3,3,3)
+  Layer 39: center=(3,3,3)
+  Layer 40: center=(3,3,3)
+  Layer 41: center=(3,3,3)
+  Layer 42: center=(3,3,3)
+  Layer 43: center=(3,3,3)
+  Layer 44: center=(3,3,3)
+  Layer 45: center=(3,3,3)
+  Layer 46: center=(3,3,3)
+  Layer 47: center=(3,3,3)
+  Layer 48: center=(3,3,3)
+  Layer 49: center=(3,3,3)
+  Layer 50: center=(3,3,3)
+  Layer 51: center=(3,3,3)
+  Layer 52: center=(3,3,3)
+  Layer 53: center=(3,3,3)
+  Layer 54: center=(3,3,3)
+  Layer 55: center=(3,3,3)
+  Layer 56: center=(3,3,3)
+  Layer 57: center=(3,3,3)
+  Layer 58: center=(3,3,3)
+  Layer 59: center=(3,3,3)
+  Layer 60: center=(3,3,3)
+  Layer 61: center=(3,3,3)
+  Layer 62: center=(3,3,3)
+  Layer 63: center=(3,3,3)
+  Layer 64: center=(3,3,3)
+  Layer 65: center=(3,3,3)
+  Layer 66: center=(3,3,3)
+  Layer 67: center=(3,3,3)
+  Layer 68: center=(3,3,3)
+  Layer 69: center=(3,3,3)
+  Layer 70: center=(3,3,3)
+  Layer 71: center=(3,3,3)
+  Layer 72: center=(3,3,3)
+  Layer 73: center=(3,3,3)
+  Layer 74: center=(3,3,3)
+  Layer 75: center=(3,3,3)
+  Layer 76: center=(3,3,3)
+  Layer 77: center=(3,3,3)
+  Layer 78: center=(3,3,3)
+  Layer 79: center=(3,3,3)
+  Layer 80: center=(3,3,3)
+  Layer 81: center=(3,3,3)
+  Layer 82: center=(3,3,3)
+  Layer 83: center=(3,3,3)
+  Layer 84: center=(3,3,3)
+  Layer 85: center=(3,3,3)
+  Layer 86: center=(3,3,3)
+  Layer 87: center=(3,3,3)
+  Layer 88: center=(3,3,3)
+  Layer 89: center=(3,3,3)
+  Layer 90: center=(3,3,3)
+  Layer 91: center=(3,3,3)
+  Layer 92: center=(3,3,3)
+  Layer 93: center=(3,3,3)
+  Layer 94: center=(3,3,3)
+  Layer 95: center=(3,3,3)
+  Layer 96: center=(3,3,3)
+  Layer 97: center=(3,3,3)
+  Layer 98: center=(3,3,3)
+  Layer 99: center=(3,3,3)
+  Layer 100: center=(3,3,3)
+  Layer 101: center=(3,3,3)
+  Layer 102: center=(3,3,3)
+  Layer 103: center=(3,3,3)
+  Layer 104: center=(3,3,3)
+  Layer 105: center=(3,3,3)
+  Layer 106: center=(3,3,3)
+  Layer 107: center=(3,3,3)
+  Layer 108: center=(3,3,3)
+  Layer 109: center=(3,3,3)
+  Layer 110: center=(3,3,3)
+  Layer 111: center=(3,3,3)
+  Layer 112: center=(3,3,3)
+  Layer 113: center=(3,3,3)
+  Layer 114: center=(3,3,3)
+  Layer 115: center=(3,3,3)
+  Layer 116: center=(3,3,3)
+  Layer 117: center=(3,3,3)
+  Layer 118: center=(3,3,3)
+  Layer 119: center=(3,3,3)
+  Layer 120: center=(3,3,3)
+  Layer 121: center=(3,3,3)
+  Layer 122: center=(3,3,3)
+  Layer 123: center=(3,3,3)
+  Layer 124: center=(3,3,3)
+  Layer 125: center=(3,3,3)
+  Layer 126: center=(3,3,3)
+  Layer 127: center=(3,3,3)
+  Layer 128: center=(3,3,3)
+  Layer 129: center=(3,3,3)
+  Layer 130: center=(3,3,3)
+  Layer 131: center=(3,3,3)
+  Layer 132: center=(3,3,3)
+  Layer 133: center=(3,3,3)
+  Layer 134: center=(3,3,3)
+  Layer 135: center=(3,3,3)
+  Layer 136: center=(3,3,3)
+  Layer 137: center=(3,3,3)
+  Layer 138: center=(3,3,3)
+  Layer 139: center=(3,3,3)
+  Layer 140: center=(3,3,3)
+  Layer 141: center=(3,3,3)
+  Layer 142: center=(3,3,3)
+  Layer 143: center=(3,3,3)
+  Layer 144: center=(3,3,3)
+  Layer 145: center=(3,3,3)
+  Layer 146: center=(3,3,3)
+initGeneral ok.
+L:	7
+W:	147
+DIAG:	7
+RMAX:	3
+ENCOUNTER:	147
+SLOT1:	168
+SLOT2:	186
+SLOT3:	204
+SLOT4:	498
+DIFFUSION:	516
+SLOT5:	516
+SLOT6:	522
+SLOT7:	528
+RELOC:	534
+REISSUE:	535
+replicate ok.
+# first-era trace  L=7  W_USED=147  RMAX=3  ISLAND_SIZE=2  CENTER=3  s2b_target=16384
+# frame  r_clk  active  shell_rf  lost  gain  lost_s2B  lost_K  lost_S  lost_D  lost_P  s2B_tot   K     D   S   P_halves   dev     dt    t_share
+[charges] tick=1 MAT=25725 ANTI=24696 mat/total=0.510204 | orphanM=0 orphanA=0 | turnarounds V=0 D=0
+[charges] closure tick=1 Disl=+1029 Dorph=+0 Dtot=+1029 Dorb=+13377 Dumb=-12348 DslOrb=+13377 DslUmb=-12348 | orbM=19551 orbA=6174 umbM=6174 umbA=18522
+[charges] retina tick=1 pairM=0 pairA=0 dPair=+0 freeM=25725 freeA=24696 freeD=+1029 | hidAnti orb=0 umb=0 form=0 blob=0 ann=0 | Dtot==dPair+freeD: OK
+[charges]   w=0 mat=343 anti=0
+[charges]   w=1 mat=343 anti=0
+[charges]   w=2 mat=343 anti=0
+[charges]   w=3 mat=343 anti=0
+[charges]   w=4 mat=343 anti=0
+[charges]   w=5 mat=343 anti=0
+[charges]   w=6 mat=0 anti=343
+[charges]   w=7 mat=0 anti=343
+[charges]   w=8 mat=343 anti=0
+[charges]   w=9 mat=343 anti=0
+[charges]   w=10 mat=0 anti=343
+[charges]   w=11 mat=0 anti=343
+[charges]   w=12 mat=0 anti=343
+[charges]   w=13 mat=0 anti=343
+[charges]   w=14 mat=0 anti=343
+[charges]   w=15 mat=0 anti=343
+[charges]   w=16 mat=343 anti=0
+[charges]   w=17 mat=343 anti=0
+[charges]   w=18 mat=343 anti=0
+[charges]   w=19 mat=343 anti=0
+[charges]   w=20 mat=343 anti=0
+[charges]   w=21 mat=343 anti=0
+[charges]   w=22 mat=0 anti=343
+[charges]   w=23 mat=0 anti=343
+[charges]   w=24 mat=343 anti=0
+[charges]   w=25 mat=343 anti=0
+[charges]   w=26 mat=0 anti=343
+[charges]   w=27 mat=0 anti=343
+[charges]   w=28 mat=0 anti=343
+[charges]   w=29 mat=0 anti=343
+[charges]   w=30 mat=0 anti=343
+[charges]   w=31 mat=0 anti=343
+[charges]   w=32 mat=343 anti=0
+[charges]   w=33 mat=343 anti=0
+[charges]   w=34 mat=343 anti=0
+[charges]   w=35 mat=343 anti=0
+[charges]   w=36 mat=343 anti=0
+[charges]   w=37 mat=343 anti=0
+[charges]   w=38 mat=0 anti=343
+[charges]   w=39 mat=0 anti=343
+[charges]   w=40 mat=343 anti=0
+[charges]   w=41 mat=343 anti=0
+[charges]   w=42 mat=0 anti=343
+[charges]   w=43 mat=0 anti=343
+[charges]   w=44 mat=0 anti=343
+[charges]   w=45 mat=0 anti=343
+[charges]   w=46 mat=0 anti=343
+[charges]   w=47 mat=0 anti=343
+[charges]   w=48 mat=343 anti=0
+[charges]   w=49 mat=343 anti=0
+[charges]   w=50 mat=343 anti=0
+[charges]   w=51 mat=343 anti=0
+[charges]   w=52 mat=343 anti=0
+[charges]   w=53 mat=343 anti=0
+[charges]   w=54 mat=0 anti=343
+[charges]   w=55 mat=0 anti=343
+[charges]   w=56 mat=343 anti=0
+[charges]   w=57 mat=343 anti=0
+[charges]   w=58 mat=0 anti=343
+[charges]   w=59 mat=0 anti=343
+[charges]   w=60 mat=0 anti=343
+[charges]   w=61 mat=0 anti=343
+[charges]   w=62 mat=0 anti=343
+[charges]   w=63 mat=0 anti=343
+[charges]   w=64 mat=343 anti=0
+[charges]   w=65 mat=343 anti=0
+[charges]   w=66 mat=343 anti=0
+[charges]   w=67 mat=343 anti=0
+[charges]   w=68 mat=343 anti=0
+[charges]   w=69 mat=343 anti=0
+[charges]   w=70 mat=0 anti=343
+[charges]   w=71 mat=0 anti=343
+[charges]   w=72 mat=343 anti=0
+[charges]   w=73 mat=343 anti=0
+[charges]   w=74 mat=0 anti=343
+[charges]   w=75 mat=0 anti=343
+[charges]   w=76 mat=0 anti=343
+[charges]   w=77 mat=0 anti=343
+[charges]   w=78 mat=0 anti=343
+[charges]   w=79 mat=0 anti=343
+[charges]   w=80 mat=343 anti=0
+[charges]   w=81 mat=343 anti=0
+[charges]   w=82 mat=343 anti=0
+[charges]   w=83 mat=343 anti=0
+[charges]   w=84 mat=343 anti=0
+[charges]   w=85 mat=343 anti=0
+[charges]   w=86 mat=0 anti=343
+[charges]   w=87 mat=0 anti=343
+[charges]   w=88 mat=343 anti=0
+[charges]   w=89 mat=343 anti=0
+[charges]   w=90 mat=0 anti=343
+[charges]   w=91 mat=0 anti=343
+[charges]   w=92 mat=0 anti=343
+[charges]   w=93 mat=0 anti=343
+[charges]   w=94 mat=0 anti=343
+[charges]   w=95 mat=0 anti=343
+[charges]   w=96 mat=343 anti=0
+[charges]   w=97 mat=343 anti=0
+[charges]   w=98 mat=343 anti=0
+[charges]   w=99 mat=343 anti=0
+[charges]   w=100 mat=343 anti=0
+[charges]   w=101 mat=343 anti=0
+[charges]   w=102 mat=0 anti=343
+[charges]   w=103 mat=0 anti=343
+[charges]   w=104 mat=343 anti=0
+[charges]   w=105 mat=343 anti=0
+[charges]   w=106 mat=0 anti=343
+[charges]   w=107 mat=0 anti=343
+[charges]   w=108 mat=0 anti=343
+[charges]   w=109 mat=0 anti=343
+[charges]   w=110 mat=0 anti=343
+[charges]   w=111 mat=0 anti=343
+[charges]   w=112 mat=343 anti=0
+[charges]   w=113 mat=343 anti=0
+[charges]   w=114 mat=343 anti=0
+[charges]   w=115 mat=343 anti=0
+[charges]   w=116 mat=343 anti=0
+[charges]   w=117 mat=343 anti=0
+[charges]   w=118 mat=0 anti=343
+[charges]   w=119 mat=0 anti=343
+[charges]   w=120 mat=343 anti=0
+[charges]   w=121 mat=343 anti=0
+[charges]   w=122 mat=0 anti=343
+[charges]   w=123 mat=0 anti=343
+[charges]   w=124 mat=0 anti=343
+[charges]   w=125 mat=0 anti=343
+[charges]   w=126 mat=0 anti=343
+[charges]   w=127 mat=0 anti=343
+[charges]   w=128 mat=343 anti=0
+[charges]   w=129 mat=343 anti=0
+[charges]   w=130 mat=343 anti=0
+[charges]   w=131 mat=343 anti=0
+[charges]   w=132 mat=343 anti=0
+[charges]   w=133 mat=343 anti=0
+[charges]   w=134 mat=0 anti=343
+[charges]   w=135 mat=0 anti=343
+[charges]   w=136 mat=343 anti=0
+[charges]   w=137 mat=343 anti=0
+[charges]   w=138 mat=0 anti=343
+[charges]   w=139 mat=0 anti=343
+[charges]   w=140 mat=0 anti=343
+[charges]   w=141 mat=0 anti=343
+[charges]   w=142 mat=0 anti=343
+[charges]   w=143 mat=0 anti=343
+[charges]   w=144 mat=343 anti=0
+[charges]   w=145 mat=343 anti=0
+[charges]   w=146 mat=343 anti=0
+DEBUG phase tick 100: center u=215 v=12 active=1 pB=0 sB=0 pol=(0,0) bstamp=0
+DEBUG phase tick 200: center u=129 v=11 active=1 pB=0 sB=0 pol=(0,0) bstamp=0
+[charges] tick=257 MAT=25725 ANTI=24696 mat/total=0.510204 | orphanM=0 orphanA=0 | turnarounds V=0 D=0
+[charges] closure tick=257 Disl=+1029 Dorph=+0 Dtot=+1029 Dorb=+13377 Dumb=-12348 DslOrb=+13377 DslUmb=-12348 | orbM=19551 orbA=6174 umbM=6174 umbA=18522
+[charges] retina tick=257 pairM=0 pairA=0 dPair=+0 freeM=25725 freeA=24696 freeD=+1029 | hidAnti orb=0 umb=0 form=0 blob=0 ann=0 | Dtot==dPair+freeD: OK
+[charges]   w=0 mat=343 anti=0
+[charges]   w=1 mat=343 anti=0
+[charges]   w=2 mat=343 anti=0
+[charges]   w=3 mat=343 anti=0
+[charges]   w=4 mat=343 anti=0
+[charges]   w=5 mat=343 anti=0
+[charges]   w=6 mat=0 anti=343
+[charges]   w=7 mat=0 anti=343
+[charges]   w=8 mat=343 anti=0
+[charges]   w=9 mat=343 anti=0
+[charges]   w=10 mat=0 anti=343
+[charges]   w=11 mat=0 anti=343
+[charges]   w=12 mat=0 anti=343
+[charges]   w=13 mat=0 anti=343
+[charges]   w=14 mat=0 anti=343
+[charges]   w=15 mat=0 anti=343
+[charges]   w=16 mat=343 anti=0
+[charges]   w=17 mat=343 anti=0
+[charges]   w=18 mat=343 anti=0
+[charges]   w=19 mat=343 anti=0
+[charges]   w=20 mat=343 anti=0
+[charges]   w=21 mat=343 anti=0
+[charges]   w=22 mat=0 anti=343
+[charges]   w=23 mat=0 anti=343
+[charges]   w=24 mat=343 anti=0
+[charges]   w=25 mat=343 anti=0
+[charges]   w=26 mat=0 anti=343
+[charges]   w=27 mat=0 anti=343
+[charges]   w=28 mat=0 anti=343
+[charges]   w=29 mat=0 anti=343
+[charges]   w=30 mat=0 anti=343
+[charges]   w=31 mat=0 anti=343
+[charges]   w=32 mat=343 anti=0
+[charges]   w=33 mat=343 anti=0
+[charges]   w=34 mat=343 anti=0
+[charges]   w=35 mat=343 anti=0
+[charges]   w=36 mat=343 anti=0
+[charges]   w=37 mat=343 anti=0
+[charges]   w=38 mat=0 anti=343
+[charges]   w=39 mat=0 anti=343
+[charges]   w=40 mat=343 anti=0
+[charges]   w=41 mat=343 anti=0
+[charges]   w=42 mat=0 anti=343
+[charges]   w=43 mat=0 anti=343
+[charges]   w=44 mat=0 anti=343
+[charges]   w=45 mat=0 anti=343
+[charges]   w=46 mat=0 anti=343
+[charges]   w=47 mat=0 anti=343
+[charges]   w=48 mat=343 anti=0
+[charges]   w=49 mat=343 anti=0
+[charges]   w=50 mat=343 anti=0
+[charges]   w=51 mat=343 anti=0
+[charges]   w=52 mat=343 anti=0
+[charges]   w=53 mat=343 anti=0
+[charges]   w=54 mat=0 anti=343
+[charges]   w=55 mat=0 anti=343
+[charges]   w=56 mat=343 anti=0
+[charges]   w=57 mat=343 anti=0
+[charges]   w=58 mat=0 anti=343
+[charges]   w=59 mat=0 anti=343
+[charges]   w=60 mat=0 anti=343
+[charges]   w=61 mat=0 anti=343
+[charges]   w=62 mat=0 anti=343
+[charges]   w=63 mat=0 anti=343
+[charges]   w=64 mat=343 anti=0
+[charges]   w=65 mat=343 anti=0
+[charges]   w=66 mat=343 anti=0
+[charges]   w=67 mat=343 anti=0
+[charges]   w=68 mat=343 anti=0
+[charges]   w=69 mat=343 anti=0
+[charges]   w=70 mat=0 anti=343
+[charges]   w=71 mat=0 anti=343
+[charges]   w=72 mat=343 anti=0
+[charges]   w=73 mat=343 anti=0
+[charges]   w=74 mat=0 anti=343
+[charges]   w=75 mat=0 anti=343
+[charges]   w=76 mat=0 anti=343
+[charges]   w=77 mat=0 anti=343
+[charges]   w=78 mat=0 anti=343
+[charges]   w=79 mat=0 anti=343
+[charges]   w=80 mat=343 anti=0
+[charges]   w=81 mat=343 anti=0
+[charges]   w=82 mat=343 anti=0
+[charges]   w=83 mat=343 anti=0
+[charges]   w=84 mat=343 anti=0
+[charges]   w=85 mat=343 anti=0
+[charges]   w=86 mat=0 anti=343
+[charges]   w=87 mat=0 anti=343
+[charges]   w=88 mat=343 anti=0
+[charges]   w=89 mat=343 anti=0
+[charges]   w=90 mat=0 anti=343
+[charges]   w=91 mat=0 anti=343
+[charges]   w=92 mat=0 anti=343
+[charges]   w=93 mat=0 anti=343
+[charges]   w=94 mat=0 anti=343
+[charges]   w=95 mat=0 anti=343
+[charges]   w=96 mat=343 anti=0
+[charges]   w=97 mat=343 anti=0
+[charges]   w=98 mat=343 anti=0
+[charges]   w=99 mat=343 anti=0
+[charges]   w=100 mat=343 anti=0
+[charges]   w=101 mat=343 anti=0
+[charges]   w=102 mat=0 anti=343
+[charges]   w=103 mat=0 anti=343
+[charges]   w=104 mat=343 anti=0
+[charges]   w=105 mat=343 anti=0
+[charges]   w=106 mat=0 anti=343
+[charges]   w=107 mat=0 anti=343
+[charges]   w=108 mat=0 anti=343
+[charges]   w=109 mat=0 anti=343
+[charges]   w=110 mat=0 anti=343
+[charges]   w=111 mat=0 anti=343
+[charges]   w=112 mat=343 anti=0
+[charges]   w=113 mat=343 anti=0
+[charges]   w=114 mat=343 anti=0
+[charges]   w=115 mat=343 anti=0
+[charges]   w=116 mat=343 anti=0
+[charges]   w=117 mat=343 anti=0
+[charges]   w=118 mat=0 anti=343
+[charges]   w=119 mat=0 anti=343
+[charges]   w=120 mat=343 anti=0
+[charges]   w=121 mat=343 anti=0
+[charges]   w=122 mat=0 anti=343
+[charges]   w=123 mat=0 anti=343
+[charges]   w=124 mat=0 anti=343
+[charges]   w=125 mat=0 anti=343
+[charges]   w=126 mat=0 anti=343
+[charges]   w=127 mat=0 anti=343
+[charges]   w=128 mat=343 anti=0
+[charges]   w=129 mat=343 anti=0
+[charges]   w=130 mat=343 anti=0
+[charges]   w=131 mat=343 anti=0
+[charges]   w=132 mat=343 anti=0
+[charges]   w=133 mat=343 anti=0
+[charges]   w=134 mat=0 anti=343
+[charges]   w=135 mat=0 anti=343
+[charges]   w=136 mat=343 anti=0
+[charges]   w=137 mat=343 anti=0
+[charges]   w=138 mat=0 anti=343
+[charges]   w=139 mat=0 anti=343
+[charges]   w=140 mat=0 anti=343
+[charges]   w=141 mat=0 anti=343
+[charges]   w=142 mat=0 anti=343
+[charges]   w=143 mat=0 anti=343
+[charges]   w=144 mat=343 anti=0
+[charges]   w=145 mat=343 anti=0
+[charges]   w=146 mat=343 anti=0
+DEBUG phase tick 300: center u=130 v=9 active=1 pB=0 sB=0 pol=(0,0) bstamp=0
+DEBUG phase tick 400: center u=134 v=12 active=1 pB=0 sB=0 pol=(0,0) bstamp=0
+DEBUG phase tick 500: center u=132 v=6 active=1 pB=0 sB=0 pol=(0,0) bstamp=0
+[charges] tick=513 MAT=25725 ANTI=24696 mat/total=0.510204 | orphanM=0 orphanA=0 | turnarounds V=0 D=0
+[charges] closure tick=513 Disl=+1029 Dorph=+0 Dtot=+1029 Dorb=+13377 Dumb=-12348 DslOrb=+13377 DslUmb=-12348 | orbM=19551 orbA=6174 umbM=6174 umbA=18522
+[charges] retina tick=513 pairM=0 pairA=0 dPair=+0 freeM=25725 freeA=24696 freeD=+1029 | hidAnti orb=0 umb=0 form=0 blob=0 ann=0 | Dtot==dPair+freeD: OK
+[charges]   w=0 mat=343 anti=0
+[charges]   w=1 mat=343 anti=0
+[charges]   w=2 mat=343 anti=0
+[charges]   w=3 mat=343 anti=0
+[charges]   w=4 mat=343 anti=0
+[charges]   w=5 mat=343 anti=0
+[charges]   w=6 mat=0 anti=343
+[charges]   w=7 mat=0 anti=343
+[charges]   w=8 mat=343 anti=0
+[charges]   w=9 mat=343 anti=0
+[charges]   w=10 mat=0 anti=343
+[charges]   w=11 mat=0 anti=343
+[charges]   w=12 mat=0 anti=343
+[charges]   w=13 mat=0 anti=343
+[charges]   w=14 mat=0 anti=343
+[charges]   w=15 mat=0 anti=343
+[charges]   w=16 mat=343 anti=0
+[charges]   w=17 mat=343 anti=0
+[charges]   w=18 mat=343 anti=0
+[charges]   w=19 mat=343 anti=0
+[charges]   w=20 mat=343 anti=0
+[charges]   w=21 mat=343 anti=0
+[charges]   w=22 mat=0 anti=343
+[charges]   w=23 mat=0 anti=343
+[charges]   w=24 mat=343 anti=0
+[charges]   w=25 mat=343 anti=0
+[charges]   w=26 mat=0 anti=343
+[charges]   w=27 mat=0 anti=343
+[charges]   w=28 mat=0 anti=343
+[charges]   w=29 mat=0 anti=343
+[charges]   w=30 mat=0 anti=343
+[charges]   w=31 mat=0 anti=343
+[charges]   w=32 mat=343 anti=0
+[charges]   w=33 mat=343 anti=0
+[charges]   w=34 mat=343 anti=0
+[charges]   w=35 mat=343 anti=0
+[charges]   w=36 mat=343 anti=0
+[charges]   w=37 mat=343 anti=0
+[charges]   w=38 mat=0 anti=343
+[charges]   w=39 mat=0 anti=343
+[charges]   w=40 mat=343 anti=0
+[charges]   w=41 mat=343 anti=0
+[charges]   w=42 mat=0 anti=343
+[charges]   w=43 mat=0 anti=343
+[charges]   w=44 mat=0 anti=343
+[charges]   w=45 mat=0 anti=343
+[charges]   w=46 mat=0 anti=343
+[charges]   w=47 mat=0 anti=343
+[charges]   w=48 mat=343 anti=0
+[charges]   w=49 mat=343 anti=0
+[charges]   w=50 mat=343 anti=0
+[charges]   w=51 mat=343 anti=0
+[charges]   w=52 mat=343 anti=0
+[charges]   w=53 mat=343 anti=0
+[charges]   w=54 mat=0 anti=343
+[charges]   w=55 mat=0 anti=343
+[charges]   w=56 mat=343 anti=0
+[charges]   w=57 mat=343 anti=0
+[charges]   w=58 mat=0 anti=343
+[charges]   w=59 mat=0 anti=343
+[charges]   w=60 mat=0 anti=343
+[charges]   w=61 mat=0 anti=343
+[charges]   w=62 mat=0 anti=343
+[charges]   w=63 mat=0 anti=343
+[charges]   w=64 mat=343 anti=0
+[charges]   w=65 mat=343 anti=0
+[charges]   w=66 mat=343 anti=0
+[charges]   w=67 mat=343 anti=0
+[charges]   w=68 mat=343 anti=0
+[charges]   w=69 mat=343 anti=0
+[charges]   w=70 mat=0 anti=343
+[charges]   w=71 mat=0 anti=343
+[charges]   w=72 mat=343 anti=0
+[charges]   w=73 mat=343 anti=0
+[charges]   w=74 mat=0 anti=343
+[charges]   w=75 mat=0 anti=343
+[charges]   w=76 mat=0 anti=343
+[charges]   w=77 mat=0 anti=343
+[charges]   w=78 mat=0 anti=343
+[charges]   w=79 mat=0 anti=343
+[charges]   w=80 mat=343 anti=0
+[charges]   w=81 mat=343 anti=0
+[charges]   w=82 mat=343 anti=0
+[charges]   w=83 mat=343 anti=0
+[charges]   w=84 mat=343 anti=0
+[charges]   w=85 mat=343 anti=0
+[charges]   w=86 mat=0 anti=343
+[charges]   w=87 mat=0 anti=343
+[charges]   w=88 mat=343 anti=0
+[charges]   w=89 mat=343 anti=0
+[charges]   w=90 mat=0 anti=343
+[charges]   w=91 mat=0 anti=343
+[charges]   w=92 mat=0 anti=343
+[charges]   w=93 mat=0 anti=343
+[charges]   w=94 mat=0 anti=343
+[charges]   w=95 mat=0 anti=343
+[charges]   w=96 mat=343 anti=0
+[charges]   w=97 mat=343 anti=0
+[charges]   w=98 mat=343 anti=0
+[charges]   w=99 mat=343 anti=0
+[charges]   w=100 mat=343 anti=0
+[charges]   w=101 mat=343 anti=0
+[charges]   w=102 mat=0 anti=343
+[charges]   w=103 mat=0 anti=343
+[charges]   w=104 mat=343 anti=0
+[charges]   w=105 mat=343 anti=0
+[charges]   w=106 mat=0 anti=343
+[charges]   w=107 mat=0 anti=343
+[charges]   w=108 mat=0 anti=343
+[charges]   w=109 mat=0 anti=343
+[charges]   w=110 mat=0 anti=343
+[charges]   w=111 mat=0 anti=343
+[charges]   w=112 mat=343 anti=0
+[charges]   w=113 mat=343 anti=0
+[charges]   w=114 mat=343 anti=0
+[charges]   w=115 mat=343 anti=0
+[charges]   w=116 mat=343 anti=0
+[charges]   w=117 mat=343 anti=0
+[charges]   w=118 mat=0 anti=343
+[charges]   w=119 mat=0 anti=343
+[charges]   w=120 mat=343 anti=0
+[charges]   w=121 mat=343 anti=0
+[charges]   w=122 mat=0 anti=343
+[charges]   w=123 mat=0 anti=343
+[charges]   w=124 mat=0 anti=343
+[charges]   w=125 mat=0 anti=343
+[charges]   w=126 mat=0 anti=343
+[charges]   w=127 mat=0 anti=343
+[charges]   w=128 mat=343 anti=0
+[charges]   w=129 mat=343 anti=0
+[charges]   w=130 mat=343 anti=0
+[charges]   w=131 mat=343 anti=0
+[charges]   w=132 mat=343 anti=0
+[charges]   w=133 mat=343 anti=0
+[charges]   w=134 mat=0 anti=343
+[charges]   w=135 mat=0 anti=343
+[charges]   w=136 mat=343 anti=0
+[charges]   w=137 mat=343 anti=0
+[charges]   w=138 mat=0 anti=343
+[charges]   w=139 mat=0 anti=343
+[charges]   w=140 mat=0 anti=343
+[charges]   w=141 mat=0 anti=343
+[charges]   w=142 mat=0 anti=343
+[charges]   w=143 mat=0 anti=343
+[charges]   w=144 mat=343 anti=0
+[charges]   w=145 mat=343 anti=0
+[charges]   w=146 mat=343 anti=0
+    1     1  147    147       0     0     0         0      0      0      0      0        0    0   147 0   50274  1    50421 
+#   frame 1 encounter latch: homb_events=+0 (cumulative 0)
+#   frame 1 move-align: moved=0  sign-match 0/1/2/3 = 0/0/0/0
+#   frame 1 move-split: flight=0  0/1/2/3 = 0/0/0/0  |  cohesion=0  0/1/2/3 = 0/0/0/0
+#   frame 1 move-drift: flight on its octant side (all 3 axes) = 0, octant-aligned = 0  |  off side (<3 axes) = 0, octant-aligned = 0
+#   frame 1 move-mask: one writer = 0 (octant-aligned 0)  |  two or more writers = 0 (octant-aligned 0)
+#   frame 1 separation: occupiedCenters=1 sources=147 moved-this-frame=0  cB=0 kB=0 homB=0 reloc!=0(sources)=0  m!=0(sources)=0/147 m!=0(cells)=0  pol!=0(cells)=0
+#   frame 1 positions: Orbis n=75 mean=(0.000,0.000,0.000) | Umbra n=72 mean=(0.000,0.000,0.000) | CoM-(centre)=(0.000,0.000,0.000)
+#   frame 1 classes:  k0(n=20)d=(+0.00,+0.00,+0.00)  k1(n=19)d=(+0.00,+0.00,+0.00)  k2(n=18)d=(+0.00,+0.00,+0.00)  k3(n=18)d=(+0.00,+0.00,+0.00)  k4(n=18)d=(+0.00,+0.00,+0.00)  k5(n=18)d=(+0.00,+0.00,+0.00)  k6(n=18)d=(+0.00,+0.00,+0.00)  k7(n=18)d=(+0.00,+0.00,+0.00)
+#   frame 1 axis-align: m==0=147  sign-match 0/1/2/3 = 0/0/0/0
+#   frame 1 clocks: resets=0  [reemit=0 (non-zero impulse=0)  reloc-at-centre=0 applied=0  cB=0  flood-to-0=0]  flood-pulls=0 | commit: pending-impulse=0, |reloc| at commit=0 | booked-on-lattice=0 drained=0 writeback-sum=0 net-layers=0 net-max=0 charge-dispersion=0 polar-seed=0 commit-calls=553 | ticks=553 captured-sum=0 | s2B fired in pass=0 (t-off=0, left-active=0)  cells-left-active=0 | relay: reseat-step=0 (octant-aligned=0 other=0) reseat-at-contact=0 | reseed-carried-reloc=0
+#   frame 1 charge words (word : addresses):  000000:20  000004:18  000025:19  000029:18  000042:18  000046:18  000051:18  000055:18
+#   distinct words=8  addresses that admit a pair rule=56
+DEBUG phase tick 600: center u=79 v=12 active=1 pB=0 sB=0 pol=(0,0) bstamp=0
+DEBUG phase tick 700: center u=78 v=10 active=1 pB=0 sB=0 pol=(0,0) bstamp=0
+[charges] tick=769 MAT=25725 ANTI=24696 mat/total=0.510204 | orphanM=0 orphanA=0 | turnarounds V=0 D=0
+[charges] closure tick=769 Disl=+1029 Dorph=+0 Dtot=+1029 Dorb=+13377 Dumb=-12348 DslOrb=+13377 DslUmb=-12348 | orbM=19551 orbA=6174 umbM=6174 umbA=18522
+[charges] retina tick=769 pairM=0 pairA=0 dPair=+0 freeM=25725 freeA=24696 freeD=+1029 | hidAnti orb=0 umb=0 form=0 blob=0 ann=0 | Dtot==dPair+freeD: OK
+[charges]   w=0 mat=343 anti=0
+[charges]   w=1 mat=343 anti=0
+[charges]   w=2 mat=343 anti=0
+[charges]   w=3 mat=343 anti=0
+[charges]   w=4 mat=343 anti=0
+[charges]   w=5 mat=343 anti=0
+[charges]   w=6 mat=0 anti=343
+[charges]   w=7 mat=0 anti=343
+[charges]   w=8 mat=343 anti=0
+[charges]   w=9 mat=343 anti=0
+[charges]   w=10 mat=0 anti=343
+[charges]   w=11 mat=0 anti=343
+[charges]   w=12 mat=0 anti=343
+[charges]   w=13 mat=0 anti=343
+[charges]   w=14 mat=0 anti=343
+[charges]   w=15 mat=0 anti=343
+[charges]   w=16 mat=343 anti=0
+[charges]   w=17 mat=343 anti=0
+[charges]   w=18 mat=343 anti=0
+[charges]   w=19 mat=343 anti=0
+[charges]   w=20 mat=343 anti=0
+[charges]   w=21 mat=343 anti=0
+[charges]   w=22 mat=0 anti=343
+[charges]   w=23 mat=0 anti=343
+[charges]   w=24 mat=343 anti=0
+[charges]   w=25 mat=343 anti=0
+[charges]   w=26 mat=0 anti=343
+[charges]   w=27 mat=0 anti=343
+[charges]   w=28 mat=0 anti=343
+[charges]   w=29 mat=0 anti=343
+[charges]   w=30 mat=0 anti=343
+[charges]   w=31 mat=0 anti=343
+[charges]   w=32 mat=343 anti=0
+[charges]   w=33 mat=343 anti=0
+[charges]   w=34 mat=343 anti=0
+[charges]   w=35 mat=343 anti=0
+[charges]   w=36 mat=343 anti=0
+[charges]   w=37 mat=343 anti=0
+[charges]   w=38 mat=0 anti=343
+[charges]   w=39 mat=0 anti=343
+[charges]   w=40 mat=343 anti=0
+[charges]   w=41 mat=343 anti=0
+[charges]   w=42 mat=0 anti=343
+[charges]   w=43 mat=0 anti=343
+[charges]   w=44 mat=0 anti=343
+[charges]   w=45 mat=0 anti=343
+[charges]   w=46 mat=0 anti=343
+[charges]   w=47 mat=0 anti=343
+[charges]   w=48 mat=343 anti=0
+[charges]   w=49 mat=343 anti=0
+[charges]   w=50 mat=343 anti=0
+[charges]   w=51 mat=343 anti=0
+[charges]   w=52 mat=343 anti=0
+[charges]   w=53 mat=343 anti=0
+[charges]   w=54 mat=0 anti=343
+[charges]   w=55 mat=0 anti=343
+[charges]   w=56 mat=343 anti=0
+[charges]   w=57 mat=343 anti=0
+[charges]   w=58 mat=0 anti=343
+[charges]   w=59 mat=0 anti=343
+[charges]   w=60 mat=0 anti=343
+[charges]   w=61 mat=0 anti=343
+[charges]   w=62 mat=0 anti=343
+[charges]   w=63 mat=0 anti=343
+[charges]   w=64 mat=343 anti=0
+[charges]   w=65 mat=343 anti=0
+[charges]   w=66 mat=343 anti=0
+[charges]   w=67 mat=343 anti=0
+[charges]   w=68 mat=343 anti=0
+[charges]   w=69 mat=343 anti=0
+[charges]   w=70 mat=0 anti=343
+[charges]   w=71 mat=0 anti=343
+[charges]   w=72 mat=343 anti=0
+[charges]   w=73 mat=343 anti=0
+[charges]   w=74 mat=0 anti=343
+[charges]   w=75 mat=0 anti=343
+[charges]   w=76 mat=0 anti=343
+[charges]   w=77 mat=0 anti=343
+[charges]   w=78 mat=0 anti=343
+[charges]   w=79 mat=0 anti=343
+[charges]   w=80 mat=343 anti=0
+[charges]   w=81 mat=343 anti=0
+[charges]   w=82 mat=343 anti=0
+[charges]   w=83 mat=343 anti=0
+[charges]   w=84 mat=343 anti=0
+[charges]   w=85 mat=343 anti=0
+[charges]   w=86 mat=0 anti=343
+[charges]   w=87 mat=0 anti=343
+[charges]   w=88 mat=343 anti=0
+[charges]   w=89 mat=343 anti=0
+[charges]   w=90 mat=0 anti=343
+[charges]   w=91 mat=0 anti=343
+[charges]   w=92 mat=0 anti=343
+[charges]   w=93 mat=0 anti=343
+[charges]   w=94 mat=0 anti=343
+[charges]   w=95 mat=0 anti=343
+[charges]   w=96 mat=343 anti=0
+[charges]   w=97 mat=343 anti=0
+[charges]   w=98 mat=343 anti=0
+[charges]   w=99 mat=343 anti=0
+[charges]   w=100 mat=343 anti=0
+[charges]   w=101 mat=343 anti=0
+[charges]   w=102 mat=0 anti=343
+[charges]   w=103 mat=0 anti=343
+[charges]   w=104 mat=343 anti=0
+[charges]   w=105 mat=343 anti=0
+[charges]   w=106 mat=0 anti=343
+[charges]   w=107 mat=0 anti=343
+[charges]   w=108 mat=0 anti=343
+[charges]   w=109 mat=0 anti=343
+[charges]   w=110 mat=0 anti=343
+[charges]   w=111 mat=0 anti=343
+[charges]   w=112 mat=343 anti=0
+[charges]   w=113 mat=343 anti=0
+[charges]   w=114 mat=343 anti=0
+[charges]   w=115 mat=343 anti=0
+[charges]   w=116 mat=343 anti=0
+[charges]   w=117 mat=343 anti=0
+[charges]   w=118 mat=0 anti=343
+[charges]   w=119 mat=0 anti=343
+[charges]   w=120 mat=343 anti=0
+[charges]   w=121 mat=343 anti=0
+[charges]   w=122 mat=0 anti=343
+[charges]   w=123 mat=0 anti=343
+[charges]   w=124 mat=0 anti=343
+[charges]   w=125 mat=0 anti=343
+[charges]   w=126 mat=0 anti=343
+[charges]   w=127 mat=0 anti=343
+[charges]   w=128 mat=343 anti=0
+[charges]   w=129 mat=343 anti=0
+[charges]   w=130 mat=343 anti=0
+[charges]   w=131 mat=343 anti=0
+[charges]   w=132 mat=343 anti=0
+[charges]   w=133 mat=343 anti=0
+[charges]   w=134 mat=0 anti=343
+[charges]   w=135 mat=0 anti=343
+[charges]   w=136 mat=343 anti=0
+[charges]   w=137 mat=343 anti=0
+[charges]   w=138 mat=0 anti=343
+[charges]   w=139 mat=0 anti=343
+[charges]   w=140 mat=0 anti=343
+[charges]   w=141 mat=0 anti=343
+[charges]   w=142 mat=0 anti=343
+[charges]   w=143 mat=0 anti=343
+[charges]   w=144 mat=343 anti=0
+[charges]   w=145 mat=343 anti=0
+[charges]   w=146 mat=343 anti=0
+DEBUG phase tick 800: center u=77 v=11 active=1 pB=0 sB=0 pol=(0,0) bstamp=0
+DEBUG phase tick 900: center u=76 v=9 active=1 pB=0 sB=0 pol=(0,0) bstamp=0
+DEBUG phase tick 1000: center u=75 v=12 active=1 pB=0 sB=0 pol=(0,0) bstamp=0
+[charges] tick=1025 MAT=25725 ANTI=24696 mat/total=0.510204 | orphanM=0 orphanA=0 | turnarounds V=0 D=0
+[charges] closure tick=1025 Disl=+1029 Dorph=+0 Dtot=+1029 Dorb=+13377 Dumb=-12348 DslOrb=+13377 DslUmb=-12348 | orbM=19551 orbA=6174 umbM=6174 umbA=18522
+[charges] retina tick=1025 pairM=0 pairA=0 dPair=+0 freeM=25725 freeA=24696 freeD=+1029 | hidAnti orb=0 umb=0 form=0 blob=0 ann=0 | Dtot==dPair+freeD: OK
+[charges]   w=0 mat=343 anti=0
+[charges]   w=1 mat=343 anti=0
+[charges]   w=2 mat=343 anti=0
+[charges]   w=3 mat=343 anti=0
+[charges]   w=4 mat=343 anti=0
+[charges]   w=5 mat=343 anti=0
+[charges]   w=6 mat=0 anti=343
+[charges]   w=7 mat=0 anti=343
+[charges]   w=8 mat=343 anti=0
+[charges]   w=9 mat=343 anti=0
+[charges]   w=10 mat=0 anti=343
+[charges]   w=11 mat=0 anti=343
+[charges]   w=12 mat=0 anti=343
+[charges]   w=13 mat=0 anti=343
+[charges]   w=14 mat=0 anti=343
+[charges]   w=15 mat=0 anti=343
+[charges]   w=16 mat=343 anti=0
+[charges]   w=17 mat=343 anti=0
+[charges]   w=18 mat=343 anti=0
+[charges]   w=19 mat=343 anti=0
+[charges]   w=20 mat=343 anti=0
+[charges]   w=21 mat=343 anti=0
+[charges]   w=22 mat=0 anti=343
+[charges]   w=23 mat=0 anti=343
+[charges]   w=24 mat=343 anti=0
+[charges]   w=25 mat=343 anti=0
+[charges]   w=26 mat=0 anti=343
+[charges]   w=27 mat=0 anti=343
+[charges]   w=28 mat=0 anti=343
+[charges]   w=29 mat=0 anti=343
+[charges]   w=30 mat=0 anti=343
+[charges]   w=31 mat=0 anti=343
+[charges]   w=32 mat=343 anti=0
+[charges]   w=33 mat=343 anti=0
+[charges]   w=34 mat=343 anti=0
+[charges]   w=35 mat=343 anti=0
+[charges]   w=36 mat=343 anti=0
+[charges]   w=37 mat=343 anti=0
+[charges]   w=38 mat=0 anti=343
+[charges]   w=39 mat=0 anti=343
+[charges]   w=40 mat=343 anti=0
+[charges]   w=41 mat=343 anti=0
+[charges]   w=42 mat=0 anti=343
+[charges]   w=43 mat=0 anti=343
+[charges]   w=44 mat=0 anti=343
+[charges]   w=45 mat=0 anti=343
+[charges]   w=46 mat=0 anti=343
+[charges]   w=47 mat=0 anti=343
+[charges]   w=48 mat=343 anti=0
+[charges]   w=49 mat=343 anti=0
+[charges]   w=50 mat=343 anti=0
+[charges]   w=51 mat=343 anti=0
+[charges]   w=52 mat=343 anti=0
+[charges]   w=53 mat=343 anti=0
+[charges]   w=54 mat=0 anti=343
+[charges]   w=55 mat=0 anti=343
+[charges]   w=56 mat=343 anti=0
+[charges]   w=57 mat=343 anti=0
+[charges]   w=58 mat=0 anti=343
+[charges]   w=59 mat=0 anti=343
+[charges]   w=60 mat=0 anti=343
+[charges]   w=61 mat=0 anti=343
+[charges]   w=62 mat=0 anti=343
+[charges]   w=63 mat=0 anti=343
+[charges]   w=64 mat=343 anti=0
+[charges]   w=65 mat=343 anti=0
+[charges]   w=66 mat=343 anti=0
+[charges]   w=67 mat=343 anti=0
+[charges]   w=68 mat=343 anti=0
+[charges]   w=69 mat=343 anti=0
+[charges]   w=70 mat=0 anti=343
+[charges]   w=71 mat=0 anti=343
+[charges]   w=72 mat=343 anti=0
+[charges]   w=73 mat=343 anti=0
+[charges]   w=74 mat=0 anti=343
+[charges]   w=75 mat=0 anti=343
+[charges]   w=76 mat=0 anti=343
+[charges]   w=77 mat=0 anti=343
+[charges]   w=78 mat=0 anti=343
+[charges]   w=79 mat=0 anti=343
+[charges]   w=80 mat=343 anti=0
+[charges]   w=81 mat=343 anti=0
+[charges]   w=82 mat=343 anti=0
+[charges]   w=83 mat=343 anti=0
+[charges]   w=84 mat=343 anti=0
+[charges]   w=85 mat=343 anti=0
+[charges]   w=86 mat=0 anti=343
+[charges]   w=87 mat=0 anti=343
+[charges]   w=88 mat=343 anti=0
+[charges]   w=89 mat=343 anti=0
+[charges]   w=90 mat=0 anti=343
+[charges]   w=91 mat=0 anti=343
+[charges]   w=92 mat=0 anti=343
+[charges]   w=93 mat=0 anti=343
+[charges]   w=94 mat=0 anti=343
+[charges]   w=95 mat=0 anti=343
+[charges]   w=96 mat=343 anti=0
+[charges]   w=97 mat=343 anti=0
+[charges]   w=98 mat=343 anti=0
+[charges]   w=99 mat=343 anti=0
+[charges]   w=100 mat=343 anti=0
+[charges]   w=101 mat=343 anti=0
+[charges]   w=102 mat=0 anti=343
+[charges]   w=103 mat=0 anti=343
+[charges]   w=104 mat=343 anti=0
+[charges]   w=105 mat=343 anti=0
+[charges]   w=106 mat=0 anti=343
+[charges]   w=107 mat=0 anti=343
+[charges]   w=108 mat=0 anti=343
+[charges]   w=109 mat=0 anti=343
+[charges]   w=110 mat=0 anti=343
+[charges]   w=111 mat=0 anti=343
+[charges]   w=112 mat=343 anti=0
+[charges]   w=113 mat=343 anti=0
+[charges]   w=114 mat=343 anti=0
+[charges]   w=115 mat=343 anti=0
+[charges]   w=116 mat=343 anti=0
+[charges]   w=117 mat=343 anti=0
+[charges]   w=118 mat=0 anti=343
+[charges]   w=119 mat=0 anti=343
+[charges]   w=120 mat=343 anti=0
+[charges]   w=121 mat=343 anti=0
+[charges]   w=122 mat=0 anti=343
+[charges]   w=123 mat=0 anti=343
+[charges]   w=124 mat=0 anti=343
+[charges]   w=125 mat=0 anti=343
+[charges]   w=126 mat=0 anti=343
+[charges]   w=127 mat=0 anti=343
+[charges]   w=128 mat=343 anti=0
+[charges]   w=129 mat=343 anti=0
+[charges]   w=130 mat=343 anti=0
+[charges]   w=131 mat=343 anti=0
+[charges]   w=132 mat=343 anti=0
+[charges]   w=133 mat=343 anti=0
+[charges]   w=134 mat=0 anti=343
+[charges]   w=135 mat=0 anti=343
+[charges]   w=136 mat=343 anti=0
+[charges]   w=137 mat=343 anti=0
+[charges]   w=138 mat=0 anti=343
+[charges]   w=139 mat=0 anti=343
+[charges]   w=140 mat=0 anti=343
+[charges]   w=141 mat=0 anti=343
+[charges]   w=142 mat=0 anti=343
+[charges]   w=143 mat=0 anti=343
+[charges]   w=144 mat=343 anti=0
+[charges]   w=145 mat=343 anti=0
+[charges]   w=146 mat=343 anti=0
+DEBUG phase tick 1100: center u=76 v=12 active=1 pB=0 sB=0 pol=(0,0) bstamp=0
+    2     2  3822   3822      0     3675  0         0      0      0      0      0        139  8   0   0   46599  1    50421 
+#   frame 2 encounter latch: homb_events=+0 (cumulative 0)
+#   frame 2 move-align: moved=147  sign-match 0/1/2/3 = 0/0/0/147
+#   frame 2 move-split: flight=147  0/1/2/3 = 0/0/0/147  |  cohesion=0  0/1/2/3 = 0/0/0/0
+#   frame 2 move-drift: flight on its octant side (all 3 axes) = 147, octant-aligned = 147  |  off side (<3 axes) = 0, octant-aligned = 0
+#   frame 2 move-mask: one writer = 147 (octant-aligned 147)  |  two or more writers = 0 (octant-aligned 0)
+#   frame 2 separation: occupiedCenters=8 sources=147 moved-this-frame=147  cB=0 kB=0 homB=0 reloc!=0(sources)=0  m!=0(sources)=0/147 m!=0(cells)=0  pol!=0(cells)=0
+#   frame 2 positions: Orbis n=75 mean=(-0.040,-1.000,-0.013) | Umbra n=72 mean=(0.000,1.000,0.000) | CoM-(centre)=(-0.020,-0.020,-0.007)
+#   frame 2 classes:  k0(n=20)d=(-1.00,-1.00,-1.00)  k1(n=19)d=(-1.00,-1.00,+1.00)  k2(n=18)d=(-1.00,+1.00,-1.00)  k3(n=18)d=(-1.00,+1.00,+1.00)  k4(n=18)d=(+1.00,-1.00,-1.00)  k5(n=18)d=(+1.00,-1.00,+1.00)  k6(n=18)d=(+1.00,+1.00,-1.00)  k7(n=18)d=(+1.00,+1.00,+1.00)
+#   frame 2 axis-align: m==0=147  sign-match 0/1/2/3 = 0/0/0/0
+#   frame 2 clocks: resets=0  [reemit=0 (non-zero impulse=0)  reloc-at-centre=147 applied=147  cB=0  flood-to-0=0]  flood-pulls=0 | commit: pending-impulse=0, |reloc| at commit=0 | booked-on-lattice=147 drained=147 writeback-sum=441 net-layers=147 net-max=3 charge-dispersion=147 polar-seed=0 commit-calls=553 | ticks=553 captured-sum=0 | s2B fired in pass=0 (t-off=0, left-active=0)  cells-left-active=0 | relay: reseat-step=0 (octant-aligned=0 other=0) reseat-at-contact=0 | reseed-carried-reloc=0
+#   frame 2 charge words (word : addresses):  000000:20  000004:18  000025:19  000029:18  000042:18  000046:18  000051:18  000055:18
+DEBUG phase tick 1200: center u=79 v=12 active=0 pB=0 sB=0 pol=(0,0) bstamp=0
+[charges] tick=1281 MAT=25725 ANTI=24696 mat/total=0.510204 | orphanM=0 orphanA=0 | turnarounds V=0 D=0
+[charges] closure tick=1281 Disl=+1029 Dorph=+0 Dtot=+1029 Dorb=+13377 Dumb=-12348 DslOrb=+13377 DslUmb=-12348 | orbM=19551 orbA=6174 umbM=6174 umbA=18522
+[charges] retina tick=1281 pairM=0 pairA=0 dPair=+0 freeM=25725 freeA=24696 freeD=+1029 | hidAnti orb=0 umb=0 form=0 blob=0 ann=0 | Dtot==dPair+freeD: OK
+[charges]   w=0 mat=343 anti=0
+[charges]   w=1 mat=343 anti=0
+[charges]   w=2 mat=343 anti=0
+[charges]   w=3 mat=343 anti=0
+[charges]   w=4 mat=343 anti=0
+[charges]   w=5 mat=343 anti=0
+[charges]   w=6 mat=0 anti=343
+[charges]   w=7 mat=0 anti=343
+[charges]   w=8 mat=343 anti=0
+[charges]   w=9 mat=343 anti=0
+[charges]   w=10 mat=0 anti=343
+[charges]   w=11 mat=0 anti=343
+[charges]   w=12 mat=0 anti=343
+[charges]   w=13 mat=0 anti=343
+[charges]   w=14 mat=0 anti=343
+[charges]   w=15 mat=0 anti=343
+[charges]   w=16 mat=343 anti=0
+[charges]   w=17 mat=343 anti=0
+[charges]   w=18 mat=343 anti=0
+[charges]   w=19 mat=343 anti=0
+[charges]   w=20 mat=343 anti=0
+[charges]   w=21 mat=343 anti=0
+[charges]   w=22 mat=0 anti=343
+[charges]   w=23 mat=0 anti=343
+[charges]   w=24 mat=343 anti=0
+[charges]   w=25 mat=343 anti=0
+[charges]   w=26 mat=0 anti=343
+[charges]   w=27 mat=0 anti=343
+[charges]   w=28 mat=0 anti=343
+[charges]   w=29 mat=0 anti=343
+[charges]   w=30 mat=0 anti=343
+[charges]   w=31 mat=0 anti=343
+[charges]   w=32 mat=343 anti=0
+[charges]   w=33 mat=343 anti=0
+[charges]   w=34 mat=343 anti=0
+[charges]   w=35 mat=343 anti=0
+[charges]   w=36 mat=343 anti=0
+[charges]   w=37 mat=343 anti=0
+[charges]   w=38 mat=0 anti=343
+[charges]   w=39 mat=0 anti=343
+[charges]   w=40 mat=343 anti=0
+[charges]   w=41 mat=343 anti=0
+[charges]   w=42 mat=0 anti=343
+[charges]   w=43 mat=0 anti=343
+[charges]   w=44 mat=0 anti=343
+[charges]   w=45 mat=0 anti=343
+[charges]   w=46 mat=0 anti=343
+[charges]   w=47 mat=0 anti=343
+[charges]   w=48 mat=343 anti=0
+[charges]   w=49 mat=343 anti=0
+[charges]   w=50 mat=343 anti=0
+[charges]   w=51 mat=343 anti=0
+[charges]   w=52 mat=343 anti=0
+[charges]   w=53 mat=343 anti=0
+[charges]   w=54 mat=0 anti=343
+[charges]   w=55 mat=0 anti=343
+[charges]   w=56 mat=343 anti=0
+[charges]   w=57 mat=343 anti=0
+[charges]   w=58 mat=0 anti=343
+[charges]   w=59 mat=0 anti=343
+[charges]   w=60 mat=0 anti=343
+[charges]   w=61 mat=0 anti=343
+[charges]   w=62 mat=0 anti=343
+[charges]   w=63 mat=0 anti=343
+[charges]   w=64 mat=343 anti=0
+[charges]   w=65 mat=343 anti=0
+[charges]   w=66 mat=343 anti=0
+[charges]   w=67 mat=343 anti=0
+[charges]   w=68 mat=343 anti=0
+[charges]   w=69 mat=343 anti=0
+[charges]   w=70 mat=0 anti=343
+[charges]   w=71 mat=0 anti=343
+[charges]   w=72 mat=343 anti=0
+[charges]   w=73 mat=343 anti=0
+[charges]   w=74 mat=0 anti=343
+[charges]   w=75 mat=0 anti=343
+[charges]   w=76 mat=0 anti=343
+[charges]   w=77 mat=0 anti=343
+[charges]   w=78 mat=0 anti=343
+[charges]   w=79 mat=0 anti=343
+[charges]   w=80 mat=343 anti=0
+[charges]   w=81 mat=343 anti=0
+[charges]   w=82 mat=343 anti=0
+[charges]   w=83 mat=343 anti=0
+[charges]   w=84 mat=343 anti=0
+[charges]   w=85 mat=343 anti=0
+[charges]   w=86 mat=0 anti=343
+[charges]   w=87 mat=0 anti=343
+[charges]   w=88 mat=343 anti=0
+[charges]   w=89 mat=343 anti=0
+[charges]   w=90 mat=0 anti=343
+[charges]   w=91 mat=0 anti=343
+[charges]   w=92 mat=0 anti=343
+[charges]   w=93 mat=0 anti=343
+[charges]   w=94 mat=0 anti=343
+[charges]   w=95 mat=0 anti=343
+[charges]   w=96 mat=343 anti=0
+[charges]   w=97 mat=343 anti=0
+[charges]   w=98 mat=343 anti=0
+[charges]   w=99 mat=343 anti=0
+[charges]   w=100 mat=343 anti=0
+[charges]   w=101 mat=343 anti=0
+[charges]   w=102 mat=0 anti=343
+[charges]   w=103 mat=0 anti=343
+[charges]   w=104 mat=343 anti=0
+[charges]   w=105 mat=343 anti=0
+[charges]   w=106 mat=0 anti=343
+[charges]   w=107 mat=0 anti=343
+[charges]   w=108 mat=0 anti=343
+[charges]   w=109 mat=0 anti=343
+[charges]   w=110 mat=0 anti=343
+[charges]   w=111 mat=0 anti=343
+[charges]   w=112 mat=343 anti=0
+[charges]   w=113 mat=343 anti=0
+[charges]   w=114 mat=343 anti=0
+[charges]   w=115 mat=343 anti=0
+[charges]   w=116 mat=343 anti=0
+[charges]   w=117 mat=343 anti=0
+[charges]   w=118 mat=0 anti=343
+[charges]   w=119 mat=0 anti=343
+[charges]   w=120 mat=343 anti=0
+[charges]   w=121 mat=343 anti=0
+[charges]   w=122 mat=0 anti=343
+[charges]   w=123 mat=0 anti=343
+[charges]   w=124 mat=0 anti=343
+[charges]   w=125 mat=0 anti=343
+[charges]   w=126 mat=0 anti=343
+[charges]   w=127 mat=0 anti=343
+[charges]   w=128 mat=343 anti=0
+[charges]   w=129 mat=343 anti=0
+[charges]   w=130 mat=343 anti=0
+[charges]   w=131 mat=343 anti=0
+[charges]   w=132 mat=343 anti=0
+[charges]   w=133 mat=343 anti=0
+[charges]   w=134 mat=0 anti=343
+[charges]   w=135 mat=0 anti=343
+[charges]   w=136 mat=343 anti=0
+[charges]   w=137 mat=343 anti=0
+[charges]   w=138 mat=0 anti=343
+[charges]   w=139 mat=0 anti=343
+[charges]   w=140 mat=0 anti=343
+[charges]   w=141 mat=0 anti=343
+[charges]   w=142 mat=0 anti=343
+[charges]   w=143 mat=0 anti=343
+[charges]   w=144 mat=343 anti=0
+[charges]   w=145 mat=343 anti=0
+[charges]   w=146 mat=343 anti=0
+DEBUG phase tick 1300: center u=74 v=11 active=0 pB=0 sB=0 pol=(0,0) bstamp=0
+DEBUG phase tick 1400: center u=78 v=12 active=0 pB=0 sB=0 pol=(0,0) bstamp=0
+DEBUG phase tick 1500: center u=75 v=10 active=0 pB=0 sB=0 pol=(0,0) bstamp=0
+[charges] tick=1537 MAT=25725 ANTI=24696 mat/total=0.510204 | orphanM=0 orphanA=0 | turnarounds V=0 D=0
+[charges] closure tick=1537 Disl=+1029 Dorph=+0 Dtot=+1029 Dorb=+13377 Dumb=-12348 DslOrb=+13377 DslUmb=-12348 | orbM=19551 orbA=6174 umbM=6174 umbA=18522
+[charges] retina tick=1537 pairM=0 pairA=0 dPair=+0 freeM=25725 freeA=24696 freeD=+1029 | hidAnti orb=0 umb=0 form=0 blob=0 ann=0 | Dtot==dPair+freeD: OK
+[charges]   w=0 mat=343 anti=0
+[charges]   w=1 mat=343 anti=0
+[charges]   w=2 mat=343 anti=0
+[charges]   w=3 mat=343 anti=0
+[charges]   w=4 mat=343 anti=0
+[charges]   w=5 mat=343 anti=0
+[charges]   w=6 mat=0 anti=343
+[charges]   w=7 mat=0 anti=343
+[charges]   w=8 mat=343 anti=0
+[charges]   w=9 mat=343 anti=0
+[charges]   w=10 mat=0 anti=343
+[charges]   w=11 mat=0 anti=343
+[charges]   w=12 mat=0 anti=343
+[charges]   w=13 mat=0 anti=343
+[charges]   w=14 mat=0 anti=343
+[charges]   w=15 mat=0 anti=343
+[charges]   w=16 mat=343 anti=0
+[charges]   w=17 mat=343 anti=0
+[charges]   w=18 mat=343 anti=0
+[charges]   w=19 mat=343 anti=0
+[charges]   w=20 mat=343 anti=0
+[charges]   w=21 mat=343 anti=0
+[charges]   w=22 mat=0 anti=343
+[charges]   w=23 mat=0 anti=343
+[charges]   w=24 mat=343 anti=0
+[charges]   w=25 mat=343 anti=0
+[charges]   w=26 mat=0 anti=343
+[charges]   w=27 mat=0 anti=343
+[charges]   w=28 mat=0 anti=343
+[charges]   w=29 mat=0 anti=343
+[charges]   w=30 mat=0 anti=343
+[charges]   w=31 mat=0 anti=343
+[charges]   w=32 mat=343 anti=0
+[charges]   w=33 mat=343 anti=0
+[charges]   w=34 mat=343 anti=0
+[charges]   w=35 mat=343 anti=0
+[charges]   w=36 mat=343 anti=0
+[charges]   w=37 mat=343 anti=0
+[charges]   w=38 mat=0 anti=343
+[charges]   w=39 mat=0 anti=343
+[charges]   w=40 mat=343 anti=0
+[charges]   w=41 mat=343 anti=0
+[charges]   w=42 mat=0 anti=343
+[charges]   w=43 mat=0 anti=343
+[charges]   w=44 mat=0 anti=343
+[charges]   w=45 mat=0 anti=343
+[charges]   w=46 mat=0 anti=343
+[charges]   w=47 mat=0 anti=343
+[charges]   w=48 mat=343 anti=0
+[charges]   w=49 mat=343 anti=0
+[charges]   w=50 mat=343 anti=0
+[charges]   w=51 mat=343 anti=0
+[charges]   w=52 mat=343 anti=0
+[charges]   w=53 mat=343 anti=0
+[charges]   w=54 mat=0 anti=343
+[charges]   w=55 mat=0 anti=343
+[charges]   w=56 mat=343 anti=0
+[charges]   w=57 mat=343 anti=0
+[charges]   w=58 mat=0 anti=343
+[charges]   w=59 mat=0 anti=343
+[charges]   w=60 mat=0 anti=343
+[charges]   w=61 mat=0 anti=343
+[charges]   w=62 mat=0 anti=343
+[charges]   w=63 mat=0 anti=343
+[charges]   w=64 mat=343 anti=0
+[charges]   w=65 mat=343 anti=0
+[charges]   w=66 mat=343 anti=0
+[charges]   w=67 mat=343 anti=0
+[charges]   w=68 mat=343 anti=0
+[charges]   w=69 mat=343 anti=0
+[charges]   w=70 mat=0 anti=343
+[charges]   w=71 mat=0 anti=343
+[charges]   w=72 mat=343 anti=0
+[charges]   w=73 mat=343 anti=0
+[charges]   w=74 mat=0 anti=343
+[charges]   w=75 mat=0 anti=343
+[charges]   w=76 mat=0 anti=343
+[charges]   w=77 mat=0 anti=343
+[charges]   w=78 mat=0 anti=343
+[charges]   w=79 mat=0 anti=343
+[charges]   w=80 mat=343 anti=0
+[charges]   w=81 mat=343 anti=0
+[charges]   w=82 mat=343 anti=0
+[charges]   w=83 mat=343 anti=0
+[charges]   w=84 mat=343 anti=0
+[charges]   w=85 mat=343 anti=0
+[charges]   w=86 mat=0 anti=343
+[charges]   w=87 mat=0 anti=343
+[charges]   w=88 mat=343 anti=0
+[charges]   w=89 mat=343 anti=0
+[charges]   w=90 mat=0 anti=343
+[charges]   w=91 mat=0 anti=343
+[charges]   w=92 mat=0 anti=343
+[charges]   w=93 mat=0 anti=343
+[charges]   w=94 mat=0 anti=343
+[charges]   w=95 mat=0 anti=343
+[charges]   w=96 mat=343 anti=0
+[charges]   w=97 mat=343 anti=0
+[charges]   w=98 mat=343 anti=0
+[charges]   w=99 mat=343 anti=0
+[charges]   w=100 mat=343 anti=0
+[charges]   w=101 mat=343 anti=0
+[charges]   w=102 mat=0 anti=343
+[charges]   w=103 mat=0 anti=343
+[charges]   w=104 mat=343 anti=0
+[charges]   w=105 mat=343 anti=0
+[charges]   w=106 mat=0 anti=343
+[charges]   w=107 mat=0 anti=343
+[charges]   w=108 mat=0 anti=343
+[charges]   w=109 mat=0 anti=343
+[charges]   w=110 mat=0 anti=343
+[charges]   w=111 mat=0 anti=343
+[charges]   w=112 mat=343 anti=0
+[charges]   w=113 mat=343 anti=0
+[charges]   w=114 mat=343 anti=0
+[charges]   w=115 mat=343 anti=0
+[charges]   w=116 mat=343 anti=0
+[charges]   w=117 mat=343 anti=0
+[charges]   w=118 mat=0 anti=343
+[charges]   w=119 mat=0 anti=343
+[charges]   w=120 mat=343 anti=0
+[charges]   w=121 mat=343 anti=0
+[charges]   w=122 mat=0 anti=343
+[charges]   w=123 mat=0 anti=343
+[charges]   w=124 mat=0 anti=343
+[charges]   w=125 mat=0 anti=343
+[charges]   w=126 mat=0 anti=343
+[charges]   w=127 mat=0 anti=343
+[charges]   w=128 mat=343 anti=0
+[charges]   w=129 mat=343 anti=0
+[charges]   w=130 mat=343 anti=0
+[charges]   w=131 mat=343 anti=0
+[charges]   w=132 mat=343 anti=0
+[charges]   w=133 mat=343 anti=0
+[charges]   w=134 mat=0 anti=343
+[charges]   w=135 mat=0 anti=343
+[charges]   w=136 mat=343 anti=0
+[charges]   w=137 mat=343 anti=0
+[charges]   w=138 mat=0 anti=343
+[charges]   w=139 mat=0 anti=343
+[charges]   w=140 mat=0 anti=343
+[charges]   w=141 mat=0 anti=343
+[charges]   w=142 mat=0 anti=343
+[charges]   w=143 mat=0 anti=343
+[charges]   w=144 mat=343 anti=0
+[charges]   w=145 mat=343 anti=0
+[charges]   w=146 mat=343 anti=0
+DEBUG phase tick 1600: center u=72 v=11 active=0 pB=0 sB=0 pol=(0,0) bstamp=0
+    3     3  9702   9702      3822  9702  0         0      3822   0      0      0        139  8   0   0   40719  1    50421 
+#   frame 3 encounter latch: homb_events=+0 (cumulative 0)
+#   frame 3 move-align: moved=0  sign-match 0/1/2/3 = 0/0/0/0
+#   frame 3 move-split: flight=0  0/1/2/3 = 0/0/0/0  |  cohesion=0  0/1/2/3 = 0/0/0/0
+#   frame 3 move-drift: flight on its octant side (all 3 axes) = 0, octant-aligned = 0  |  off side (<3 axes) = 0, octant-aligned = 0
+#   frame 3 move-mask: one writer = 0 (octant-aligned 0)  |  two or more writers = 0 (octant-aligned 0)
+#   frame 3 separation: occupiedCenters=8 sources=147 moved-this-frame=0  cB=0 kB=0 homB=0 reloc!=0(sources)=0  m!=0(sources)=0/147 m!=0(cells)=0  pol!=0(cells)=0
+#   frame 3 positions: Orbis n=75 mean=(-0.040,-1.000,-0.013) | Umbra n=72 mean=(0.000,1.000,0.000) | CoM-(centre)=(-0.020,-0.020,-0.007)
+#   frame 3 classes:  k0(n=20)d=(-1.00,-1.00,-1.00)  k1(n=19)d=(-1.00,-1.00,+1.00)  k2(n=18)d=(-1.00,+1.00,-1.00)  k3(n=18)d=(-1.00,+1.00,+1.00)  k4(n=18)d=(+1.00,-1.00,-1.00)  k5(n=18)d=(+1.00,-1.00,+1.00)  k6(n=18)d=(+1.00,+1.00,-1.00)  k7(n=18)d=(+1.00,+1.00,+1.00)
+#   frame 3 axis-align: m==0=147  sign-match 0/1/2/3 = 0/0/0/0
+#   frame 3 clocks: resets=0  [reemit=0 (non-zero impulse=0)  reloc-at-centre=0 applied=0  cB=0  flood-to-0=0]  flood-pulls=0 | commit: pending-impulse=0, |reloc| at commit=0 | booked-on-lattice=0 drained=0 writeback-sum=0 net-layers=0 net-max=3 charge-dispersion=0 polar-seed=0 commit-calls=553 | ticks=553 captured-sum=0 | s2B fired in pass=0 (t-off=0, left-active=0)  cells-left-active=0 | relay: reseat-step=0 (octant-aligned=0 other=0) reseat-at-contact=0 | reseed-carried-reloc=0
+[charges] VIRGIN turnaround w=0 tick=1660 t=3
+[charges] VIRGIN turnaround w=1 tick=1660 t=3
+[charges] VIRGIN turnaround w=2 tick=1660 t=3
+[charges] VIRGIN turnaround w=3 tick=1660 t=3
+[charges] VIRGIN turnaround w=4 tick=1660 t=3
+[charges] VIRGIN turnaround w=5 tick=1660 t=3
+[charges] VIRGIN turnaround w=6 tick=1660 t=3
+[charges] VIRGIN turnaround w=7 tick=1660 t=3
+[charges] VIRGIN turnaround w=8 tick=1660 t=3
+[charges] VIRGIN turnaround w=9 tick=1660 t=3
+[charges] VIRGIN turnaround w=10 tick=1660 t=3
+[charges] VIRGIN turnaround w=11 tick=1660 t=3
+[charges] VIRGIN turnaround w=12 tick=1660 t=3
+[charges] VIRGIN turnaround w=13 tick=1660 t=3
+[charges] VIRGIN turnaround w=14 tick=1660 t=3
+[charges] VIRGIN turnaround w=15 tick=1660 t=3
+[charges] VIRGIN turnaround w=16 tick=1660 t=3
+[charges] VIRGIN turnaround w=17 tick=1660 t=3
+[charges] VIRGIN turnaround w=18 tick=1660 t=3
+[charges] VIRGIN turnaround w=19 tick=1660 t=3
+[charges] VIRGIN turnaround w=20 tick=1660 t=3
+[charges] VIRGIN turnaround w=21 tick=1660 t=3
+[charges] VIRGIN turnaround w=22 tick=1660 t=3
+[charges] VIRGIN turnaround w=23 tick=1660 t=3
+[charges] VIRGIN turnaround w=24 tick=1660 t=3
+[charges] VIRGIN turnaround w=25 tick=1660 t=3
+[charges] VIRGIN turnaround w=26 tick=1660 t=3
+[charges] VIRGIN turnaround w=27 tick=1660 t=3
+[charges] VIRGIN turnaround w=28 tick=1660 t=3
+[charges] VIRGIN turnaround w=29 tick=1660 t=3
+[charges] VIRGIN turnaround w=30 tick=1660 t=3
+[charges] VIRGIN turnaround w=31 tick=1660 t=3
+[charges] VIRGIN turnaround w=32 tick=1660 t=3
+[charges] VIRGIN turnaround w=33 tick=1660 t=3
+[charges] VIRGIN turnaround w=34 tick=1660 t=3
+[charges] VIRGIN turnaround w=35 tick=1660 t=3
+[charges] VIRGIN turnaround w=36 tick=1660 t=3
+[charges] VIRGIN turnaround w=37 tick=1660 t=3
+[charges] VIRGIN turnaround w=38 tick=1660 t=3
+[charges] VIRGIN turnaround w=39 tick=1660 t=3
+[charges] VIRGIN turnaround w=40 tick=1660 t=3
+[charges] VIRGIN turnaround w=41 tick=1660 t=3
+[charges] VIRGIN turnaround w=42 tick=1660 t=3
+[charges] VIRGIN turnaround w=43 tick=1660 t=3
+[charges] VIRGIN turnaround w=44 tick=1660 t=3
+[charges] VIRGIN turnaround w=45 tick=1660 t=3
+[charges] VIRGIN turnaround w=46 tick=1660 t=3
+[charges] VIRGIN turnaround w=47 tick=1660 t=3
+[charges] VIRGIN turnaround w=48 tick=1660 t=3
+[charges] VIRGIN turnaround w=49 tick=1660 t=3
+[charges] VIRGIN turnaround w=50 tick=1660 t=3
+[charges] VIRGIN turnaround w=51 tick=1660 t=3
+[charges] VIRGIN turnaround w=52 tick=1660 t=3
+[charges] VIRGIN turnaround w=53 tick=1660 t=3
+[charges] VIRGIN turnaround w=54 tick=1660 t=3
+[charges] VIRGIN turnaround w=55 tick=1660 t=3
+[charges] VIRGIN turnaround w=56 tick=1660 t=3
+[charges] VIRGIN turnaround w=57 tick=1660 t=3
+[charges] VIRGIN turnaround w=58 tick=1660 t=3
+[charges] VIRGIN turnaround w=59 tick=1660 t=3
+[charges] VIRGIN turnaround w=60 tick=1660 t=3
+[charges] VIRGIN turnaround w=61 tick=1660 t=3
+[charges] VIRGIN turnaround w=62 tick=1660 t=3
+[charges] VIRGIN turnaround w=63 tick=1660 t=3
+[charges] VIRGIN turnaround w=64 tick=1660 t=3
+[charges] VIRGIN turnaround w=65 tick=1660 t=3
+[charges] VIRGIN turnaround w=66 tick=1660 t=3
+[charges] VIRGIN turnaround w=67 tick=1660 t=3
+[charges] VIRGIN turnaround w=68 tick=1660 t=3
+[charges] VIRGIN turnaround w=69 tick=1660 t=3
+[charges] VIRGIN turnaround w=70 tick=1660 t=3
+[charges] VIRGIN turnaround w=71 tick=1660 t=3
+[charges] VIRGIN turnaround w=72 tick=1660 t=3
+[charges] VIRGIN turnaround w=73 tick=1660 t=3
+[charges] VIRGIN turnaround w=74 tick=1660 t=3
+[charges] VIRGIN turnaround w=75 tick=1660 t=3
+[charges] VIRGIN turnaround w=76 tick=1660 t=3
+[charges] VIRGIN turnaround w=77 tick=1660 t=3
+[charges] VIRGIN turnaround w=78 tick=1660 t=3
+[charges] VIRGIN turnaround w=79 tick=1660 t=3
+[charges] VIRGIN turnaround w=80 tick=1660 t=3
+[charges] VIRGIN turnaround w=81 tick=1660 t=3
+[charges] VIRGIN turnaround w=82 tick=1660 t=3
+[charges] VIRGIN turnaround w=83 tick=1660 t=3
+[charges] VIRGIN turnaround w=84 tick=1660 t=3
+[charges] VIRGIN turnaround w=85 tick=1660 t=3
+[charges] VIRGIN turnaround w=86 tick=1660 t=3
+[charges] VIRGIN turnaround w=87 tick=1660 t=3
+[charges] VIRGIN turnaround w=88 tick=1660 t=3
+[charges] VIRGIN turnaround w=89 tick=1660 t=3
+[charges] VIRGIN turnaround w=90 tick=1660 t=3
+[charges] VIRGIN turnaround w=91 tick=1660 t=3
+[charges] VIRGIN turnaround w=92 tick=1660 t=3
+[charges] VIRGIN turnaround w=93 tick=1660 t=3
+[charges] VIRGIN turnaround w=94 tick=1660 t=3
+[charges] VIRGIN turnaround w=95 tick=1660 t=3
+[charges] VIRGIN turnaround w=96 tick=1660 t=3
+[charges] VIRGIN turnaround w=97 tick=1660 t=3
+[charges] VIRGIN turnaround w=98 tick=1660 t=3
+[charges] VIRGIN turnaround w=99 tick=1660 t=3
+[charges] VIRGIN turnaround w=100 tick=1660 t=3
+[charges] VIRGIN turnaround w=101 tick=1660 t=3
+[charges] VIRGIN turnaround w=102 tick=1660 t=3
+[charges] VIRGIN turnaround w=103 tick=1660 t=3
+[charges] VIRGIN turnaround w=104 tick=1660 t=3
+[charges] VIRGIN turnaround w=105 tick=1660 t=3
+[charges] VIRGIN turnaround w=106 tick=1660 t=3
+[charges] VIRGIN turnaround w=107 tick=1660 t=3
+[charges] VIRGIN turnaround w=108 tick=1660 t=3
+[charges] VIRGIN turnaround w=109 tick=1660 t=3
+[charges] VIRGIN turnaround w=110 tick=1660 t=3
+[charges] VIRGIN turnaround w=111 tick=1660 t=3
+[charges] VIRGIN turnaround w=112 tick=1660 t=3
+[charges] VIRGIN turnaround w=113 tick=1660 t=3
+[charges] VIRGIN turnaround w=114 tick=1660 t=3
+[charges] VIRGIN turnaround w=115 tick=1660 t=3
+[charges] VIRGIN turnaround w=116 tick=1660 t=3
+[charges] VIRGIN turnaround w=117 tick=1660 t=3
+[charges] VIRGIN turnaround w=118 tick=1660 t=3
+[charges] VIRGIN turnaround w=119 tick=1660 t=3
+[charges] VIRGIN turnaround w=120 tick=1660 t=3
+[charges] VIRGIN turnaround w=121 tick=1660 t=3
+[charges] VIRGIN turnaround w=122 tick=1660 t=3
+[charges] VIRGIN turnaround w=123 tick=1660 t=3
+[charges] VIRGIN turnaround w=124 tick=1660 t=3
+[charges] VIRGIN turnaround w=125 tick=1660 t=3
+[charges] VIRGIN turnaround w=126 tick=1660 t=3
+[charges] VIRGIN turnaround w=127 tick=1660 t=3
+[charges] VIRGIN turnaround w=128 tick=1660 t=3
+[charges] VIRGIN turnaround w=129 tick=1660 t=3
+[charges] VIRGIN turnaround w=130 tick=1660 t=3
+[charges] VIRGIN turnaround w=131 tick=1660 t=3
+[charges] VIRGIN turnaround w=132 tick=1660 t=3
+[charges] VIRGIN turnaround w=133 tick=1660 t=3
+[charges] VIRGIN turnaround w=134 tick=1660 t=3
+[charges] VIRGIN turnaround w=135 tick=1660 t=3
+[charges] VIRGIN turnaround w=136 tick=1660 t=3
+[charges] VIRGIN turnaround w=137 tick=1660 t=3
+[charges] VIRGIN turnaround w=138 tick=1660 t=3
+[charges] VIRGIN turnaround w=139 tick=1660 t=3
+[charges] VIRGIN turnaround w=140 tick=1660 t=3
+[charges] VIRGIN turnaround w=141 tick=1660 t=3
+[charges] VIRGIN turnaround w=142 tick=1660 t=3
+[charges] VIRGIN turnaround w=143 tick=1660 t=3
+[charges] VIRGIN turnaround w=144 tick=1660 t=3
+[charges] VIRGIN turnaround w=145 tick=1660 t=3
+[charges] VIRGIN turnaround w=146 tick=1660 t=3
+DEBUG phase tick 1700: center u=78 v=12 active=0 pB=1 sB=0 pol=(1,0) bstamp=1661
+[charges] tick=1793 MAT=25725 ANTI=24696 mat/total=0.510204 | orphanM=0 orphanA=0 | turnarounds V=147 D=0
+[charges] closure tick=1793 Disl=+1029 Dorph=+0 Dtot=+1029 Dorb=+13377 Dumb=-12348 DslOrb=+13377 DslUmb=-12348 | orbM=19551 orbA=6174 umbM=6174 umbA=18522
+[charges] retina tick=1793 pairM=0 pairA=0 dPair=+0 freeM=25725 freeA=24696 freeD=+1029 | hidAnti orb=0 umb=0 form=0 blob=0 ann=0 | Dtot==dPair+freeD: OK
+[charges]   w=0 mat=343 anti=0
+[charges]   w=1 mat=343 anti=0
+[charges]   w=2 mat=343 anti=0
+[charges]   w=3 mat=343 anti=0
+[charges]   w=4 mat=343 anti=0
+[charges]   w=5 mat=343 anti=0
+[charges]   w=6 mat=0 anti=343
+[charges]   w=7 mat=0 anti=343
+[charges]   w=8 mat=343 anti=0
+[charges]   w=9 mat=343 anti=0
+[charges]   w=10 mat=0 anti=343
+[charges]   w=11 mat=0 anti=343
+[charges]   w=12 mat=0 anti=343
+[charges]   w=13 mat=0 anti=343
+[charges]   w=14 mat=0 anti=343
+[charges]   w=15 mat=0 anti=343
+[charges]   w=16 mat=343 anti=0
+[charges]   w=17 mat=343 anti=0
+[charges]   w=18 mat=343 anti=0
+[charges]   w=19 mat=343 anti=0
+[charges]   w=20 mat=343 anti=0
+[charges]   w=21 mat=343 anti=0
+[charges]   w=22 mat=0 anti=343
+[charges]   w=23 mat=0 anti=343
+[charges]   w=24 mat=343 anti=0
+[charges]   w=25 mat=343 anti=0
+[charges]   w=26 mat=0 anti=343
+[charges]   w=27 mat=0 anti=343
+[charges]   w=28 mat=0 anti=343
+[charges]   w=29 mat=0 anti=343
+[charges]   w=30 mat=0 anti=343
+[charges]   w=31 mat=0 anti=343
+[charges]   w=32 mat=343 anti=0
+[charges]   w=33 mat=343 anti=0
+[charges]   w=34 mat=343 anti=0
+[charges]   w=35 mat=343 anti=0
+[charges]   w=36 mat=343 anti=0
+[charges]   w=37 mat=343 anti=0
+[charges]   w=38 mat=0 anti=343
+[charges]   w=39 mat=0 anti=343
+[charges]   w=40 mat=343 anti=0
+[charges]   w=41 mat=343 anti=0
+[charges]   w=42 mat=0 anti=343
+[charges]   w=43 mat=0 anti=343
+[charges]   w=44 mat=0 anti=343
+[charges]   w=45 mat=0 anti=343
+[charges]   w=46 mat=0 anti=343
+[charges]   w=47 mat=0 anti=343
+[charges]   w=48 mat=343 anti=0
+[charges]   w=49 mat=343 anti=0
+[charges]   w=50 mat=343 anti=0
+[charges]   w=51 mat=343 anti=0
+[charges]   w=52 mat=343 anti=0
+[charges]   w=53 mat=343 anti=0
+[charges]   w=54 mat=0 anti=343
+[charges]   w=55 mat=0 anti=343
+[charges]   w=56 mat=343 anti=0
+[charges]   w=57 mat=343 anti=0
+[charges]   w=58 mat=0 anti=343
+[charges]   w=59 mat=0 anti=343
+[charges]   w=60 mat=0 anti=343
+[charges]   w=61 mat=0 anti=343
+[charges]   w=62 mat=0 anti=343
+[charges]   w=63 mat=0 anti=343
+[charges]   w=64 mat=343 anti=0
+[charges]   w=65 mat=343 anti=0
+[charges]   w=66 mat=343 anti=0
+[charges]   w=67 mat=343 anti=0
+[charges]   w=68 mat=343 anti=0
+[charges]   w=69 mat=343 anti=0
+[charges]   w=70 mat=0 anti=343
+[charges]   w=71 mat=0 anti=343
+[charges]   w=72 mat=343 anti=0
+[charges]   w=73 mat=343 anti=0
+[charges]   w=74 mat=0 anti=343
+[charges]   w=75 mat=0 anti=343
+[charges]   w=76 mat=0 anti=343
+[charges]   w=77 mat=0 anti=343
+[charges]   w=78 mat=0 anti=343
+[charges]   w=79 mat=0 anti=343
+[charges]   w=80 mat=343 anti=0
+[charges]   w=81 mat=343 anti=0
+[charges]   w=82 mat=343 anti=0
+[charges]   w=83 mat=343 anti=0
+[charges]   w=84 mat=343 anti=0
+[charges]   w=85 mat=343 anti=0
+[charges]   w=86 mat=0 anti=343
+[charges]   w=87 mat=0 anti=343
+[charges]   w=88 mat=343 anti=0
+[charges]   w=89 mat=343 anti=0
+[charges]   w=90 mat=0 anti=343
+[charges]   w=91 mat=0 anti=343
+[charges]   w=92 mat=0 anti=343
+[charges]   w=93 mat=0 anti=343
+[charges]   w=94 mat=0 anti=343
+[charges]   w=95 mat=0 anti=343
+[charges]   w=96 mat=343 anti=0
+[charges]   w=97 mat=343 anti=0
+[charges]   w=98 mat=343 anti=0
+[charges]   w=99 mat=343 anti=0
+[charges]   w=100 mat=343 anti=0
+[charges]   w=101 mat=343 anti=0
+[charges]   w=102 mat=0 anti=343
+[charges]   w=103 mat=0 anti=343
+[charges]   w=104 mat=343 anti=0
+[charges]   w=105 mat=343 anti=0
+[charges]   w=106 mat=0 anti=343
+[charges]   w=107 mat=0 anti=343
+[charges]   w=108 mat=0 anti=343
+[charges]   w=109 mat=0 anti=343
+[charges]   w=110 mat=0 anti=343
+[charges]   w=111 mat=0 anti=343
+[charges]   w=112 mat=343 anti=0
+[charges]   w=113 mat=343 anti=0
+[charges]   w=114 mat=343 anti=0
+[charges]   w=115 mat=343 anti=0
+[charges]   w=116 mat=343 anti=0
+[charges]   w=117 mat=343 anti=0
+[charges]   w=118 mat=0 anti=343
+[charges]   w=119 mat=0 anti=343
+[charges]   w=120 mat=343 anti=0
+[charges]   w=121 mat=343 anti=0
+[charges]   w=122 mat=0 anti=343
+[charges]   w=123 mat=0 anti=343
+[charges]   w=124 mat=0 anti=343
+[charges]   w=125 mat=0 anti=343
+[charges]   w=126 mat=0 anti=343
+[charges]   w=127 mat=0 anti=343
+[charges]   w=128 mat=343 anti=0
+[charges]   w=129 mat=343 anti=0
+[charges]   w=130 mat=343 anti=0
+[charges]   w=131 mat=343 anti=0
+[charges]   w=132 mat=343 anti=0
+[charges]   w=133 mat=343 anti=0
+[charges]   w=134 mat=0 anti=343
+[charges]   w=135 mat=0 anti=343
+[charges]   w=136 mat=343 anti=0
+[charges]   w=137 mat=343 anti=0
+[charges]   w=138 mat=0 anti=343
+[charges]   w=139 mat=0 anti=343
+[charges]   w=140 mat=0 anti=343
+[charges]   w=141 mat=0 anti=343
+[charges]   w=142 mat=0 anti=343
+[charges]   w=143 mat=0 anti=343
+[charges]   w=144 mat=343 anti=0
+[charges]   w=145 mat=343 anti=0
+[charges]   w=146 mat=343 anti=0
+DEBUG phase tick 1800: center u=75 v=10 active=0 pB=1 sB=0 pol=(1,0) bstamp=1661
+DEBUG phase tick 1900: center u=72 v=11 active=0 pB=1 sB=0 pol=(1,0) bstamp=1661
+DEBUG phase tick 2000: center u=78 v=12 active=0 pB=1 sB=0 pol=(1,0) bstamp=1661
+[charges] tick=2049 MAT=25725 ANTI=24696 mat/total=0.510204 | orphanM=0 orphanA=0 | turnarounds V=147 D=0
+[charges] closure tick=2049 Disl=+1029 Dorph=+0 Dtot=+1029 Dorb=+13377 Dumb=-12348 DslOrb=+13377 DslUmb=-12348 | orbM=19551 orbA=6174 umbM=6174 umbA=18522
+[charges] retina tick=2049 pairM=0 pairA=0 dPair=+0 freeM=25725 freeA=24696 freeD=+1029 | hidAnti orb=0 umb=0 form=0 blob=0 ann=0 | Dtot==dPair+freeD: OK
+[charges]   w=0 mat=343 anti=0
+[charges]   w=1 mat=343 anti=0
+[charges]   w=2 mat=343 anti=0
+[charges]   w=3 mat=343 anti=0
+[charges]   w=4 mat=343 anti=0
+[charges]   w=5 mat=343 anti=0
+[charges]   w=6 mat=0 anti=343
+[charges]   w=7 mat=0 anti=343
+[charges]   w=8 mat=343 anti=0
+[charges]   w=9 mat=343 anti=0
+[charges]   w=10 mat=0 anti=343
+[charges]   w=11 mat=0 anti=343
+[charges]   w=12 mat=0 anti=343
+[charges]   w=13 mat=0 anti=343
+[charges]   w=14 mat=0 anti=343
+[charges]   w=15 mat=0 anti=343
+[charges]   w=16 mat=343 anti=0
+[charges]   w=17 mat=343 anti=0
+[charges]   w=18 mat=343 anti=0
+[charges]   w=19 mat=343 anti=0
+[charges]   w=20 mat=343 anti=0
+[charges]   w=21 mat=343 anti=0
+[charges]   w=22 mat=0 anti=343
+[charges]   w=23 mat=0 anti=343
+[charges]   w=24 mat=343 anti=0
+[charges]   w=25 mat=343 anti=0
+[charges]   w=26 mat=0 anti=343
+[charges]   w=27 mat=0 anti=343
+[charges]   w=28 mat=0 anti=343
+[charges]   w=29 mat=0 anti=343
+[charges]   w=30 mat=0 anti=343
+[charges]   w=31 mat=0 anti=343
+[charges]   w=32 mat=343 anti=0
+[charges]   w=33 mat=343 anti=0
+[charges]   w=34 mat=343 anti=0
+[charges]   w=35 mat=343 anti=0
+[charges]   w=36 mat=343 anti=0
+[charges]   w=37 mat=343 anti=0
+[charges]   w=38 mat=0 anti=343
+[charges]   w=39 mat=0 anti=343
+[charges]   w=40 mat=343 anti=0
+[charges]   w=41 mat=343 anti=0
+[charges]   w=42 mat=0 anti=343
+[charges]   w=43 mat=0 anti=343
+[charges]   w=44 mat=0 anti=343
+[charges]   w=45 mat=0 anti=343
+[charges]   w=46 mat=0 anti=343
+[charges]   w=47 mat=0 anti=343
+[charges]   w=48 mat=343 anti=0
+[charges]   w=49 mat=343 anti=0
+[charges]   w=50 mat=343 anti=0
+[charges]   w=51 mat=343 anti=0
+[charges]   w=52 mat=343 anti=0
+[charges]   w=53 mat=343 anti=0
+[charges]   w=54 mat=0 anti=343
+[charges]   w=55 mat=0 anti=343
+[charges]   w=56 mat=343 anti=0
+[charges]   w=57 mat=343 anti=0
+[charges]   w=58 mat=0 anti=343
+[charges]   w=59 mat=0 anti=343
+[charges]   w=60 mat=0 anti=343
+[charges]   w=61 mat=0 anti=343
+[charges]   w=62 mat=0 anti=343
+[charges]   w=63 mat=0 anti=343
+[charges]   w=64 mat=343 anti=0
+[charges]   w=65 mat=343 anti=0
+[charges]   w=66 mat=343 anti=0
+[charges]   w=67 mat=343 anti=0
+[charges]   w=68 mat=343 anti=0
+[charges]   w=69 mat=343 anti=0
+[charges]   w=70 mat=0 anti=343
+[charges]   w=71 mat=0 anti=343
+[charges]   w=72 mat=343 anti=0
+[charges]   w=73 mat=343 anti=0
+[charges]   w=74 mat=0 anti=343
+[charges]   w=75 mat=0 anti=343
+[charges]   w=76 mat=0 anti=343
+[charges]   w=77 mat=0 anti=343
+[charges]   w=78 mat=0 anti=343
+[charges]   w=79 mat=0 anti=343
+[charges]   w=80 mat=343 anti=0
+[charges]   w=81 mat=343 anti=0
+[charges]   w=82 mat=343 anti=0
+[charges]   w=83 mat=343 anti=0
+[charges]   w=84 mat=343 anti=0
+[charges]   w=85 mat=343 anti=0
+[charges]   w=86 mat=0 anti=343
+[charges]   w=87 mat=0 anti=343
+[charges]   w=88 mat=343 anti=0
+[charges]   w=89 mat=343 anti=0
+[charges]   w=90 mat=0 anti=343
+[charges]   w=91 mat=0 anti=343
+[charges]   w=92 mat=0 anti=343
+[charges]   w=93 mat=0 anti=343
+[charges]   w=94 mat=0 anti=343
+[charges]   w=95 mat=0 anti=343
+[charges]   w=96 mat=343 anti=0
+[charges]   w=97 mat=343 anti=0
+[charges]   w=98 mat=343 anti=0
+[charges]   w=99 mat=343 anti=0
+[charges]   w=100 mat=343 anti=0
+[charges]   w=101 mat=343 anti=0
+[charges]   w=102 mat=0 anti=343
+[charges]   w=103 mat=0 anti=343
+[charges]   w=104 mat=343 anti=0
+[charges]   w=105 mat=343 anti=0
+[charges]   w=106 mat=0 anti=343
+[charges]   w=107 mat=0 anti=343
+[charges]   w=108 mat=0 anti=343
+[charges]   w=109 mat=0 anti=343
+[charges]   w=110 mat=0 anti=343
+[charges]   w=111 mat=0 anti=343
+[charges]   w=112 mat=343 anti=0
+[charges]   w=113 mat=343 anti=0
+[charges]   w=114 mat=343 anti=0
+[charges]   w=115 mat=343 anti=0
+[charges]   w=116 mat=343 anti=0
+[charges]   w=117 mat=343 anti=0
+[charges]   w=118 mat=0 anti=343
+[charges]   w=119 mat=0 anti=343
+[charges]   w=120 mat=343 anti=0
+[charges]   w=121 mat=343 anti=0
+[charges]   w=122 mat=0 anti=343
+[charges]   w=123 mat=0 anti=343
+[charges]   w=124 mat=0 anti=343
+[charges]   w=125 mat=0 anti=343
+[charges]   w=126 mat=0 anti=343
+[charges]   w=127 mat=0 anti=343
+[charges]   w=128 mat=343 anti=0
+[charges]   w=129 mat=343 anti=0
+[charges]   w=130 mat=343 anti=0
+[charges]   w=131 mat=343 anti=0
+[charges]   w=132 mat=343 anti=0
+[charges]   w=133 mat=343 anti=0
+[charges]   w=134 mat=0 anti=343
+[charges]   w=135 mat=0 anti=343
+[charges]   w=136 mat=343 anti=0
+[charges]   w=137 mat=343 anti=0
+[charges]   w=138 mat=0 anti=343
+[charges]   w=139 mat=0 anti=343
+[charges]   w=140 mat=0 anti=343
+[charges]   w=141 mat=0 anti=343
+[charges]   w=142 mat=0 anti=343
+[charges]   w=143 mat=0 anti=343
+[charges]   w=144 mat=343 anti=0
+[charges]   w=145 mat=343 anti=0
+[charges]   w=146 mat=343 anti=0
+DEBUG phase tick 2100: center u=75 v=10 active=0 pB=1 sB=0 pol=(1,0) bstamp=1661
+DEBUG phase tick 2200: center u=72 v=11 active=0 pB=1 sB=0 pol=(1,0) bstamp=1661
+    4     2  23226  23226     9702  23226 0         0      9702   0      0      0        139  8   0   0   27195  1    50421 
+#   frame 4 encounter latch: homb_events=+0 (cumulative 0)
+#   frame 4 move-align: moved=0  sign-match 0/1/2/3 = 0/0/0/0
+#   frame 4 move-split: flight=0  0/1/2/3 = 0/0/0/0  |  cohesion=0  0/1/2/3 = 0/0/0/0
+#   frame 4 move-drift: flight on its octant side (all 3 axes) = 0, octant-aligned = 0  |  off side (<3 axes) = 0, octant-aligned = 0
+#   frame 4 move-mask: one writer = 0 (octant-aligned 0)  |  two or more writers = 0 (octant-aligned 0)
+#   frame 4 separation: occupiedCenters=8 sources=147 moved-this-frame=0  cB=0 kB=0 homB=0 reloc!=0(sources)=0  m!=0(sources)=147/147 m!=0(cells)=147  pol!=0(cells)=13671
+#   frame 4 positions: Orbis n=75 mean=(-0.040,-1.000,-0.013) | Umbra n=72 mean=(0.000,1.000,0.000) | CoM-(centre)=(-0.020,-0.020,-0.007)
+#   frame 4 classes:  k0(n=20)d=(-1.00,-1.00,-1.00)  k1(n=19)d=(-1.00,-1.00,+1.00)  k2(n=18)d=(-1.00,+1.00,-1.00)  k3(n=18)d=(-1.00,+1.00,+1.00)  k4(n=18)d=(+1.00,-1.00,-1.00)  k5(n=18)d=(+1.00,-1.00,+1.00)  k6(n=18)d=(+1.00,+1.00,-1.00)  k7(n=18)d=(+1.00,+1.00,+1.00)
+#   frame 4 axis-align: m==0=0  sign-match 0/1/2/3 = 0/0/0/147
+#   frame 4 clocks: resets=0  [reemit=0 (non-zero impulse=0)  reloc-at-centre=0 applied=0  cB=0  flood-to-0=0]  flood-pulls=0 | commit: pending-impulse=0, |reloc| at commit=0 | booked-on-lattice=0 drained=0 writeback-sum=0 net-layers=0 net-max=3 charge-dispersion=0 polar-seed=147 commit-calls=553 | ticks=553 captured-sum=0 | s2B fired in pass=0 (t-off=0, left-active=0)  cells-left-active=0 | relay: reseat-step=0 (octant-aligned=0 other=0) reseat-at-contact=0 | reseed-carried-reloc=0
+DEBUG phase tick 2300: center u=78 v=12 active=0 pB=1 sB=0 pol=(1,0) bstamp=1661
+[charges] tick=2305 MAT=25725 ANTI=24696 mat/total=0.510204 | orphanM=0 orphanA=0 | turnarounds V=147 D=0
+[charges] closure tick=2305 Disl=+1029 Dorph=+0 Dtot=+1029 Dorb=+13377 Dumb=-12348 DslOrb=+13377 DslUmb=-12348 | orbM=19551 orbA=6174 umbM=6174 umbA=18522
+[charges] retina tick=2305 pairM=0 pairA=0 dPair=+0 freeM=25725 freeA=24696 freeD=+1029 | hidAnti orb=0 umb=0 form=0 blob=0 ann=0 | Dtot==dPair+freeD: OK
+[charges]   w=0 mat=343 anti=0
+[charges]   w=1 mat=343 anti=0
+[charges]   w=2 mat=343 anti=0
+[charges]   w=3 mat=343 anti=0
+[charges]   w=4 mat=343 anti=0
+[charges]   w=5 mat=343 anti=0
+[charges]   w=6 mat=0 anti=343
+[charges]   w=7 mat=0 anti=343
+[charges]   w=8 mat=343 anti=0
+[charges]   w=9 mat=343 anti=0
+[charges]   w=10 mat=0 anti=343
+[charges]   w=11 mat=0 anti=343
+[charges]   w=12 mat=0 anti=343
+[charges]   w=13 mat=0 anti=343
+[charges]   w=14 mat=0 anti=343
+[charges]   w=15 mat=0 anti=343
+[charges]   w=16 mat=343 anti=0
+[charges]   w=17 mat=343 anti=0
+[charges]   w=18 mat=343 anti=0
+[charges]   w=19 mat=343 anti=0
+[charges]   w=20 mat=343 anti=0
+[charges]   w=21 mat=343 anti=0
+[charges]   w=22 mat=0 anti=343
+[charges]   w=23 mat=0 anti=343
+[charges]   w=24 mat=343 anti=0
+[charges]   w=25 mat=343 anti=0
+[charges]   w=26 mat=0 anti=343
+[charges]   w=27 mat=0 anti=343
+[charges]   w=28 mat=0 anti=343
+[charges]   w=29 mat=0 anti=343
+[charges]   w=30 mat=0 anti=343
+[charges]   w=31 mat=0 anti=343
+[charges]   w=32 mat=343 anti=0
+[charges]   w=33 mat=343 anti=0
+[charges]   w=34 mat=343 anti=0
+[charges]   w=35 mat=343 anti=0
+[charges]   w=36 mat=343 anti=0
+[charges]   w=37 mat=343 anti=0
+[charges]   w=38 mat=0 anti=343
+[charges]   w=39 mat=0 anti=343
+[charges]   w=40 mat=343 anti=0
+[charges]   w=41 mat=343 anti=0
+[charges]   w=42 mat=0 anti=343
+[charges]   w=43 mat=0 anti=343
+[charges]   w=44 mat=0 anti=343
+[charges]   w=45 mat=0 anti=343
+[charges]   w=46 mat=0 anti=343
+[charges]   w=47 mat=0 anti=343
+[charges]   w=48 mat=343 anti=0
+[charges]   w=49 mat=343 anti=0
+[charges]   w=50 mat=343 anti=0
+[charges]   w=51 mat=343 anti=0
+[charges]   w=52 mat=343 anti=0
+[charges]   w=53 mat=343 anti=0
+[charges]   w=54 mat=0 anti=343
+[charges]   w=55 mat=0 anti=343
+[charges]   w=56 mat=343 anti=0
+[charges]   w=57 mat=343 anti=0
+[charges]   w=58 mat=0 anti=343
+[charges]   w=59 mat=0 anti=343
+[charges]   w=60 mat=0 anti=343
+[charges]   w=61 mat=0 anti=343
+[charges]   w=62 mat=0 anti=343
+[charges]   w=63 mat=0 anti=343
+[charges]   w=64 mat=343 anti=0
+[charges]   w=65 mat=343 anti=0
+[charges]   w=66 mat=343 anti=0
+[charges]   w=67 mat=343 anti=0
+[charges]   w=68 mat=343 anti=0
+[charges]   w=69 mat=343 anti=0
+[charges]   w=70 mat=0 anti=343
+[charges]   w=71 mat=0 anti=343
+[charges]   w=72 mat=343 anti=0
+[charges]   w=73 mat=343 anti=0
+[charges]   w=74 mat=0 anti=343
+[charges]   w=75 mat=0 anti=343
+[charges]   w=76 mat=0 anti=343
+[charges]   w=77 mat=0 anti=343
+[charges]   w=78 mat=0 anti=343
+[charges]   w=79 mat=0 anti=343
+[charges]   w=80 mat=343 anti=0
+[charges]   w=81 mat=343 anti=0
+[charges]   w=82 mat=343 anti=0
+[charges]   w=83 mat=343 anti=0
+[charges]   w=84 mat=343 anti=0
+[charges]   w=85 mat=343 anti=0
+[charges]   w=86 mat=0 anti=343
+[charges]   w=87 mat=0 anti=343
+[charges]   w=88 mat=343 anti=0
+[charges]   w=89 mat=343 anti=0
+[charges]   w=90 mat=0 anti=343
+[charges]   w=91 mat=0 anti=343
+[charges]   w=92 mat=0 anti=343
+[charges]   w=93 mat=0 anti=343
+[charges]   w=94 mat=0 anti=343
+[charges]   w=95 mat=0 anti=343
+[charges]   w=96 mat=343 anti=0
+[charges]   w=97 mat=343 anti=0
+[charges]   w=98 mat=343 anti=0
+[charges]   w=99 mat=343 anti=0
+[charges]   w=100 mat=343 anti=0
+[charges]   w=101 mat=343 anti=0
+[charges]   w=102 mat=0 anti=343
+[charges]   w=103 mat=0 anti=343
+[charges]   w=104 mat=343 anti=0
+[charges]   w=105 mat=343 anti=0
+[charges]   w=106 mat=0 anti=343
+[charges]   w=107 mat=0 anti=343
+[charges]   w=108 mat=0 anti=343
+[charges]   w=109 mat=0 anti=343
+[charges]   w=110 mat=0 anti=343
+[charges]   w=111 mat=0 anti=343
+[charges]   w=112 mat=343 anti=0
+[charges]   w=113 mat=343 anti=0
+[charges]   w=114 mat=343 anti=0
+[charges]   w=115 mat=343 anti=0
+[charges]   w=116 mat=343 anti=0
+[charges]   w=117 mat=343 anti=0
+[charges]   w=118 mat=0 anti=343
+[charges]   w=119 mat=0 anti=343
+[charges]   w=120 mat=343 anti=0
+[charges]   w=121 mat=343 anti=0
+[charges]   w=122 mat=0 anti=343
+[charges]   w=123 mat=0 anti=343
+[charges]   w=124 mat=0 anti=343
+[charges]   w=125 mat=0 anti=343
+[charges]   w=126 mat=0 anti=343
+[charges]   w=127 mat=0 anti=343
+[charges]   w=128 mat=343 anti=0
+[charges]   w=129 mat=343 anti=0
+[charges]   w=130 mat=343 anti=0
+[charges]   w=131 mat=343 anti=0
+[charges]   w=132 mat=343 anti=0
+[charges]   w=133 mat=343 anti=0
+[charges]   w=134 mat=0 anti=343
+[charges]   w=135 mat=0 anti=343
+[charges]   w=136 mat=343 anti=0
+[charges]   w=137 mat=343 anti=0
+[charges]   w=138 mat=0 anti=343
+[charges]   w=139 mat=0 anti=343
+[charges]   w=140 mat=0 anti=343
+[charges]   w=141 mat=0 anti=343
+[charges]   w=142 mat=0 anti=343
+[charges]   w=143 mat=0 anti=343
+[charges]   w=144 mat=343 anti=0
+[charges]   w=145 mat=343 anti=0
+[charges]   w=146 mat=343 anti=0
+DEBUG phase tick 2400: center u=75 v=10 active=0 pB=1 sB=0 pol=(1,0) bstamp=1661
+DEBUG phase tick 2500: center u=72 v=11 active=0 pB=1 sB=0 pol=(1,0) bstamp=1661
+[charges] tick=2561 MAT=25725 ANTI=24696 mat/total=0.510204 | orphanM=0 orphanA=0 | turnarounds V=147 D=0
+[charges] closure tick=2561 Disl=+1029 Dorph=+0 Dtot=+1029 Dorb=+13377 Dumb=-12348 DslOrb=+13377 DslUmb=-12348 | orbM=19551 orbA=6174 umbM=6174 umbA=18522
+[charges] retina tick=2561 pairM=0 pairA=0 dPair=+0 freeM=25725 freeA=24696 freeD=+1029 | hidAnti orb=0 umb=0 form=0 blob=0 ann=0 | Dtot==dPair+freeD: OK
+[charges]   w=0 mat=343 anti=0
+[charges]   w=1 mat=343 anti=0
+[charges]   w=2 mat=343 anti=0
+[charges]   w=3 mat=343 anti=0
+[charges]   w=4 mat=343 anti=0
+[charges]   w=5 mat=343 anti=0
+[charges]   w=6 mat=0 anti=343
+[charges]   w=7 mat=0 anti=343
+[charges]   w=8 mat=343 anti=0
+[charges]   w=9 mat=343 anti=0
+[charges]   w=10 mat=0 anti=343
+[charges]   w=11 mat=0 anti=343
+[charges]   w=12 mat=0 anti=343
+[charges]   w=13 mat=0 anti=343
+[charges]   w=14 mat=0 anti=343
+[charges]   w=15 mat=0 anti=343
+[charges]   w=16 mat=343 anti=0
+[charges]   w=17 mat=343 anti=0
+[charges]   w=18 mat=343 anti=0
+[charges]   w=19 mat=343 anti=0
+[charges]   w=20 mat=343 anti=0
+[charges]   w=21 mat=343 anti=0
+[charges]   w=22 mat=0 anti=343
+[charges]   w=23 mat=0 anti=343
+[charges]   w=24 mat=343 anti=0
+[charges]   w=25 mat=343 anti=0
+[charges]   w=26 mat=0 anti=343
+[charges]   w=27 mat=0 anti=343
+[charges]   w=28 mat=0 anti=343
+[charges]   w=29 mat=0 anti=343
+[charges]   w=30 mat=0 anti=343
+[charges]   w=31 mat=0 anti=343
+[charges]   w=32 mat=343 anti=0
+[charges]   w=33 mat=343 anti=0
+[charges]   w=34 mat=343 anti=0
+[charges]   w=35 mat=343 anti=0
+[charges]   w=36 mat=343 anti=0
+[charges]   w=37 mat=343 anti=0
+[charges]   w=38 mat=0 anti=343
+[charges]   w=39 mat=0 anti=343
+[charges]   w=40 mat=343 anti=0
+[charges]   w=41 mat=343 anti=0
+[charges]   w=42 mat=0 anti=343
+[charges]   w=43 mat=0 anti=343
+[charges]   w=44 mat=0 anti=343
+[charges]   w=45 mat=0 anti=343
+[charges]   w=46 mat=0 anti=343
+[charges]   w=47 mat=0 anti=343
+[charges]   w=48 mat=343 anti=0
+[charges]   w=49 mat=343 anti=0
+[charges]   w=50 mat=343 anti=0
+[charges]   w=51 mat=343 anti=0
+[charges]   w=52 mat=343 anti=0
+[charges]   w=53 mat=343 anti=0
+[charges]   w=54 mat=0 anti=343
+[charges]   w=55 mat=0 anti=343
+[charges]   w=56 mat=343 anti=0
+[charges]   w=57 mat=343 anti=0
+[charges]   w=58 mat=0 anti=343
+[charges]   w=59 mat=0 anti=343
+[charges]   w=60 mat=0 anti=343
+[charges]   w=61 mat=0 anti=343
+[charges]   w=62 mat=0 anti=343
+[charges]   w=63 mat=0 anti=343
+[charges]   w=64 mat=343 anti=0
+[charges]   w=65 mat=343 anti=0
+[charges]   w=66 mat=343 anti=0
+[charges]   w=67 mat=343 anti=0
+[charges]   w=68 mat=343 anti=0
+[charges]   w=69 mat=343 anti=0
+[charges]   w=70 mat=0 anti=343
+[charges]   w=71 mat=0 anti=343
+[charges]   w=72 mat=343 anti=0
+[charges]   w=73 mat=343 anti=0
+[charges]   w=74 mat=0 anti=343
+[charges]   w=75 mat=0 anti=343
+[charges]   w=76 mat=0 anti=343
+[charges]   w=77 mat=0 anti=343
+[charges]   w=78 mat=0 anti=343
+[charges]   w=79 mat=0 anti=343
+[charges]   w=80 mat=343 anti=0
+[charges]   w=81 mat=343 anti=0
+[charges]   w=82 mat=343 anti=0
+[charges]   w=83 mat=343 anti=0
+[charges]   w=84 mat=343 anti=0
+[charges]   w=85 mat=343 anti=0
+[charges]   w=86 mat=0 anti=343
+[charges]   w=87 mat=0 anti=343
+[charges]   w=88 mat=343 anti=0
+[charges]   w=89 mat=343 anti=0
+[charges]   w=90 mat=0 anti=343
+[charges]   w=91 mat=0 anti=343
+[charges]   w=92 mat=0 anti=343
+[charges]   w=93 mat=0 anti=343
+[charges]   w=94 mat=0 anti=343
+[charges]   w=95 mat=0 anti=343
+[charges]   w=96 mat=343 anti=0
+[charges]   w=97 mat=343 anti=0
+[charges]   w=98 mat=343 anti=0
+[charges]   w=99 mat=343 anti=0
+[charges]   w=100 mat=343 anti=0
+[charges]   w=101 mat=343 anti=0
+[charges]   w=102 mat=0 anti=343
+[charges]   w=103 mat=0 anti=343
+[charges]   w=104 mat=343 anti=0
+[charges]   w=105 mat=343 anti=0
+[charges]   w=106 mat=0 anti=343
+[charges]   w=107 mat=0 anti=343
+[charges]   w=108 mat=0 anti=343
+[charges]   w=109 mat=0 anti=343
+[charges]   w=110 mat=0 anti=343
+[charges]   w=111 mat=0 anti=343
+[charges]   w=112 mat=343 anti=0
+[charges]   w=113 mat=343 anti=0
+[charges]   w=114 mat=343 anti=0
+[charges]   w=115 mat=343 anti=0
+[charges]   w=116 mat=343 anti=0
+[charges]   w=117 mat=343 anti=0
+[charges]   w=118 mat=0 anti=343
+[charges]   w=119 mat=0 anti=343
+[charges]   w=120 mat=343 anti=0
+[charges]   w=121 mat=343 anti=0
+[charges]   w=122 mat=0 anti=343
+[charges]   w=123 mat=0 anti=343
+[charges]   w=124 mat=0 anti=343
+[charges]   w=125 mat=0 anti=343
+[charges]   w=126 mat=0 anti=343
+[charges]   w=127 mat=0 anti=343
+[charges]   w=128 mat=343 anti=0
+[charges]   w=129 mat=343 anti=0
+[charges]   w=130 mat=343 anti=0
+[charges]   w=131 mat=343 anti=0
+[charges]   w=132 mat=343 anti=0
+[charges]   w=133 mat=343 anti=0
+[charges]   w=134 mat=0 anti=343
+[charges]   w=135 mat=0 anti=343
+[charges]   w=136 mat=343 anti=0
+[charges]   w=137 mat=343 anti=0
+[charges]   w=138 mat=0 anti=343
+[charges]   w=139 mat=0 anti=343
+[charges]   w=140 mat=0 anti=343
+[charges]   w=141 mat=0 anti=343
+[charges]   w=142 mat=0 anti=343
+[charges]   w=143 mat=0 anti=343
+[charges]   w=144 mat=343 anti=0
+[charges]   w=145 mat=343 anti=0
+[charges]   w=146 mat=343 anti=0
+DEBUG phase tick 2600: center u=78 v=12 active=0 pB=1 sB=0 pol=(1,0) bstamp=1661
+DEBUG phase tick 2700: center u=75 v=10 active=0 pB=1 sB=0 pol=(1,0) bstamp=1661
+    5     1  9702   9702      23226 9702  0         0      23226  0      0      0        139  8   0   0   40719  1    50421 
+#   frame 5 encounter latch: homb_events=+0 (cumulative 0)
+#   frame 5 move-align: moved=0  sign-match 0/1/2/3 = 0/0/0/0
+#   frame 5 move-split: flight=0  0/1/2/3 = 0/0/0/0  |  cohesion=0  0/1/2/3 = 0/0/0/0
+#   frame 5 move-drift: flight on its octant side (all 3 axes) = 0, octant-aligned = 0  |  off side (<3 axes) = 0, octant-aligned = 0
+#   frame 5 move-mask: one writer = 0 (octant-aligned 0)  |  two or more writers = 0 (octant-aligned 0)
+#   frame 5 separation: occupiedCenters=8 sources=147 moved-this-frame=0  cB=0 kB=0 homB=0 reloc!=0(sources)=0  m!=0(sources)=147/147 m!=0(cells)=147  pol!=0(cells)=13671
+#   frame 5 positions: Orbis n=75 mean=(-0.040,-1.000,-0.013) | Umbra n=72 mean=(0.000,1.000,0.000) | CoM-(centre)=(-0.020,-0.020,-0.007)
+#   frame 5 classes:  k0(n=20)d=(-1.00,-1.00,-1.00)  k1(n=19)d=(-1.00,-1.00,+1.00)  k2(n=18)d=(-1.00,+1.00,-1.00)  k3(n=18)d=(-1.00,+1.00,+1.00)  k4(n=18)d=(+1.00,-1.00,-1.00)  k5(n=18)d=(+1.00,-1.00,+1.00)  k6(n=18)d=(+1.00,+1.00,-1.00)  k7(n=18)d=(+1.00,+1.00,+1.00)
+#   frame 5 axis-align: m==0=0  sign-match 0/1/2/3 = 0/0/0/147
+#   frame 5 clocks: resets=0  [reemit=0 (non-zero impulse=0)  reloc-at-centre=0 applied=0  cB=0  flood-to-0=0]  flood-pulls=0 | commit: pending-impulse=0, |reloc| at commit=0 | booked-on-lattice=0 drained=0 writeback-sum=0 net-layers=0 net-max=3 charge-dispersion=0 polar-seed=0 commit-calls=553 | ticks=553 captured-sum=0 | s2B fired in pass=0 (t-off=0, left-active=0)  cells-left-active=0 | relay: reseat-step=0 (octant-aligned=0 other=0) reseat-at-contact=0 | reseed-carried-reloc=0
+DEBUG phase tick 2800: center u=72 v=11 active=1 pB=1 sB=0 pol=(1,0) bstamp=1661
+[charges] tick=2817 MAT=25725 ANTI=24696 mat/total=0.510204 | orphanM=0 orphanA=0 | turnarounds V=147 D=0
+[charges] closure tick=2817 Disl=+1029 Dorph=+0 Dtot=+1029 Dorb=+13377 Dumb=-12348 DslOrb=+13377 DslUmb=-12348 | orbM=19551 orbA=6174 umbM=6174 umbA=18522
+[charges] retina tick=2817 pairM=0 pairA=0 dPair=+0 freeM=25725 freeA=24696 freeD=+1029 | hidAnti orb=0 umb=0 form=0 blob=0 ann=0 | Dtot==dPair+freeD: OK
+[charges]   w=0 mat=343 anti=0
+[charges]   w=1 mat=343 anti=0
+[charges]   w=2 mat=343 anti=0
+[charges]   w=3 mat=343 anti=0
+[charges]   w=4 mat=343 anti=0
+[charges]   w=5 mat=343 anti=0
+[charges]   w=6 mat=0 anti=343
+[charges]   w=7 mat=0 anti=343
+[charges]   w=8 mat=343 anti=0
+[charges]   w=9 mat=343 anti=0
+[charges]   w=10 mat=0 anti=343
+[charges]   w=11 mat=0 anti=343
+[charges]   w=12 mat=0 anti=343
+[charges]   w=13 mat=0 anti=343
+[charges]   w=14 mat=0 anti=343
+[charges]   w=15 mat=0 anti=343
+[charges]   w=16 mat=343 anti=0
+[charges]   w=17 mat=343 anti=0
+[charges]   w=18 mat=343 anti=0
+[charges]   w=19 mat=343 anti=0
+[charges]   w=20 mat=343 anti=0
+[charges]   w=21 mat=343 anti=0
+[charges]   w=22 mat=0 anti=343
+[charges]   w=23 mat=0 anti=343
+[charges]   w=24 mat=343 anti=0
+[charges]   w=25 mat=343 anti=0
+[charges]   w=26 mat=0 anti=343
+[charges]   w=27 mat=0 anti=343
+[charges]   w=28 mat=0 anti=343
+[charges]   w=29 mat=0 anti=343
+[charges]   w=30 mat=0 anti=343
+[charges]   w=31 mat=0 anti=343
+[charges]   w=32 mat=343 anti=0
+[charges]   w=33 mat=343 anti=0
+[charges]   w=34 mat=343 anti=0
+[charges]   w=35 mat=343 anti=0
+[charges]   w=36 mat=343 anti=0
+[charges]   w=37 mat=343 anti=0
+[charges]   w=38 mat=0 anti=343
+[charges]   w=39 mat=0 anti=343
+[charges]   w=40 mat=343 anti=0
+[charges]   w=41 mat=343 anti=0
+[charges]   w=42 mat=0 anti=343
+[charges]   w=43 mat=0 anti=343
+[charges]   w=44 mat=0 anti=343
+[charges]   w=45 mat=0 anti=343
+[charges]   w=46 mat=0 anti=343
+[charges]   w=47 mat=0 anti=343
+[charges]   w=48 mat=343 anti=0
+[charges]   w=49 mat=343 anti=0
+[charges]   w=50 mat=343 anti=0
+[charges]   w=51 mat=343 anti=0
+[charges]   w=52 mat=343 anti=0
+[charges]   w=53 mat=343 anti=0
+[charges]   w=54 mat=0 anti=343
+[charges]   w=55 mat=0 anti=343
+[charges]   w=56 mat=343 anti=0
+[charges]   w=57 mat=343 anti=0
+[charges]   w=58 mat=0 anti=343
+[charges]   w=59 mat=0 anti=343
+[charges]   w=60 mat=0 anti=343
+[charges]   w=61 mat=0 anti=343
+[charges]   w=62 mat=0 anti=343
+[charges]   w=63 mat=0 anti=343
+[charges]   w=64 mat=343 anti=0
+[charges]   w=65 mat=343 anti=0
+[charges]   w=66 mat=343 anti=0
+[charges]   w=67 mat=343 anti=0
+[charges]   w=68 mat=343 anti=0
+[charges]   w=69 mat=343 anti=0
+[charges]   w=70 mat=0 anti=343
+[charges]   w=71 mat=0 anti=343
+[charges]   w=72 mat=343 anti=0
+[charges]   w=73 mat=343 anti=0
+[charges]   w=74 mat=0 anti=343
+[charges]   w=75 mat=0 anti=343
+[charges]   w=76 mat=0 anti=343
+[charges]   w=77 mat=0 anti=343
+[charges]   w=78 mat=0 anti=343
+[charges]   w=79 mat=0 anti=343
+[charges]   w=80 mat=343 anti=0
+[charges]   w=81 mat=343 anti=0
+[charges]   w=82 mat=343 anti=0
+[charges]   w=83 mat=343 anti=0
+[charges]   w=84 mat=343 anti=0
+[charges]   w=85 mat=343 anti=0
+[charges]   w=86 mat=0 anti=343
+[charges]   w=87 mat=0 anti=343
+[charges]   w=88 mat=343 anti=0
+[charges]   w=89 mat=343 anti=0
+[charges]   w=90 mat=0 anti=343
+[charges]   w=91 mat=0 anti=343
+[charges]   w=92 mat=0 anti=343
+[charges]   w=93 mat=0 anti=343
+[charges]   w=94 mat=0 anti=343
+[charges]   w=95 mat=0 anti=343
+[charges]   w=96 mat=343 anti=0
+[charges]   w=97 mat=343 anti=0
+[charges]   w=98 mat=343 anti=0
+[charges]   w=99 mat=343 anti=0
+[charges]   w=100 mat=343 anti=0
+[charges]   w=101 mat=343 anti=0
+[charges]   w=102 mat=0 anti=343
+[charges]   w=103 mat=0 anti=343
+[charges]   w=104 mat=343 anti=0
+[charges]   w=105 mat=343 anti=0
+[charges]   w=106 mat=0 anti=343
+[charges]   w=107 mat=0 anti=343
+[charges]   w=108 mat=0 anti=343
+[charges]   w=109 mat=0 anti=343
+[charges]   w=110 mat=0 anti=343
+[charges]   w=111 mat=0 anti=343
+[charges]   w=112 mat=343 anti=0
+[charges]   w=113 mat=343 anti=0
+[charges]   w=114 mat=343 anti=0
+[charges]   w=115 mat=343 anti=0
+[charges]   w=116 mat=343 anti=0
+[charges]   w=117 mat=343 anti=0
+[charges]   w=118 mat=0 anti=343
+[charges]   w=119 mat=0 anti=343
+[charges]   w=120 mat=343 anti=0
+[charges]   w=121 mat=343 anti=0
+[charges]   w=122 mat=0 anti=343
+[charges]   w=123 mat=0 anti=343
+[charges]   w=124 mat=0 anti=343
+[charges]   w=125 mat=0 anti=343
+[charges]   w=126 mat=0 anti=343
+[charges]   w=127 mat=0 anti=343
+[charges]   w=128 mat=343 anti=0
+[charges]   w=129 mat=343 anti=0
+[charges]   w=130 mat=343 anti=0
+[charges]   w=131 mat=343 anti=0
+[charges]   w=132 mat=343 anti=0
+[charges]   w=133 mat=343 anti=0
+[charges]   w=134 mat=0 anti=343
+[charges]   w=135 mat=0 anti=343
+[charges]   w=136 mat=343 anti=0
+[charges]   w=137 mat=343 anti=0
+[charges]   w=138 mat=0 anti=343
+[charges]   w=139 mat=0 anti=343
+[charges]   w=140 mat=0 anti=343
+[charges]   w=141 mat=0 anti=343
+[charges]   w=142 mat=0 anti=343
+[charges]   w=143 mat=0 anti=343
+[charges]   w=144 mat=343 anti=0
+[charges]   w=145 mat=343 anti=0
+[charges]   w=146 mat=343 anti=0
+DEBUG phase tick 2900: center u=78 v=12 active=1 pB=1 sB=0 pol=(1,0) bstamp=1661
+DEBUG phase tick 3000: center u=75 v=10 active=1 pB=1 sB=0 pol=(1,0) bstamp=1661
+[charges] tick=3073 MAT=25725 ANTI=24696 mat/total=0.510204 | orphanM=0 orphanA=0 | turnarounds V=147 D=0
+[charges] closure tick=3073 Disl=+1029 Dorph=+0 Dtot=+1029 Dorb=+13377 Dumb=-12348 DslOrb=+13377 DslUmb=-12348 | orbM=19551 orbA=6174 umbM=6174 umbA=18522
+[charges] retina tick=3073 pairM=0 pairA=0 dPair=+0 freeM=25725 freeA=24696 freeD=+1029 | hidAnti orb=0 umb=0 form=0 blob=0 ann=0 | Dtot==dPair+freeD: OK
+[charges]   w=0 mat=343 anti=0
+[charges]   w=1 mat=343 anti=0
+[charges]   w=2 mat=343 anti=0
+[charges]   w=3 mat=343 anti=0
+[charges]   w=4 mat=343 anti=0
+[charges]   w=5 mat=343 anti=0
+[charges]   w=6 mat=0 anti=343
+[charges]   w=7 mat=0 anti=343
+[charges]   w=8 mat=343 anti=0
+[charges]   w=9 mat=343 anti=0
+[charges]   w=10 mat=0 anti=343
+[charges]   w=11 mat=0 anti=343
+[charges]   w=12 mat=0 anti=343
+[charges]   w=13 mat=0 anti=343
+[charges]   w=14 mat=0 anti=343
+[charges]   w=15 mat=0 anti=343
+[charges]   w=16 mat=343 anti=0
+[charges]   w=17 mat=343 anti=0
+[charges]   w=18 mat=343 anti=0
+[charges]   w=19 mat=343 anti=0
+[charges]   w=20 mat=343 anti=0
+[charges]   w=21 mat=343 anti=0
+[charges]   w=22 mat=0 anti=343
+[charges]   w=23 mat=0 anti=343
+[charges]   w=24 mat=343 anti=0
+[charges]   w=25 mat=343 anti=0
+[charges]   w=26 mat=0 anti=343
+[charges]   w=27 mat=0 anti=343
+[charges]   w=28 mat=0 anti=343
+[charges]   w=29 mat=0 anti=343
+[charges]   w=30 mat=0 anti=343
+[charges]   w=31 mat=0 anti=343
+[charges]   w=32 mat=343 anti=0
+[charges]   w=33 mat=343 anti=0
+[charges]   w=34 mat=343 anti=0
+[charges]   w=35 mat=343 anti=0
+[charges]   w=36 mat=343 anti=0
+[charges]   w=37 mat=343 anti=0
+[charges]   w=38 mat=0 anti=343
+[charges]   w=39 mat=0 anti=343
+[charges]   w=40 mat=343 anti=0
+[charges]   w=41 mat=343 anti=0
+[charges]   w=42 mat=0 anti=343
+[charges]   w=43 mat=0 anti=343
+[charges]   w=44 mat=0 anti=343
+[charges]   w=45 mat=0 anti=343
+[charges]   w=46 mat=0 anti=343
+[charges]   w=47 mat=0 anti=343
+[charges]   w=48 mat=343 anti=0
+[charges]   w=49 mat=343 anti=0
+[charges]   w=50 mat=343 anti=0
+[charges]   w=51 mat=343 anti=0
+[charges]   w=52 mat=343 anti=0
+[charges]   w=53 mat=343 anti=0
+[charges]   w=54 mat=0 anti=343
+[charges]   w=55 mat=0 anti=343
+[charges]   w=56 mat=343 anti=0
+[charges]   w=57 mat=343 anti=0
+[charges]   w=58 mat=0 anti=343
+[charges]   w=59 mat=0 anti=343
+[charges]   w=60 mat=0 anti=343
+[charges]   w=61 mat=0 anti=343
+[charges]   w=62 mat=0 anti=343
+[charges]   w=63 mat=0 anti=343
+[charges]   w=64 mat=343 anti=0
+[charges]   w=65 mat=343 anti=0
+[charges]   w=66 mat=343 anti=0
+[charges]   w=67 mat=343 anti=0
+[charges]   w=68 mat=343 anti=0
+[charges]   w=69 mat=343 anti=0
+[charges]   w=70 mat=0 anti=343
+[charges]   w=71 mat=0 anti=343
+[charges]   w=72 mat=343 anti=0
+[charges]   w=73 mat=343 anti=0
+[charges]   w=74 mat=0 anti=343
+[charges]   w=75 mat=0 anti=343
+[charges]   w=76 mat=0 anti=343
+[charges]   w=77 mat=0 anti=343
+[charges]   w=78 mat=0 anti=343
+[charges]   w=79 mat=0 anti=343
+[charges]   w=80 mat=343 anti=0
+[charges]   w=81 mat=343 anti=0
+[charges]   w=82 mat=343 anti=0
+[charges]   w=83 mat=343 anti=0
+[charges]   w=84 mat=343 anti=0
+[charges]   w=85 mat=343 anti=0
+[charges]   w=86 mat=0 anti=343
+[charges]   w=87 mat=0 anti=343
+[charges]   w=88 mat=343 anti=0
+[charges]   w=89 mat=343 anti=0
+[charges]   w=90 mat=0 anti=343
+[charges]   w=91 mat=0 anti=343
+[charges]   w=92 mat=0 anti=343
+[charges]   w=93 mat=0 anti=343
+[charges]   w=94 mat=0 anti=343
+[charges]   w=95 mat=0 anti=343
+[charges]   w=96 mat=343 anti=0
+[charges]   w=97 mat=343 anti=0
+[charges]   w=98 mat=343 anti=0
+[charges]   w=99 mat=343 anti=0
+[charges]   w=100 mat=343 anti=0
+[charges]   w=101 mat=343 anti=0
+[charges]   w=102 mat=0 anti=343
+[charges]   w=103 mat=0 anti=343
+[charges]   w=104 mat=343 anti=0
+[charges]   w=105 mat=343 anti=0
+[charges]   w=106 mat=0 anti=343
+[charges]   w=107 mat=0 anti=343
+[charges]   w=108 mat=0 anti=343
+[charges]   w=109 mat=0 anti=343
+[charges]   w=110 mat=0 anti=343
+[charges]   w=111 mat=0 anti=343
+[charges]   w=112 mat=343 anti=0
+[charges]   w=113 mat=343 anti=0
+[charges]   w=114 mat=343 anti=0
+[charges]   w=115 mat=343 anti=0
+[charges]   w=116 mat=343 anti=0
+[charges]   w=117 mat=343 anti=0
+[charges]   w=118 mat=0 anti=343
+[charges]   w=119 mat=0 anti=343
+[charges]   w=120 mat=343 anti=0
+[charges]   w=121 mat=343 anti=0
+[charges]   w=122 mat=0 anti=343
+[charges]   w=123 mat=0 anti=343
+[charges]   w=124 mat=0 anti=343
+[charges]   w=125 mat=0 anti=343
+[charges]   w=126 mat=0 anti=343
+[charges]   w=127 mat=0 anti=343
+[charges]   w=128 mat=343 anti=0
+[charges]   w=129 mat=343 anti=0
+[charges]   w=130 mat=343 anti=0
+[charges]   w=131 mat=343 anti=0
+[charges]   w=132 mat=343 anti=0
+[charges]   w=133 mat=343 anti=0
+[charges]   w=134 mat=0 anti=343
+[charges]   w=135 mat=0 anti=343
+[charges]   w=136 mat=343 anti=0
+[charges]   w=137 mat=343 anti=0
+[charges]   w=138 mat=0 anti=343
+[charges]   w=139 mat=0 anti=343
+[charges]   w=140 mat=0 anti=343
+[charges]   w=141 mat=0 anti=343
+[charges]   w=142 mat=0 anti=343
+[charges]   w=143 mat=0 anti=343
+[charges]   w=144 mat=343 anti=0
+[charges]   w=145 mat=343 anti=0
+[charges]   w=146 mat=343 anti=0
+DEBUG phase tick 3100: center u=72 v=11 active=1 pB=1 sB=0 pol=(1,0) bstamp=1661
+DEBUG phase tick 3200: center u=78 v=12 active=1 pB=1 sB=0 pol=(1,0) bstamp=1661
+DEBUG phase tick 3300: center u=75 v=10 active=1 pB=1 sB=0 pol=(1,0) bstamp=1661
+    6     1  3822   3969      9501  3621  0         0      9501   0      0      0        139  8   0   0   46452  2    36936 
+#   frame 6 encounter latch: homb_events=+0 (cumulative 0)
+#   frame 6 move-align: moved=46  sign-match 0/1/2/3 = 0/7/0/39
+#   frame 6 move-split: flight=32  0/1/2/3 = 0/0/0/32  |  cohesion=14  0/1/2/3 = 0/7/0/7
+#   frame 6 move-drift: flight on its octant side (all 3 axes) = 32, octant-aligned = 32  |  off side (<3 axes) = 0, octant-aligned = 0
+#   frame 6 move-mask: one writer = 39 (octant-aligned 32)  |  two or more writers = 7 (octant-aligned 7)
+#   frame 6 separation: occupiedCenters=30 sources=147 moved-this-frame=46  cB=0 kB=0 homB=0 reloc!=0(sources)=0  m!=0(sources)=147/147 m!=0(cells)=147  pol!=0(cells)=13671
+#   frame 6 positions: Orbis n=75 mean=(-0.093,-1.480,-0.013) | Umbra n=72 mean=(-0.028,1.583,-0.028) | CoM-(centre)=(-0.061,0.020,-0.020)
+#   frame 6 classes:  k0(n=20)d=(-1.50,-1.50,-1.50)  k1(n=19)d=(-1.53,-1.53,+1.53)  k2(n=18)d=(-1.67,+1.67,-1.67)  k3(n=18)d=(-1.56,+1.56,+1.56)  k4(n=18)d=(+1.44,-1.44,-1.44)  k5(n=18)d=(+1.44,-1.44,+1.44)  k6(n=18)d=(+1.56,+1.56,-1.56)  k7(n=18)d=(+1.56,+1.56,+1.56)
+#   frame 6 axis-align: m==0=0  sign-match 0/1/2/3 = 0/0/0/147
+#   frame 6 clocks: resets=0  [reemit=0 (non-zero impulse=0)  reloc-at-centre=53 applied=53  cB=519  flood-to-0=45347]  flood-pulls=52323 | commit: pending-impulse=39, |reloc| at commit=234 | booked-on-lattice=14 drained=14 writeback-sum=14 net-layers=14 net-max=3 charge-dispersion=0 polar-seed=0 commit-calls=553 | ticks=553 captured-sum=0 | s2B fired in pass=0 (t-off=0, left-active=0)  cells-left-active=0 | relay: reseat-step=0 (octant-aligned=0 other=0) reseat-at-contact=0 | reseed-carried-reloc=0
+# period of active-shell size                  : none up to 1 frames
+# period of shell size + s2B occupancy         : none up to 1 frames
+# period of shell size + s2B departures        : none up to 1 frames
+# period of the full recorded state            : none up to 1 frames
+# series (frame >= 3) active / lost_s2B / s2B_tot:  4:23226/0/0  5:9702/0/0  6:3822/0/0
+# totals: lost=46251 gained=49926  of the lost cells 0 carried s2B
+#   whole-lattice (r - f) summed over the run (r-f : cell-frames):  -3:147  -2:4116  -1:17493  0:50568  1:82026  2:82026  3:50274  4:14700  5:1176
+#   charge words of cells that left the shell (word : count):  000000:6293  000004:5664  000025:5989  000029:5664  000042:5658  000046:5661  000051:5661  000055:5661
+#   (r - f) of cells that left the shell:  0:46251

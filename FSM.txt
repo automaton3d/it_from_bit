@@ -557,6 +557,8 @@ WHAT THIS IS
            nmake CANDIDATES=1 trace-first-era
            nmake check-docs              (the lint: cited paths, the registry against the
                                           #ifdefs, and the invariants against build\*.out)
+           nmake check-trace             (the regression: four configurations, one era at L=7,
+                                          against experiments\golden\)
            experiments\trace_build_variants.bat   (seven single-purpose variants by flags:
                                                    ref, disp, polar, base, aonly, own, bothab)
   Fold a log into a per-era table:  experiments\era_summary.ps1 -Log <log> -Era <frames>
@@ -567,6 +569,11 @@ WHAT THIS IS
 
   These are the invariants the current description rests on.  If one of them moves, the
   paragraph above it is no longer true.
+
+  Two tools watch them: `nmake check-docs` recomputes the machine-checkable rows below from the
+  logs in build\ (and fails if the sentence that states them is re-worded), and
+  `nmake check-trace` pins the whole era-1 state -- four configurations, L=7, 6 frames -- against
+  the committed logs in experiments\golden\, which is the stricter of the two.
 
     frame 2, any L            K = W-8, D = 8, S = 0, P = 0, dt = 1, t_share = all cells
     frames 1-4, any L         active per layer 1, 26, 66, 158 (the torus counts)

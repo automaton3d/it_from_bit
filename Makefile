@@ -545,6 +545,26 @@ check-claims: check-docs
 	@echo check-claims: renamed to check-docs on 2026-09-24 -- the lint above ran instead
 
 # ================================================
+# Trace regression (golden logs)
+# ================================================
+# experiments\check_trace.bat builds four configurations of the harness -- the reference and the
+# three of the promotion decision (ref, disp, base, bothab) -- runs each on one scenario (L=7,
+# sieve closed, 6 frames = one era, ending on the era-1 cascade frame) and compares the log with
+# the expectation committed in experiments\golden\.  That scenario is what separates the four:
+# nothing, the dispersal alone, the encounter's transport (94 steps at f6) and the same with the
+# pair rules (46 steps).  The model is deterministic (no RNG, no address, no scan order), so a
+# difference is a change in the dynamics or in the scenario and never noise; the runs are the
+# cost, about 70 s each.
+#   nmake check-trace             compare; non-zero exit on any difference
+#   nmake refresh-trace-golden    accept what was produced as the new expectation (then commit)
+
+check-trace:
+	cmd /c experiments\check_trace.bat
+
+refresh-trace-golden:
+	cmd /c experiments\check_trace.bat refresh
+
+# ================================================
 # ODR/link gate (header regression check)
 # ================================================
 # Two tiny TUs include the shared headers and are linked together.  A header
@@ -602,4 +622,4 @@ rebuild:
 # Targets simbólicos
 # ================================================
 
-.SYMBOLIC: clean run rebuild all dirs dlls copy_config check-odr check-extras check-docs trace-first-era
+.SYMBOLIC: clean run rebuild all dirs dlls copy_config check-odr check-extras check-docs check-trace refresh-trace-golden trace-first-era
