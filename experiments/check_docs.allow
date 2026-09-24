@@ -1,0 +1,18 @@
+# check_docs.allow -- cited paths that are deliberately NOT in this repository, with the
+# reason, for experiments\check_docs.ps1 (check A).  One pattern per line (a wildcard match
+# against the file name or the whole cited path); '#' starts a comment.
+#
+# Everything below is material of the study archive (E:\alpha), which the README's "lives in"
+# paragraph declares and which is not part of this repository.  The README's table covers the
+# ones the manuscript quotes; the rest are cited from source comments, which is where a
+# reference rots unnoticed -- that is why they are listed here instead of being edited away.
+
+make_it_from_bit.ps1    # the generator of this reduced manuscript (README, "lives in")
+EMERGENCE_SEARCH.md     # study-archive note, cited from src\include\model\chief_transition.h
+WORK_PLAN.md            # study-archive note, cited from src\model\interaction.cpp
+PARENT_SELECTIVE.md     # study-archive note, cited from src\model\interaction.cpp
+FAMILY_SELECTIVE_DESIGN.md  # study-archive note, cited from src\model\simulation.cpp
+ISLAND_CENSUS.md        # study-archive note, cited from src\model\simulation.cpp
+SEED_ASYMMETRY.md       # study-archive note, cited from src\model\interaction.cpp
+CLAIMS_LINT.md          # the retired claims lint's note (E:\alpha\attic\closed_programmes\)
+check_claims.py         # ... and its script

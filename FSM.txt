@@ -555,6 +555,8 @@ WHAT THIS IS
                                          ever flipped.  CANDIDATES=1 and REFERENCE=1 stop the
                                          build with U1050 rather than silently combining.)
            nmake CANDIDATES=1 trace-first-era
+           nmake check-docs              (the lint: cited paths, the registry against the
+                                          #ifdefs, and the invariants against build\*.out)
            experiments\trace_build_variants.bat   (seven single-purpose variants by flags:
                                                    ref, disp, polar, base, aonly, own, bothab)
   Fold a log into a per-era table:  experiments\era_summary.ps1 -Log <log> -Era <frames>
@@ -574,8 +576,9 @@ WHAT THIS IS
                               147/147 (L=7) and 243/243 (L=9) aligned.  ALONE (the `disp`
                               variant) the phase never closes and it fires once per ERA
     dispersion alone (disp)   L=7, 24 frames: fires at f2, f8, f14, f20 -- 147/147 octant-
-                              aligned every time, the ledger frozen at K=139, D=8, dt=1 in
-                              all 24 frames, m == 0 / pol == 0 in all of them; the class
+                              aligned every time; from f2 on the ledger holds at K=139, D=8,
+                              dt=1 in every frame (f1 is the seed: K=D=0, S=W), m == 0 and
+                              pol == 0 in all 24 frames; the class
                               offsets grow +1 per era (1, 2, 3) and at f20 the centers wrap
                               the torus (offsets invert to -3/+3, 147/147 read "off side")
     m alignment (candidate)   147/147 from frame 4 to frame 14, then decaying: 119 at 18,

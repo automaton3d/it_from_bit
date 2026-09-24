@@ -9,7 +9,7 @@
 
 #ifdef _WIN32
 // windows.h first: ShellExecuteA lives in shellapi.h and windows.h must not be
-// dragged in after glad/GLFW (it redefines APIENTRY/WINGDIAPI).
+// dragged in after glad and GLFW (it redefines APIENTRY/WINGDIAPI).
 #  include <windows.h>
 #  include <shellapi.h>
 #endif

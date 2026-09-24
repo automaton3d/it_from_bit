@@ -815,9 +815,10 @@ axis is ever elected, nothing ever stops the rule, the latch re-arms at every er
 writer-mask 16) and the encounter stays completely inert -- `cB = kB = homB = reemit = 0` in every
 frame, as in the reference.
 
-**Everything else the paper quotes survives, exactly.**  The ledger holds at `K = 139`, `D = 8`,
-`S = 0`, `P = 0`, `dt = 1`, and `dev` and the shell counts (147, 3822, 9702, 23226, ...) are
-frame-for-frame the reference values in all 24 frames; the harness still finds the same 6-frame period.
+**Everything else the paper quotes survives, exactly.**  From frame 2 on (frame 1 is the seed,
+`K = D = P = 0` with `S = W`) the ledger holds at `K = 139`, `D = 8`, `S = 0`, `P = 0`, `dt = 1`, and
+`dev` and the shell counts (147, 3822, 9702, 23226, ...) are frame-for-frame the reference values;
+the harness still finds the same 6-frame period.
 So this configuration is "the reference, plus eight separated blocks" -- which is precisely why it is
 the cheapest possible way to have movement, and precisely why it cannot stand as the default.
 
@@ -1133,7 +1134,7 @@ halves), the number of distinct charge words, the structurally pairable addresse
 and the in-loop `s2B` counters (logs in `build\*.log`).  What it measured:
 
 **Multi-era and candidate runs.**  The harness is the same source in every candidate measurement on
-this page; only the macros change, and no source is edited.  Two scripts make that reproducible:
+this page; only the macros change, and no source is edited.  Three scripts make that reproducible:
 
 * `experiments\trace_build_variants.bat` builds, from a developer prompt, the seven variants used here
   -- `ref` (counters only, the reference transport channel), `disp` (the dispersion with **no** polar
@@ -1148,6 +1149,16 @@ this page; only the macros change, and no source is edited.  Two scripts make th
   default execution policy refuses script files, and the cultures differ (`-` vs `,` as decimal
   separator), so the script pins the invariant culture itself.
 
+* `experiments\check_docs.ps1` (`nmake check-docs`) is the lint over the claims themselves: the cited
+  paths, checked against this tree, the README's "lives in" table and `experiments\check_docs.allow`
+  (a cited path that is neither present nor declared fails); the FSM.txt registry against the
+  `#ifdef`/`defined()` of the sources, both directions (a registry macro with no `#ifdef` and a
+  Makefile `/D` the sources never test both fail); and the machine-checkable rows of FSM.txt section 10
+  recomputed from the trace logs in `build\`, where a log that is not built is a note and never a
+  failure.  Each rule quotes the sentence it verifies, so re-wording a claim in the documents fails the
+  lint instead of passing silently.  It is the in-tree successor of the retired claims lint
+  (`nmake check-claims` still answers, as an alias).  Its first run is what tightened the frame-1
+  wording of "The dispersion alone, measured";
 * the shell advances **one cell per light frame** from radius 0 to RMAX and back, and the
   per-layer shell counts are the exact lattice counts 1, 26, 66, 158, 234 for radii 0..4, so one
   era is `2 RMAX` frames (6 at `L = 7`, 8 at `L = 9`, i.e. `L - 1` on the odd lattices the seed

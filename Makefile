@@ -527,15 +527,22 @@ run:
 	cd "$(BUILD_DIR)" && $(TARGET)
 
 # ================================================
-# Claims-vs-artifacts lint (menu item 5)
+# Documents-vs-artifacts lint (the claims lint, revived over what exists in this tree)
 # ================================================
-# RETIRED 2026-09-19 with the rest of the paper-facing tooling: the lint and its
-# note (CLAIMS_LINT.md, check_claims.py) are in attic/closed_programmes/.  The
-# target is kept only as a pointer, so `make check-claims` says where it went
-# instead of failing with "no rule to make target".
+# The 2026-09-19 lint (its note CLAIMS_LINT.md and its script check_claims.py) lived over the
+# whole paper-facing tooling and was retired to the study archive, which is not part of this
+# repository (E:\alpha\attic\closed_programmes\).  This target is its in-tree
+# successor and checks only claims that can be checked here: the cited paths, the FSM.txt
+# registry against the #ifdefs of the sources, and the machine-checkable invariants against the
+# trace logs in build\ (a log that is not built is a note, never a failure).  Warnings do not
+# fail; errors do.  `check-claims` stays as an alias, so the old name does not fail with
+# "no rule to make target".
 
-check-claims:
-	@echo check-claims: retired 2026-09-19 -- see attic/closed_programmes/README.md
+check-docs:
+	powershell -NoProfile -ExecutionPolicy Bypass -File experiments\check_docs.ps1
+
+check-claims: check-docs
+	@echo check-claims: renamed to check-docs on 2026-09-24 -- the lint above ran instead
 
 # ================================================
 # ODR/link gate (header regression check)
@@ -595,4 +602,4 @@ rebuild:
 # Targets simbólicos
 # ================================================
 
-.SYMBOLIC: clean run rebuild all dirs dlls copy_config check-odr check-extras trace-first-era
+.SYMBOLIC: clean run rebuild all dirs dlls copy_config check-odr check-extras check-docs trace-first-era
