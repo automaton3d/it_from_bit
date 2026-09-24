@@ -562,6 +562,9 @@ WHAT THIS IS
            experiments\trace_build_variants.bat   (seven single-purpose variants by flags:
                                                    ref, disp, polar, base, aonly, own, bothab)
   Fold a log into a per-era table:  experiments\era_summary.ps1 -Log <log> -Era <frames>
+  Fold several logs into the finite-size table, and read the plateau ratio, the charge-word
+  roster and the era-1 dynamics off them:
+           experiments\scaling_summary.ps1 -Logs <log>,<log>,...   (L and W from each header)
 
 
 10. NUMBERS TO RE-CHECK WHEN SOMETHING CHANGES
