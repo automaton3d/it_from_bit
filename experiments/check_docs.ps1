@@ -568,6 +568,39 @@ Report-Rule 'octant over twelve eras' 'FSM.txt' `
   }
 }
 
+# --- C10: the corrected manuscript sentence on the twelve-era ledger ---------------------
+Report-Rule 'twelve-era ledger' 'it_from_bit.tex' `
+  'The ledger holds its plateau ($K=139$, $D=8$ at $L=7$) from frame~2 to frame~13 and then drifts with the cascades, reaching $K=124$, $D=23$ at frame~72' `
+  'long2_L7.out' {
+  param($lines)
+  $census = Get-Census $lines
+  $rows = @($census | Where-Object { $_.Frame -ge 2 })
+  # The plateau holds from frame 2 to frame 13 ...
+  foreach ($c in @($rows | Where-Object { $_.Frame -le 13 }))
+  {
+    Want ("frame " + $c.Frame) 'K' $c.K 139
+    Want ("frame " + $c.Frame) 'D' $c.D 8
+  }
+  # ... the first departure is frame 14 ...
+  $first = @($rows | Where-Object { $_.K -ne 139 -or $_.D -ne 8 } | Select-Object -First 1)
+  if ($first.Count -eq 0) { $script:ruleBad += 'the ledger never leaves the plateau, so the sentence is now wrong the other way' }
+  else
+  {
+    Want ("frame " + $first[0].Frame + " (first departure)") 'K' $first[0].K 136
+    Want ("frame " + $first[0].Frame + " (first departure)") 'D' $first[0].D 11
+  }
+  # ... and frame 72 carries what the sentence quotes.
+  $last = @($rows | Where-Object { $_.Frame -eq 72 } | Select-Object -First 1)
+  if ($last.Count -eq 0) { $script:ruleBad += 'the log has no frame 72 row' }
+  else { Want 'frame 72' 'K' $last[0].K 124; Want 'frame 72' 'D' $last[0].D 23 }
+  # The saturation is what holds throughout: K + D = W = 147, in every frame.
+  foreach ($c in $rows)
+  {
+    if ($c.K + $c.D -ne 147)
+      { $script:ruleBad += ("frame " + $c.Frame + ": K + D = " + ($c.K + $c.D) + ", documented 147 (= W)") }
+  }
+}
+
 # ======================================================================================
 # verdict
 # ======================================================================================

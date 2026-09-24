@@ -995,6 +995,18 @@ tables' column held the largest single *component* (frame 6: 0.067 as a norm aga
 component; frame 12: 0.135 against 0.109).  The two conventions differ; the values above are the
 norm.
 
+**And the manuscript now says what this table shows.**  The candidate bullet of Sect. 8.4 stated that the
+ledger "stays at its plateau throughout" and that the flight displacements are "octant-aligned at every
+cascade measured", with the off-octant later steps explained as impulses inherited from earlier frames.
+The twelve-era log contradicts the first -- the plateau holds through frame 13 and the ledger then drifts
+to `K = 124`, `D = 23` by frame 72, so what holds is the *saturation* `K + D = W = 3L^2` -- and qualifies
+the second: the dispersal and the era-1 cascade are fully aligned (147 of 147, and 32 of 32 flight steps),
+but the later cascades' aligned share runs 29-77% per era (era 5: 48 of 90; era 12: 17 of 54).  The claim
+that the off-octant steps are inherited impulses is not established by any run in this repository, and the
+bullet now says so.  `it_from_bit.tex` was corrected accordingly (39 pages, 0 errors, 0 undefined
+references after the change), and `nmake check-docs` recomputes those numbers from this log as rule C10 --
+the paper's sentence and the trace now agree by machine, not by reading.
+
 ## Finite-size scaling, first pass: the plateau is derivable, the transport is not
 
 Item (iii) of the manuscript's open problems (Sect. 9.4) asks for a finite-size scaling study of the
