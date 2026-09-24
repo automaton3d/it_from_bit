@@ -778,6 +778,8 @@ DEBUG phase tick 500: center u=132 v=6 active=1 pB=0 sB=0 pol=(0,0) bstamp=0
 #   frame 1 move-split: flight=0  0/1/2/3 = 0/0/0/0  |  cohesion=0  0/1/2/3 = 0/0/0/0
 #   frame 1 move-drift: flight on its octant side (all 3 axes) = 0, octant-aligned = 0  |  off side (<3 axes) = 0, octant-aligned = 0
 #   frame 1 move-mask: one writer = 0 (octant-aligned 0)  |  two or more writers = 0 (octant-aligned 0)
+#   frame 1 move-carrier: queue-carried = 0 (octant-aligned 0)  |  booked this frame = 0 (octant-aligned 0)  |  both = 0 (octant-aligned 0)  |  no writer = 0 (octant-aligned 0)
+#   frame 1 move-writer: walk = 0 (0)  |  relay = 0 (0)  |  relay-contact = 0 (0)  |  cohesion = 0 (0)  |  dispersion = 0 (0)  |  thrust = 0 (0)   [flight movers, moved (octant-aligned); a mover can carry more than one bit]
 #   frame 1 separation: occupiedCenters=1 sources=147 moved-this-frame=0  cB=0 kB=0 homB=0 reloc!=0(sources)=0  m!=0(sources)=0/147 m!=0(cells)=0  pol!=0(cells)=0
 #   frame 1 positions: Orbis n=75 mean=(0.000,0.000,0.000) | Umbra n=72 mean=(0.000,0.000,0.000) | CoM-(centre)=(0.000,0.000,0.000)
 #   frame 1 classes:  k0(n=20)d=(+0.00,+0.00,+0.00)  k1(n=19)d=(+0.00,+0.00,+0.00)  k2(n=18)d=(+0.00,+0.00,+0.00)  k3(n=18)d=(+0.00,+0.00,+0.00)  k4(n=18)d=(+0.00,+0.00,+0.00)  k5(n=18)d=(+0.00,+0.00,+0.00)  k6(n=18)d=(+0.00,+0.00,+0.00)  k7(n=18)d=(+0.00,+0.00,+0.00)
@@ -1097,6 +1099,8 @@ DEBUG phase tick 1100: center u=123 v=14 active=0 pB=0 sB=0 pol=(0,0) bstamp=0
 #   frame 2 move-split: flight=0  0/1/2/3 = 0/0/0/0  |  cohesion=0  0/1/2/3 = 0/0/0/0
 #   frame 2 move-drift: flight on its octant side (all 3 axes) = 0, octant-aligned = 0  |  off side (<3 axes) = 0, octant-aligned = 0
 #   frame 2 move-mask: one writer = 0 (octant-aligned 0)  |  two or more writers = 0 (octant-aligned 0)
+#   frame 2 move-carrier: queue-carried = 0 (octant-aligned 0)  |  booked this frame = 0 (octant-aligned 0)  |  both = 0 (octant-aligned 0)  |  no writer = 0 (octant-aligned 0)
+#   frame 2 move-writer: walk = 0 (0)  |  relay = 0 (0)  |  relay-contact = 0 (0)  |  cohesion = 0 (0)  |  dispersion = 0 (0)  |  thrust = 0 (0)   [flight movers, moved (octant-aligned); a mover can carry more than one bit]
 #   frame 2 separation: occupiedCenters=1 sources=147 moved-this-frame=0  cB=0 kB=0 homB=0 reloc!=0(sources)=0  m!=0(sources)=0/147 m!=0(cells)=0  pol!=0(cells)=0
 #   frame 2 positions: Orbis n=75 mean=(0.000,0.000,0.000) | Umbra n=72 mean=(0.000,0.000,0.000) | CoM-(centre)=(0.000,0.000,0.000)
 #   frame 2 classes:  k0(n=20)d=(+0.00,+0.00,+0.00)  k1(n=19)d=(+0.00,+0.00,+0.00)  k2(n=18)d=(+0.00,+0.00,+0.00)  k3(n=18)d=(+0.00,+0.00,+0.00)  k4(n=18)d=(+0.00,+0.00,+0.00)  k5(n=18)d=(+0.00,+0.00,+0.00)  k6(n=18)d=(+0.00,+0.00,+0.00)  k7(n=18)d=(+0.00,+0.00,+0.00)
@@ -1414,6 +1418,8 @@ DEBUG phase tick 1600: center u=129 v=10 active=0 pB=0 sB=0 pol=(0,0) bstamp=0
 #   frame 3 move-split: flight=0  0/1/2/3 = 0/0/0/0  |  cohesion=0  0/1/2/3 = 0/0/0/0
 #   frame 3 move-drift: flight on its octant side (all 3 axes) = 0, octant-aligned = 0  |  off side (<3 axes) = 0, octant-aligned = 0
 #   frame 3 move-mask: one writer = 0 (octant-aligned 0)  |  two or more writers = 0 (octant-aligned 0)
+#   frame 3 move-carrier: queue-carried = 0 (octant-aligned 0)  |  booked this frame = 0 (octant-aligned 0)  |  both = 0 (octant-aligned 0)  |  no writer = 0 (octant-aligned 0)
+#   frame 3 move-writer: walk = 0 (0)  |  relay = 0 (0)  |  relay-contact = 0 (0)  |  cohesion = 0 (0)  |  dispersion = 0 (0)  |  thrust = 0 (0)   [flight movers, moved (octant-aligned); a mover can carry more than one bit]
 #   frame 3 separation: occupiedCenters=1 sources=147 moved-this-frame=0  cB=0 kB=0 homB=0 reloc!=0(sources)=0  m!=0(sources)=0/147 m!=0(cells)=0  pol!=0(cells)=0
 #   frame 3 positions: Orbis n=75 mean=(0.000,0.000,0.000) | Umbra n=72 mean=(0.000,0.000,0.000) | CoM-(centre)=(0.000,0.000,0.000)
 #   frame 3 classes:  k0(n=20)d=(+0.00,+0.00,+0.00)  k1(n=19)d=(+0.00,+0.00,+0.00)  k2(n=18)d=(+0.00,+0.00,+0.00)  k3(n=18)d=(+0.00,+0.00,+0.00)  k4(n=18)d=(+0.00,+0.00,+0.00)  k5(n=18)d=(+0.00,+0.00,+0.00)  k6(n=18)d=(+0.00,+0.00,+0.00)  k7(n=18)d=(+0.00,+0.00,+0.00)
@@ -1878,6 +1884,8 @@ DEBUG phase tick 2200: center u=129 v=10 active=0 pB=0 sB=0 pol=(0,0) bstamp=0
 #   frame 4 move-split: flight=0  0/1/2/3 = 0/0/0/0  |  cohesion=0  0/1/2/3 = 0/0/0/0
 #   frame 4 move-drift: flight on its octant side (all 3 axes) = 0, octant-aligned = 0  |  off side (<3 axes) = 0, octant-aligned = 0
 #   frame 4 move-mask: one writer = 0 (octant-aligned 0)  |  two or more writers = 0 (octant-aligned 0)
+#   frame 4 move-carrier: queue-carried = 0 (octant-aligned 0)  |  booked this frame = 0 (octant-aligned 0)  |  both = 0 (octant-aligned 0)  |  no writer = 0 (octant-aligned 0)
+#   frame 4 move-writer: walk = 0 (0)  |  relay = 0 (0)  |  relay-contact = 0 (0)  |  cohesion = 0 (0)  |  dispersion = 0 (0)  |  thrust = 0 (0)   [flight movers, moved (octant-aligned); a mover can carry more than one bit]
 #   frame 4 separation: occupiedCenters=1 sources=147 moved-this-frame=0  cB=0 kB=0 homB=0 reloc!=0(sources)=0  m!=0(sources)=0/147 m!=0(cells)=0  pol!=0(cells)=0
 #   frame 4 positions: Orbis n=75 mean=(0.000,0.000,0.000) | Umbra n=72 mean=(0.000,0.000,0.000) | CoM-(centre)=(0.000,0.000,0.000)
 #   frame 4 classes:  k0(n=20)d=(+0.00,+0.00,+0.00)  k1(n=19)d=(+0.00,+0.00,+0.00)  k2(n=18)d=(+0.00,+0.00,+0.00)  k3(n=18)d=(+0.00,+0.00,+0.00)  k4(n=18)d=(+0.00,+0.00,+0.00)  k5(n=18)d=(+0.00,+0.00,+0.00)  k6(n=18)d=(+0.00,+0.00,+0.00)  k7(n=18)d=(+0.00,+0.00,+0.00)
@@ -2194,6 +2202,8 @@ DEBUG phase tick 2700: center u=137 v=11 active=0 pB=0 sB=0 pol=(0,0) bstamp=0
 #   frame 5 move-split: flight=0  0/1/2/3 = 0/0/0/0  |  cohesion=0  0/1/2/3 = 0/0/0/0
 #   frame 5 move-drift: flight on its octant side (all 3 axes) = 0, octant-aligned = 0  |  off side (<3 axes) = 0, octant-aligned = 0
 #   frame 5 move-mask: one writer = 0 (octant-aligned 0)  |  two or more writers = 0 (octant-aligned 0)
+#   frame 5 move-carrier: queue-carried = 0 (octant-aligned 0)  |  booked this frame = 0 (octant-aligned 0)  |  both = 0 (octant-aligned 0)  |  no writer = 0 (octant-aligned 0)
+#   frame 5 move-writer: walk = 0 (0)  |  relay = 0 (0)  |  relay-contact = 0 (0)  |  cohesion = 0 (0)  |  dispersion = 0 (0)  |  thrust = 0 (0)   [flight movers, moved (octant-aligned); a mover can carry more than one bit]
 #   frame 5 separation: occupiedCenters=1 sources=147 moved-this-frame=0  cB=0 kB=0 homB=0 reloc!=0(sources)=0  m!=0(sources)=0/147 m!=0(cells)=0  pol!=0(cells)=0
 #   frame 5 positions: Orbis n=75 mean=(0.000,0.000,0.000) | Umbra n=72 mean=(0.000,0.000,0.000) | CoM-(centre)=(0.000,0.000,0.000)
 #   frame 5 classes:  k0(n=20)d=(+0.00,+0.00,+0.00)  k1(n=19)d=(+0.00,+0.00,+0.00)  k2(n=18)d=(+0.00,+0.00,+0.00)  k3(n=18)d=(+0.00,+0.00,+0.00)  k4(n=18)d=(+0.00,+0.00,+0.00)  k5(n=18)d=(+0.00,+0.00,+0.00)  k6(n=18)d=(+0.00,+0.00,+0.00)  k7(n=18)d=(+0.00,+0.00,+0.00)
@@ -2511,6 +2521,8 @@ DEBUG phase tick 3300: center u=137 v=11 active=0 pB=0 sB=0 pol=(0,0) bstamp=0
 #   frame 6 move-split: flight=0  0/1/2/3 = 0/0/0/0  |  cohesion=0  0/1/2/3 = 0/0/0/0
 #   frame 6 move-drift: flight on its octant side (all 3 axes) = 0, octant-aligned = 0  |  off side (<3 axes) = 0, octant-aligned = 0
 #   frame 6 move-mask: one writer = 0 (octant-aligned 0)  |  two or more writers = 0 (octant-aligned 0)
+#   frame 6 move-carrier: queue-carried = 0 (octant-aligned 0)  |  booked this frame = 0 (octant-aligned 0)  |  both = 0 (octant-aligned 0)  |  no writer = 0 (octant-aligned 0)
+#   frame 6 move-writer: walk = 0 (0)  |  relay = 0 (0)  |  relay-contact = 0 (0)  |  cohesion = 0 (0)  |  dispersion = 0 (0)  |  thrust = 0 (0)   [flight movers, moved (octant-aligned); a mover can carry more than one bit]
 #   frame 6 separation: occupiedCenters=1 sources=147 moved-this-frame=0  cB=0 kB=0 homB=0 reloc!=0(sources)=0  m!=0(sources)=0/147 m!=0(cells)=0  pol!=0(cells)=0
 #   frame 6 positions: Orbis n=75 mean=(0.000,0.000,0.000) | Umbra n=72 mean=(0.000,0.000,0.000) | CoM-(centre)=(0.000,0.000,0.000)
 #   frame 6 classes:  k0(n=20)d=(+0.00,+0.00,+0.00)  k1(n=19)d=(+0.00,+0.00,+0.00)  k2(n=18)d=(+0.00,+0.00,+0.00)  k3(n=18)d=(+0.00,+0.00,+0.00)  k4(n=18)d=(+0.00,+0.00,+0.00)  k5(n=18)d=(+0.00,+0.00,+0.00)  k6(n=18)d=(+0.00,+0.00,+0.00)  k7(n=18)d=(+0.00,+0.00,+0.00)

@@ -272,6 +272,20 @@ int main(int argc, char** argv)
          step runs against the octant).  `pm` counts the axes in which the layer is still on its
          octant's side; the two buckets below report the flight alignment for pm == 3 and pm < 3. */
       unsigned onSideN = 0, onSideAligned = 0, offSideN = 0, offSideAligned = 0;
+      /* Carrier of the displacement: the question the drift buckets left open.  The mask says which
+         writer touched the layer in THIS frame, but the drain bit (64) is the transport of a booking
+         made EARLIER, and a layer can move with no bit set at all (its centre was re-selected rather
+         than displaced).  The four classes below are disjoint and partition the flight movers, which
+         the move-mask line cannot do: it buckets by "bits <= 1", so a mover with no bit and a mover
+         whose only bit is the drain both read as "one writer".  (README, "The carrier of the flight
+         steps".) */
+      unsigned carQueueN = 0, carQueueAl = 0, carFrameN = 0, carFrameAl = 0,
+               carBothN = 0, carBothAl = 0, carNoneN = 0, carNoneAl = 0;
+      /* Per-writer split of the same flight movers: which mask bit booked the step, and how many of
+         those steps came out octant-aligned.  A mover can carry several bits (one per writer that
+         touched it).  Bits, in order: 1 walk funnel, 2 relay, 4 relay contact, 8 cohesion (structurally
+         absent here, the cohesion movers are not flight), 16 charge dispersion, 32 own-axis thrust. */
+      unsigned bitN[6] = {0,0,0,0,0,0}, bitAl[6] = {0,0,0,0,0,0};
       for (const Cell& c : lattice_curr)
         if (c.r2 == 0 && c.w < W_USED)
         {
@@ -315,6 +329,17 @@ int main(int argc, char** argv)
               if (((int)c.x[2] - (int)CENTER) * ((ch6 & 1u) ? +1 : -1) > 0) ++pm;
               if (pm == 3u) { ++onSideN; if (a == 3u) ++onSideAligned; }
               else          { ++offSideN; if (a == 3u) ++offSideAligned; }
+              /* Which carrier produced this flight displacement (see the counters above): the
+                 impulse queue's drain, a writer that fired in this frame, both, or neither. */
+              const unsigned carMask = (c.w < s2bTraceWriterMask.size()) ? s2bTraceWriterMask[c.w] : 0u;
+              const bool carDrain  = (carMask & 0x40u) != 0u;
+              const bool carBooked = (carMask & 0x3Fu) != 0u;
+              if (carDrain && carBooked) { ++carBothN;  if (a == 3u) ++carBothAl; }
+              else if (carDrain)         { ++carQueueN; if (a == 3u) ++carQueueAl; }
+              else if (carBooked)        { ++carFrameN; if (a == 3u) ++carFrameAl; }
+              else                       { ++carNoneN;  if (a == 3u) ++carNoneAl; }
+              for (unsigned b = 0; b < 6u; ++b)
+                if (carMask & (1u << b)) { ++bitN[b]; if (a == 3u) ++bitAl[b]; }
             }
 #endif
           }
@@ -333,6 +358,16 @@ int main(int argc, char** argv)
       printf("#   frame %d move-mask: one writer = %u (octant-aligned %u)  |  two or more writers"
              " = %u (octant-aligned %u)\n",
              frame, singleN, singleAl, multiN, multiAl);
+      printf("#   frame %d move-carrier: queue-carried = %u (octant-aligned %u)  |  booked this frame"
+             " = %u (octant-aligned %u)  |  both = %u (octant-aligned %u)  |  no writer = %u"
+             " (octant-aligned %u)\n",
+             frame, carQueueN, carQueueAl, carFrameN, carFrameAl,
+             carBothN, carBothAl, carNoneN, carNoneAl);
+      printf("#   frame %d move-writer: walk = %u (%u)  |  relay = %u (%u)  |  relay-contact = %u (%u)"
+             "  |  cohesion = %u (%u)  |  dispersion = %u (%u)  |  thrust = %u (%u)   [flight movers,"
+             " moved (octant-aligned); a mover can carry more than one bit]\n",
+             frame, bitN[0], bitAl[0], bitN[1], bitAl[1], bitN[2], bitAl[2],
+             bitN[3], bitAl[3], bitN[4], bitAl[4], bitN[5], bitAl[5]);
 #ifdef S2B_TRACE
       /* The mask is per frame: clear it now that this frame has been read, so the next frame's
          writers start from zero.  (The model's writers only set bits.) */

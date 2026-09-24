@@ -737,6 +737,104 @@ Report-Rule 'twelve-era decomposition' 'README.md' `
   Want 'era 1 (frames 1-6)' 'off-side movers' $e1off 0
 }
 
+# --- C14: the carrier of the flight steps (not the queue -- the own-axis thrust) ----------
+Report-Rule 'carrier of the flight steps' 'README.md' `
+  'Every unaligned flight step carries the own-axis thrust bit (32)' `
+  'carrier_L7_20.out' {
+  param($lines)
+  $split = Get-FrameLines $lines 'move-split'
+  $car = Get-FrameLines $lines 'move-carrier'
+  $wri = Get-FrameLines $lines 'move-writer'
+  if ($split.Count -ne 20) { $script:ruleBad += ("20 frames documented, the log has " + $split.Count) }
+  if ($car.Count -ne 20) { $script:ruleBad += ("20 move-carrier lines expected, the log has " + $car.Count) }
+  if ($wri.Count -ne 20) { $script:ruleBad += ("20 move-writer lines expected, the log has " + $wri.Count) }
+  # The four carrier classes partition the flight movers, in every frame.  This is the invariant that
+  # makes the reading below a decomposition instead of a coincidence.
+  $un = 0
+  foreach ($f in ($split.Keys | Sort-Object))
+  {
+    $fl = Val $split[$f] 'flight=(\d+)'; $flA = Val $split[$f] 'flight=\d+\s+0/1/2/3 = \d+/\d+/\d+/(\d+)'
+    $q = Val $car[$f] 'queue-carried = (\d+)'; $fr = Val $car[$f] 'booked this frame = (\d+)'
+    $bo = Val $car[$f] 'both = (\d+)';        $no = Val $car[$f] 'no writer = (\d+)'
+    if ($null -eq $q -or $null -eq $fr -or $null -eq $bo -or $null -eq $no)
+      { $script:ruleBad += ("frame " + $f + ": the move-carrier line does not parse"); continue }
+    if ($q + $fr + $bo + $no -ne $fl)
+      { $script:ruleBad += ("frame " + $f + ": the carriers (" + $q + " + " + $fr + " + " + $bo + " + " + $no +
+                            ") do not add up to the flight counter (" + $fl + ")") }
+    $un += ($fl - $flA)
+  }
+  # The documented window totals.  The carrier rows of the README's table stop at frame 18 (the last
+  # complete era); the writer rows cover the whole 20 frames, which is why the two ragged totals differ.
+  $t = @{ q=0; qA=0; f=0; fA=0; b=0; bA=0; n=0; nA=0 }
+  foreach ($f in ($split.Keys | Sort-Object | Where-Object { $_ -le 18 }))
+  {
+    $t.q += (Val $car[$f] 'queue-carried = (\d+)');      $t.qA += (Val $car[$f] 'queue-carried = \d+ \(octant-aligned (\d+)\)')
+    $t.f += (Val $car[$f] 'booked this frame = (\d+)');  $t.fA += (Val $car[$f] 'booked this frame = \d+ \(octant-aligned (\d+)\)')
+    $t.b += (Val $car[$f] 'both = (\d+)');               $t.bA += (Val $car[$f] 'both = \d+ \(octant-aligned (\d+)\)')
+    $t.n += (Val $car[$f] 'no writer = (\d+)');          $t.nA += (Val $car[$f] 'no writer = \d+ \(octant-aligned (\d+)\)')
+  }
+  Want 'frames 1-18' 'queue-carried' $t.q 0
+  Want 'frames 1-18' 'booked this frame' $t.f 122
+  Want 'frames 1-18' 'booked this frame, aligned' $t.fA 101
+  Want 'frames 1-18' 'both' $t.b 147
+  Want 'frames 1-18' 'both, aligned' $t.bA 147
+  Want 'frames 1-18' 'no writer' $t.n 0
+  Want 'frames 1-18' 'flight movers (all carriers)' ($t.q + $t.f + $t.b + $t.n) 269
+  Want 'frames 1-18' 'flight movers, aligned' ($t.qA + $t.fA + $t.bA + $t.nA) 248
+  # The writer columns: the dispersion's steps are fully aligned, every other bit except the thrust
+  # contributes no unaligned step at all, and the thrust accounts for at least the unaligned total.
+  $bits = @(@('walk funnel', 'walk'), @('relay', 'relay'), @('relay contact', 'relay-contact'),
+            @('cohesion table', 'cohesion'), @('dispersion', 'dispersion'), @('thrust', 'thrust'))
+  $thrustUn = 0
+  foreach ($b in $bits)
+  {
+    $m = 0; $a = 0
+    foreach ($f in ($wri.Keys | Sort-Object))
+    {
+      $m += (Val $wri[$f] ($b[1] + ' = (\d+)'))
+      $a += (Val $wri[$f] ($b[1] + ' = \d+ \((\d+)\)'))
+    }
+    if ($b[1] -eq 'thrust') { $thrustUn = $m - $a
+      Want 'frames 1-20' 'own-axis thrust movers' $m 128
+      Want 'frames 1-20' 'own-axis thrust movers, aligned' $a 103 }
+    elseif ($b[1] -eq 'dispersion') { Want 'frames 1-20' 'dispersion movers' $m 147
+      Want 'frames 1-20' 'dispersion movers, aligned' $a 147 }
+    elseif ($m -ne 0) { $script:ruleBad += ("the " + $b[0] + " bit is documented as contributing no flight step, but it carries " + $m) }
+    if ($b[1] -ne 'thrust' -and ($m - $a) -gt 0)
+      { $script:ruleBad += ("the " + $b[0] + " bit carries " + ($m - $a) + " unaligned flight step(s), documented none") }
+  }
+  if ($thrustUn -lt $un)
+    { $script:ruleBad += ("the thrust bit carries " + $thrustUn + " unaligned steps, fewer than the " + $un +
+                          " the flight channel produced -- so not every unaligned step is a thrust") }
+}
+
+# --- C15: the carrier instrumentation is reporting only -----------------------------------
+Report-Rule 'the carrier instrument is reporting only' 'README.md' `
+  'reporting only: the new log, with its two added lines removed, is **identical line for line** to the log of the same run before the change (`build\carrier_L7_20.out` against `build\both_L7_repro.out`)' `
+  'carrier_L7_20.out' {
+  param($lines)
+  $before = Read-TraceLog 'both_L7_repro.out'
+  if ($null -eq $before)
+    { $script:ruleBad += 'the pre-instrumentation log build\both_L7_repro.out is absent (the run this comparison is against)' }
+  else
+  {
+    $stripped = @($lines | Where-Object { $_ -notmatch 'move-carrier|move-writer' })
+    if ($stripped.Count -ne $before.Count)
+      { $script:ruleBad += ("with the two new lines removed the log has " + $stripped.Count + " lines, the run before the change " + $before.Count) }
+    else
+    {
+      for ($i = 0; $i -lt $stripped.Count; $i++)
+      {
+        if ($stripped[$i] -ne $before[$i])
+        {
+          $script:ruleBad += ("line " + ($i + 1) + " differs once the new lines are removed: [" + $stripped[$i].Trim() + "] against [" + $before[$i].Trim() + "]")
+          break
+        }
+      }
+    }
+  }
+}
+
 # ======================================================================================
 # verdict
 # ======================================================================================

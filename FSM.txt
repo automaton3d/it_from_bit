@@ -511,6 +511,21 @@ WHAT THIS IS
         how many distinct movers touched each layer, from the writer mask
         (1 walk funnel, 2 relay, 4 relay contact, 8 cohesion, 16 dispersion, 32 own-axis
         thrust; bit 64 is the queue drain and is excluded).
+    # frame N move-carrier: queue-carried = ... | booked this frame = ... | both = ... | no writer = ...
+        the flight movers of the frame classified by what carried them -- which the move-mask
+        line cannot separate, since it buckets by "bits <= 1" and so counts a mover with no
+        bit and a mover whose only bit is the drain both as "one writer".  The four classes
+        are disjoint and cover every flight mover: the queue drain (bit 64, a booking made in
+        an earlier frame landing now), a writer that fired in this frame (bits 1..32), both,
+        or neither (a center that moved with no impulse and no writer behind it).  Each class
+        carries its octant-aligned count, the same 3-of-3 test as the lines above.
+    # frame N move-writer: walk = ... | relay = ... | relay-contact = ... | cohesion = ... |
+                          dispersion = ... | thrust = ...
+        the same flight movers split by WHICH mask bit booked the step -- the writer named, not only
+        its number.  A mover that several writers touched is counted in each of their columns, so the
+        columns do not partition the movers (the move-carrier line above does).  Cohesion is
+        structurally 0 here: a layer flagged by the cohesion table is counted as cohesion and not as
+        flight, so its rows never reach this line.
     # frame N separation: occupiedCenters=... sources=... moved-this-frame=...
                           cB= kB= homB= reloc!=0(sources)= m!=0(sources)=.../... 
                           m!=0(cells)=... pol!=0(cells)=...
@@ -616,16 +631,20 @@ WHAT THIS IS
            nmake CANDIDATES=1           (the pre-promotion name of the default, kept as an alias;
                                          REFERENCE=1 and CANDIDATES=1 stop the build with U1050
                                          rather than silently combining)
-           nmake trace-first-era
+           nmake trace-first-era         (the harness, with S2B_TRACE on top of the configuration's
+                                          own flags, so the annotated lines carry real counters)
            nmake check-docs              (the lint: cited paths, the registry against the
                                           #ifdefs, and the invariants against build\*.out)
            nmake check-trace             (the regression: four configurations, one era at L=7,
                                           against experiments\golden\)
-           experiments\trace_build_variants.bat   (nine single-purpose variants by flags:
+           experiments\trace_build_variants.bat   (ten single-purpose variants by flags:
                                                    ref, disp, polar, base, aonly, own, bothab,
+                                                   inherit -- the inherited-impulse probe -- and
                                                    axis -- the election probe -- and octaxis --
                                                    the four plus the anchored axis)
-  Fold a log into a per-era table:  experiments\era_summary.ps1 -Log <log> -Era <frames>
+  Fold a log into a per-era table (the sector split, the flight/cohesion channels, the drift
+  buckets, the carrier classes and the per-writer split):
+           experiments\era_summary.ps1 -Log <log> -Era <frames>
   Fold several logs into the finite-size table, and read the plateau ratio, the charge-word
   roster and the era-1 dynamics off them:
            experiments\scaling_summary.ps1 -Logs <log>,<log>,...   (L and W from each header)
@@ -678,6 +697,13 @@ WHAT THIS IS
                               loses the ordering: eight inverted frames (44, 45, 59,
                               68-72) against three (65-67) -- no ordering gain
                               (build\five_L7.out against build\long2_L7.out)
+    carrier of the flight steps not the queue and not a writerless center: over 20
+                               frames at L=7 the four carrier classes add up to the
+                               flight counter in every frame (269 = 122 + 147), the
+                               queue carries none of them and all 21 unaligned steps
+                               are in-frame bookings; by bit, the dispersion is
+                               147/147 aligned and every unaligned step carries the
+                               own-axis thrust (build\carrier_L7_20.out)
     era-1 cascade (candidate) 32 flight steps, all aligned; 14 cohesion steps (7/7)
     displacement channel       not inherited: the probe log is byte-identical to
                                the promoted run over 20 frames at L=7 and
@@ -695,11 +721,12 @@ WHAT THIS IS
   Where each one is written down: README.md, sections "The first era, measured" (the
   reference numbers), "Item 3 of the follow-up list" (the twelve eras), "Decision pack"
   (promotion impact), "Twelve eras at L=9" (the larger lattice), "The inherited-impulse
-  probe" and "The twelve-era decomposition" (the displacement channel: the probe that
-  refutes the inherited-impulse reading, and the disposition of the flight steps over the
-  twelve eras) and "Finite-size scaling, first pass" (the plateau ratio and the era-1 trends
-  at L=5, 7, 9 -- and the price of the two measurements that pass leaves out, the L=11 era-1
-  dynamics and the L=13 static row).
+  probe", "The twelve-era decomposition" and "The carrier of the flight steps" (the
+  displacement channel: the probe that refutes the inherited-impulse reading, the disposition
+  of the flight steps over the twelve eras, and the four carrier classes plus the per-writer
+  split that put the residual on the own-axis thrust) and "Finite-size scaling, first pass"
+  (the plateau ratio and the era-1 trends at L=5, 7, 9 -- and the price of the two measurements
+  that pass leaves out, the L=11 era-1 dynamics and the L=13 static row).
 
 
 11. WHERE EACH PIECE IS WRITTEN UP IN THE PAPER

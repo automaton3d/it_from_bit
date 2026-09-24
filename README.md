@@ -635,6 +635,71 @@ Three readings:
   window, so the 336 off-octant steps are not stale material from earlier frames.
 
 
+## The carrier of the flight steps: not the queue -- the own-axis thrust
+
+The two probes above leave the residual's carrier open, so the harness gained two lines.  They are
+reporting only: the new log, with its two added lines removed, is **identical line for line** to the log
+of the same run before the change (`build\carrier_L7_20.out` against `build\both_L7_repro.out`) -- which
+is what a counter that only reads the writer mask has to be.
+
+* `move-carrier` puts every flight mover in exactly one of four disjoint classes: **queue-carried** (the
+  only bit is the queue drain, 64 -- a booking made in an earlier frame landing now), **booked this
+  frame** (a writer bit, 1..32, and no drain), **both** (a writer *and* the drain), and **no writer**
+  (neither -- a centre that moved with nothing booked for it).  The `move-mask` line cannot separate
+  them: it buckets by "bits <= 1", so a mover with no bit and a mover whose only bit is the drain both
+  read as "one writer".
+* `move-writer` names the bit: walk funnel, relay, relay contact, cohesion table, charge dispersion,
+  own-axis thrust.  A mover that several writers touched counts in each of their columns, so those
+  columns do not partition the movers (the carrier line does).
+
+Measured at `L = 7`, 20 frames (`build\carrier_L7_20.out`; the carrier rows cover the three complete
+eras, frames 1-18, the writer rows all 20 frames):
+
+| carrier class | moved | octant-aligned | unaligned |
+|---|---|---|---|
+| queue-carried | 0 | 0 | 0 |
+| booked this frame | 122 | 101 (82.8 %) | **21** |
+| both (a writer and the drain -- the dispersal frames) | 147 | 147 (100 %) | 0 |
+| no writer | 0 | 0 | 0 |
+| **all** | **269** | **248 (92.2 %)** | **21** |
+
+| writer bit | moved | octant-aligned | unaligned |
+|---|---|---|---|
+| walk funnel | 0 | 0 | 0 |
+| relay | 0 | 0 | 0 |
+| relay contact | 0 | 0 | 0 |
+| cohesion table | 0 | 0 | 0 |
+| charge dispersion | 147 | 147 (100 %) | 0 |
+| own-axis thrust | 128 | 103 (80.5 %) | **25** |
+
+Three things follow, and they close the question the two probes left standing:
+
+* **the queue is not the carrier.**  No flight step landed from the drain alone and none moved with no
+  writer at all -- the two candidates the inherited-impulse probe left open.  Every unaligned step was
+  booked and applied in the *same* frame, and the four classes add up to the flight counter exactly
+  (269 = 122 + 147) over the eras they cover;
+* **the walk funnels, the relay and the dispersion are not the writers either.**  They contribute no
+  unaligned step at all: the dispersion's 147 steps at frame 2 are fully aligned, the relay books no
+  flight step in these frames, and the cohesion channel is counted separately.  **Every unaligned flight
+  step carries the own-axis thrust bit (32)** -- and in the two frames where the residual is largest the
+  thrust is the *only* writer of flight steps at all (6 of 6 movers at frame 12, 48 of 48 at frame 14);
+* **and the re-anchoring test above is explained rather than contradicted.**  `/D PAIR_OCTANT_REANCHOR`
+  re-anchors the three *walk* funnels (`moveOneStep`, `moveOneStepAway`, `reemitAtContact`) -- and those
+  book nothing here, which is exactly why turning it on changed no frame.  The residual lives in the
+  thrust, which that macro never touched.
+
+**What is still open, and now sharply.**  At frames 12 and 14 the unaligned thrust steps match *none* of
+the three signs (`0/1/2/3 = 3/0/0/3` and `7/0/0/41`): the displacement runs *against* the layer's own
+octant on every non-zero axis.  Yet the source takes the thrust's direction from the receiver's own word
+and says so -- `interaction.cpp`, the `PAIR_OWN_AXIS_EXCHANGE` branch, "the octant must come from the
+RECEIVER's own word ... in this branch the pair is evaluated from both `W` directions (the rotated
+partner lattice supplies one half), so its word is not always the receiver's".  Two readings fit the same
+numbers: the thrust read a word other than the one the commit installs (the rotated half), or the
+harness's 3-of-3 test is measuring a net centre displacement that includes movement no writer tagged.
+The instrument that separates them is one more reporting change at the thrust site -- how often the word
+it reads differs from the word the commit installs, and how the `a = 0` population splits between the two
+cases.
+
 ## Multi-era run with (a)+(b): the split holds its sign, not its size
 
 `build\long_L7.log`, `L = 7`, 40 frames (6.6 eras) launched, read to frame 27 (4.5 eras; the run was

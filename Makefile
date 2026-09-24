@@ -605,6 +605,11 @@ check-extras: dirs
 # GUI build's own objects.  Run from the repository root, where automaton.cfg lives:
 #   nmake trace-first-era
 #   build\first_era_trace.exe 9 16384 8      (L, s2b_target, frames)
+# The trace target adds /D "S2B_TRACE" on top of $(CFLAGS): the harness's annotated counters (the
+# census and clock lines, move-align/split/drift/mask/carrier) only exist under that macro -- without
+# it the model compiles the plain path and those lines print zeros, which is how this target's output
+# was read as "the drift and mask buckets are empty" once.  The .bat scripts of experiments\ define it
+# as well.  The dynamics do not depend on it (it is counters and two per-layer vectors).
 TRACE_SRC   = experiments\first_era_trace.cpp
 TRACE_MODEL = src\config.cpp src\model\initSim.cpp src\model\simulation.cpp \
 	src\model\interaction.cpp src\model\utils.cpp src\model\geometry.cpp \
@@ -612,8 +617,9 @@ TRACE_MODEL = src\config.cpp src\model\initSim.cpp src\model\simulation.cpp \
 	src\model\wavefront.cpp
 
 trace-first-era: dirs
+	@echo [trace-first-era] config: $(OBJ_DIR) $(CANDIDATE_FLAGS)
 	if not exist "$(OBJ_DIR)\trace" mkdir "$(OBJ_DIR)\trace"
-	$(CC) $(CFLAGS) $(TRACE_SRC) $(TRACE_MODEL) /Fo"$(OBJ_DIR)\trace\\" /Fe:$(BUILD_DIR)\first_era_trace.exe /link /SUBSYSTEM:CONSOLE
+	$(CC) $(CFLAGS) /D "S2B_TRACE" $(TRACE_SRC) $(TRACE_MODEL) /Fo"$(OBJ_DIR)\trace\\" /Fe:$(BUILD_DIR)\first_era_trace.exe /link /SUBSYSTEM:CONSOLE
 	@echo [trace-first-era] built $(BUILD_DIR)\first_era_trace.exe
 
 rebuild:
