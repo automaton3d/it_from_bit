@@ -636,6 +636,12 @@ WHAT THIS IS
   the committed logs in experiments\golden\, which is the stricter of the two.
 
     frame 2, any L            K = W-8, D = 8, S = 0, P = 0, dt = 1, t_share = all cells
+    plateau ratio, any L      D = 8, so K = W-8 and K/W = 1-8/(3L^2): 89.33 / 94.56 / 96.71 /
+                              97.80 / 98.81 % at L = 5 / 7 / 9 / 11 / 15 (logs
+                              build\scale_ref_L*.out; README, "Finite-size scaling, first pass")
+    pair-rule fraction, any L the addresses admitting a pair rule are about 38% of W at every size
+                              measured: 29/75, 56/147, 93/243, 138/363 -- and unchanged when
+                              ISLAND_SIZE changes (2 at L=7, 3 at L=11)
     frames 1-4, any L         active per layer 1, 26, 66, 158 (the torus counts)
     every frame, reference    m == 0 on all W layers; 0 displacements; dt = 1 (<= 42 frames)
     any config at L=7         8 distinct charge words, 56 addresses admitting a pair rule

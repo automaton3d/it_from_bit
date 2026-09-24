@@ -325,7 +325,8 @@ function Report-Rule([string]$name, [string]$docFiles, [string]$docText, [string
     return
   }
   $script:ruleBad = @()
-  & $check $lines
+  try { & $check $lines }
+  catch { $script:ruleBad += ("the rule threw instead of checking: " + $_.Exception.Message) }
   if ($script:ruleBad.Count -eq 0)
     { Report 'OK' ("C. " + $name + "   [build\" + $logName + " | " + $docFiles + "]") }
   else
@@ -598,6 +599,52 @@ Report-Rule 'twelve-era ledger' 'it_from_bit.tex' `
   {
     if ($c.K + $c.D -ne 147)
       { $script:ruleBad += ("frame " + $c.Frame + ": K + D = " + ($c.K + $c.D) + ", documented 147 (= W)") }
+  }
+}
+
+# --- C11: the finite-size table (the plateau and the roster at several sizes) ------------
+Report-Rule 'finite-size table' 'README.md' `
+  '`D = 8` at every size, so `K = W - 8` exactly' `
+  'scale_ref_L9.out' {
+  param($lines)
+  # One row per size, each from its own log.  L=11 is checked when its log is present: two frames
+  # suffice for the static row, but a clone of this repository will not have it.
+  $rows = @(
+    @{ L = 5;  log = 'scale_ref_L5.out' },
+    @{ L = 7;  log = 'scale_ref_L7.out' },
+    @{ L = 9;  log = 'scale_ref_L9.out' },
+    @{ L = 11; log = 'scale_ref_L11.out' })
+  foreach ($row in $rows)
+  {
+    $side = $row.L
+    $W = 3 * $side * $side
+    $ls = Read-TraceLog $row.log
+    if ($null -eq $ls)
+    {
+      Report 'INFO' ("C. finite-size table: " + $row.log + " is not built here, so the L=" + $side + " row is not checked")
+      continue
+    }
+    $f2 = @(Get-Census $ls | Where-Object { $_.Frame -eq 2 } | Select-Object -First 1)
+    if ($f2.Count -eq 0) { $script:ruleBad += ($row.log + ": no frame-2 row"); continue }
+    Want ("L=" + $side) 'W (3L^2)' (Val ($ls | Where-Object { $_ -match '^# first-era trace' } | Select-Object -First 1) 'W_USED=(\d+)') $W
+    Want ("L=" + $side) 'D' $f2[0].D 8
+    Want ("L=" + $side) 'K' $f2[0].K ($W - 8)
+    Want ("L=" + $side) 'K + D' ($f2[0].K + $f2[0].D) $W
+    # The roster: eight words at every size, and the pairable fraction the section calls about 38%.
+    $summary = @($ls | Where-Object { $_ -match 'distinct words=' } | Select-Object -First 1)
+    if ($summary.Count -eq 0) { $script:ruleBad += ($row.log + ": no charge-word summary line") }
+    else
+    {
+      Want ("L=" + $side) 'distinct charge words' (Val $summary[0] 'distinct words=\s*(\d+)') 8
+      $pairable = Val $summary[0] 'pair rule=\s*(\d+)'
+      if ($null -eq $pairable) { $script:ruleBad += ($row.log + ": cannot read the pairable count") }
+      else
+      {
+        $frac = 100.0 * $pairable / $W
+        if ($frac -lt 35.0 -or $frac -gt 41.0)
+          { $script:ruleBad += ("L=" + $side + ": the pairable fraction is " + ("{0:F1}" -f $frac) + "%, documented as about 38%") }
+      }
+    }
   }
 }
 

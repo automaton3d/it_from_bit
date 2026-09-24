@@ -1013,7 +1013,8 @@ Item (iii) of the manuscript's open problems (Sect. 9.4) asks for a finite-size 
 dimensionless observables and notes that the only relation measured so far is the saturation of the
 ledger in the frozen plateau, `K + D = W = 3L^2`.  This is a first pass at it: the same harness at
 `L = 5, 7, 9` in the reference and in the promoted configuration, one era each (frames = `L`, six at
-`L = 5`; sieve closed, `S = 16384`), folded by
+`L = 5`; sieve closed, `S = 16384`), plus the reference at `L = 11` for the **static** observables only
+(two frames, `build\scale_ref_L11.out`), all folded by
 `experiments\scaling_summary.ps1 -Logs build\scale_ref_L5.out,...` (logs `build\scale_ref_L*.out`,
 `build\scale_bothab_L*.out`; each run is `build\check_<cfg>.exe <L> 16384 <L>`, i.e. the harness with
 the same macros as the `check-trace` configurations).
@@ -1026,21 +1027,25 @@ configurations:
 | 5 | 75 | 67 | 8 | 0, 0 | 75 | 89.33% | 10.67% | 8 | 29 | 38.7% |
 | 7 | 147 | 139 | 8 | 0, 0 | 147 | 94.56% | 5.44% | 8 | 56 | 38.1% |
 | 9 | 243 | 235 | 8 | 0, 0 | 243 | 96.71% | 3.29% | 8 | 93 | 38.3% |
+| 11 | 363 | 355 | 8 | 0, 0 | 363 | 97.80% | 2.20% | 8 | 138 | 38.0% |
 | 15 | 675 | 667 | 8 | 0, 0 | 675 | 98.81% | 1.19% | not read | not read | not read |
 
 The `L = 15` row is not a new run: it is the reading the frozen-state item of the manuscript already
-quotes (`K = 667`, `D = 8`, "no candidate macro involved"), cited here because it is the fourth point
-of the same relation and it costs nothing.  Two statements come out of the four:
+quotes (`K = 667`, `D = 8`, "no candidate macro involved"), cited here because it is the fifth point
+of the same relation and it costs nothing.  Two statements come out of the five:
 
 * **`D = 8` at every size, so `K = W - 8` exactly**, i.e. the plateau ratio is not a measured
-  parameter but `K/W = 1 - 8/(3L^2)` (89.33, 94.56, 96.71, 98.81%).  The eight delegates are the
+  parameter but `K/W = 1 - 8/(3L^2)` (89.33, 94.56, 96.71, 97.80, 98.81%).  The eight delegates are the
   seed's own eight: the roster is eight words at every size, the family map makes the word a function
   of `island mod 8`, and the same eight are what the dispersal separates.  Nothing new appears as the
   lattice grows -- what grows is the number of chiefs, one per additional layer.
-* **The pairable fraction is size-independent**: 29/75, 56/147 and 93/243 are all about 38%.  The
-  *count* of addresses admitting a pair rule grows with `W` (29, 56, 93), the *fraction* does not.
-  That is the charge-combination census of the same open problem in its cheapest form; turning it
-  into a cross-section prediction would need the unit mapping, which is not in this repository.
+* **The pairable fraction is size-independent**: 29/75, 56/147, 93/243 and 138/363 are all about 38%
+  (38.7, 38.1, 38.3, 38.0%) -- a span of `W` from 75 to 363, i.e. 4.8x.  The *count* of addresses
+  admitting a pair rule grows with `W` (29, 56, 93, 138); the *fraction* does not, and it does not
+  even move when `ISLAND_SIZE` changes (`2` at `L = 7`, `3` at `L = 11`), so it is a property of the
+  seed's word map rather than of the family layout.  That is the charge-combination census of the same
+  open problem in its cheapest form; turning it into a cross-section prediction would need the unit
+  mapping, which is not in this repository.
 
 **The transport does scale -- against the lattice.**  The promoted configuration (the four macros),
 same runs, era 1 = frames `1..L-1`:
@@ -1073,15 +1078,15 @@ Three trends, each with three points:
    above showed for the ordering, and consistent with the ledger leaving its plateau earlier as the
    lattice grows.
 
-**What is not here, and what it costs.**  `L = 11` and `L = 13` were attempted and abandoned inside
-the session's budget, and the cost is the reason to write it down: a frame costs about a minute at
-`L = 9` on an idle machine, the `L = 11` run spent five minutes in initialization alone (one full
-charge census per layer, over 363 layers) without completing frame 1 while six jobs shared the CPU,
-and its era-1 window is ten frames -- so the static rows of the table above cost roughly an hour of
-wall clock at that size, and the `L = 13` column about 2.6 times that.  The runs are a one-command
-matter and the fold is the script; what the extra sizes would settle is whether the aligned share
-keeps falling, whether the freeze keeps arriving earlier, and whether the pairable fraction stays at
-38% (which is the one number here that looks like a genuine invariant).
+**What is not here, and what it costs.**  The `L = 11` *static* row is now read -- two frames, about ten
+minutes of initialization plus about four minutes per frame, after the first attempt was abandoned when
+six jobs shared the CPU -- and it is what settles the pairable fraction (38.0% at a fourth size, so the
+invariant holds over a `W` span of 4.8x).  What is still missing is the *dynamics* at `L = 11`: its era-1
+window is ten frames, i.e. about forty minutes per configuration as measured here, and `L = 13` would cost
+about 2.6 times that per frame.  The runs are a one-command matter (`build\trace_ref.exe 11 16384 2`) and
+the fold is the script above; those extra sizes are what would settle whether the aligned share keeps
+falling and whether the freeze keeps arriving earlier, the two trends the table below reads with three
+points each.
 
 ## (a) Same-octant pairing: halves the cascade, does not yet align it
 
