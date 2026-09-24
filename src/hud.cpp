@@ -356,8 +356,10 @@ void renderHUD(int screenW, int screenH)
     renderAboutDialog();
 
     // === SIDE PANELS - DRAWN BEFORE EVERYTHING ELSE ===
-    const int panelPadding = 60;
-    const int bottomMargin = 170;
+    // The geometry lives in GUI.h (kPanel*), because whatever has to be laid out between
+    // the two panels -- the status row of GUI_2D.cpp -- needs the same numbers.
+    const int panelPadding = (int)kPanelTop;
+    const int bottomMargin = (int)kPanelBottomGap;
 
     int leftH  = screenH - bottomMargin;
     int rightH = screenH - bottomMargin;
@@ -367,10 +369,11 @@ void renderHUD(int screenW, int screenH)
     glm::vec3 panelBorderHL = glm::vec3(0.48f, 0.52f, 0.65f);      // highlight sutil (opcional)
 
     // Left panel
-    drawPanel(35, panelPadding, 170, leftH, panelBg, panelBorder, 2.0f, P);
+    drawPanel(kPanelLeftX, panelPadding, kPanelLeftW, leftH, panelBg, panelBorder, 2.0f, P);
 
     // Right panel
-    drawPanel(screenW - 260, panelPadding, 250, rightH, panelBg, panelBorder, 2.0f, P);
+    drawPanel(screenW - (kPanelRightW + kPanelRightInset), panelPadding, kPanelRightW, rightH,
+              panelBg, panelBorder, 2.0f, P);
                 
     if (scenarioHelpToggle &&
         scenarioHelpToggle->getState())
@@ -416,13 +419,9 @@ void renderHUD(int screenW, int screenH)
 
     renderTomoRadios();
 
-    renderSimulationStats();
-
-    renderEra();
-
-    renderComputeStats();
-
-    renderLayerInfo();
+    // The status row: its six displays at one font size, its dividers, and the L / W and
+    // current-layer readouts that belong to the same block.
+    renderStatusRow();
 
     renderLayers();
 

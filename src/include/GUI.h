@@ -75,6 +75,29 @@ namespace framework
   extern unsigned long long replayTimer;
   extern std::atomic<bool> replayFrames;
 
+  // ---------------------------------------------------------------------------
+  // Geometry of the two HUD side panels, and of the 3D window they leave between them.
+  // Both panels are overlays at the edges of the window (drawn by renderHUD in hud.cpp),
+  // so anything that has to live *inside the 3D window* -- the status row and its
+  // dividers, the L/W readout -- measures itself from here instead of from the window
+  // edges: move a panel and the row follows.
+  // ---------------------------------------------------------------------------
+  inline constexpr float kPanelTop        = 60.0f;    // inset of both panels from the top
+  inline constexpr float kPanelBottomGap  = 170.0f;   // distance of the panels from the bottom
+  inline constexpr float kPanelLeftX      = 35.0f;    // left panel: x and width
+  inline constexpr float kPanelLeftW      = 170.0f;
+  inline constexpr float kPanelRightW     = 250.0f;   // right panel: width, inset from the edge
+  inline constexpr float kPanelRightInset = 10.0f;
+
+  // The status row (GUI_2D.cpp): one line of displays between the two side panels, whose
+  // fields are partitioned across the 3D window and share one font size.  kStatusLineY is
+  // its distance from the *top* edge of the window (the row is fed to the text renderer as
+  // `height - kStatusLineY`, because that renderer counts y upwards from the bottom, while
+  // the 2D drawing helpers count downwards from the top -- the two spaces are opposite).
+  // It lives here so that anything measuring the row -- the build gauge in
+  // experiments\row_gauge.cpp, for instance -- uses the same number.
+  inline constexpr float kStatusLineY = 80.0f;
+
   void init();
   void resize(int width, int height);
   void clearVoxels();
@@ -101,10 +124,7 @@ namespace framework
   void renderCenters();
   void renderUI();
   void renderElapsedTime();
-  void renderSimulationStats();
-  void renderEra();
-  void renderComputeStats();
-  void renderLayerInfo();
+  void renderStatusRow();
   void renderLayers();
   void renderHelpText();
   void renderSliders();
@@ -121,7 +141,6 @@ namespace framework
   void renderTomoRadios();
   void renderHyperlink();
   void renderScenarioHelpPane();
-  void renderEra();
 
   void drawPanel(float x, float y, float w, float h,
                  const glm::vec3& bgColor = glm::vec3(0.05f, 0.05f, 0.1f),
