@@ -672,6 +672,14 @@ eras, frames 1-18, the writer rows all 20 frames):
 | charge dispersion | 147 | 147 (100 %) | 0 |
 | own-axis thrust | 128 | 103 (80.5 %) | **25** |
 
+**Over all twelve eras the same attribution holds, and it is exact** (`build\carrier_L7_72.out`, same
+fold): queue-carried 0, no writer 0, booked this frame **664** (328 aligned), both 147 (147) -- 811
+flight steps, the same total the drift decomposition above counts, 336 of them unaligned; and by bit,
+walk funnel, relay, relay contact and cohesion each **0**, dispersion 147 (147 aligned), **own-axis
+thrust 664 (328 aligned)**.  The thrust's unaligned count *is* the unaligned count of the flight channel
+(336 = 336), and the transport of those twelve eras is the thrust plus the frame-2 dispersal and nothing
+else: 664 + 147 = 811.
+
 Three things follow, and they close the question the two probes left standing:
 
 * **the queue is not the carrier.**  No flight step landed from the drain alone and none moved with no
@@ -689,16 +697,17 @@ Three things follow, and they close the question the two probes left standing:
   thrust, which that macro never touched.
 
 **What is still open, and now sharply.**  At frames 12 and 14 the unaligned thrust steps match *none* of
-the three signs (`0/1/2/3 = 3/0/0/3` and `7/0/0/41`): the displacement runs *against* the layer's own
-octant on every non-zero axis.  Yet the source takes the thrust's direction from the receiver's own word
-and says so -- `interaction.cpp`, the `PAIR_OWN_AXIS_EXCHANGE` branch, "the octant must come from the
-RECEIVER's own word ... in this branch the pair is evaluated from both `W` directions (the rotated
-partner lattice supplies one half), so its word is not always the receiver's".  Two readings fit the same
-numbers: the thrust read a word other than the one the commit installs (the rotated half), or the
-harness's 3-of-3 test is measuring a net centre displacement that includes movement no writer tagged.
-The instrument that separates them is one more reporting change at the thrust site -- how often the word
-it reads differs from the word the commit installs, and how the `a = 0` population splits between the two
-cases.
+the three signs (`0/1/2/3 = 3/0/0/3` and `7/0/0/41`), and over the twelve eras the 336 unaligned steps
+split by how many of the three signs they match as **180 / 67 / 89** -- so the step runs *against* the
+layer's own octant on every non-zero axis in 180 of them, and matches part of the octant in the other
+156.  Yet the source takes the thrust's direction from the receiver's own word and says so --
+`interaction.cpp`, the `PAIR_OWN_AXIS_EXCHANGE` branch, "the octant must come from the RECEIVER's own word
+... in this branch the pair is evaluated from both `W` directions (the rotated partner lattice supplies
+one half), so its word is not always the receiver's".  Two readings fit the same numbers: the thrust read
+a word other than the one the commit installs (the rotated half), or the harness's 3-of-3 test is
+measuring a net centre displacement that includes movement no writer tagged.  The instrument that
+separates them is one more reporting change at the thrust site -- how often the word it reads differs from
+the word the commit installs, and how the `a = 0` population splits between the two cases.
 
 ## Multi-era run with (a)+(b): the split holds its sign, not its size
 

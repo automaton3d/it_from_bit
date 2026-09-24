@@ -703,7 +703,12 @@ WHAT THIS IS
                                queue carries none of them and all 21 unaligned steps
                                are in-frame bookings; by bit, the dispersion is
                                147/147 aligned and every unaligned step carries the
-                               own-axis thrust (build\carrier_L7_20.out)
+                               own-axis thrust.  Over the twelve eras the same
+                               attribution is exact: 811 flight steps = 664 thrust +
+                               147 dispersal, the thrust is 328 aligned against
+                               336 unaligned, and 336 is the whole unaligned
+                               population of the flight channel
+                               (build\carrier_L7_20.out, build\carrier_L7_72.out)
     era-1 cascade (candidate) 32 flight steps, all aligned; 14 cohesion steps (7/7)
     displacement channel       not inherited: the probe log is byte-identical to
                                the promoted run over 20 frames at L=7 and

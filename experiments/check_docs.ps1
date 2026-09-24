@@ -806,6 +806,43 @@ Report-Rule 'carrier of the flight steps' 'README.md' `
   if ($thrustUn -lt $un)
     { $script:ruleBad += ("the thrust bit carries " + $thrustUn + " unaligned steps, fewer than the " + $un +
                           " the flight channel produced -- so not every unaligned step is a thrust") }
+  # The same claim over the whole twelve eras, when that log is present.  Here the sharp form is an
+  # equality: the thrust's unaligned count IS the flight channel's unaligned count.
+  $long = Read-TraceLog 'carrier_L7_72.out'
+  if ($null -eq $long)
+    { Report 'INFO' 'C. carrier of the flight steps: build\carrier_L7_72.out is not built here, so the twelve-era half of the claim is not checked' }
+  else
+  {
+    $lsp = Get-FrameLines $long 'move-split'
+    $lcar = Get-FrameLines $long 'move-carrier'
+    $lwr = Get-FrameLines $long 'move-writer'
+    if ($lsp.Count -ne 72) { $script:ruleBad += ("72 frames documented for the twelve-era log, it has " + $lsp.Count) }
+    $tot = 0; $totUn = 0
+    foreach ($f in ($lsp.Keys | Sort-Object))
+    {
+      $lfl = Val $lsp[$f] 'flight=(\d+)'; $lflA = Val $lsp[$f] 'flight=\d+\s+0/1/2/3 = \d+/\d+/\d+/(\d+)'
+      $lq = Val $lcar[$f] 'queue-carried = (\d+)'; $lf = Val $lcar[$f] 'booked this frame = (\d+)'
+      $lb = Val $lcar[$f] 'both = (\d+)'; $ln = Val $lcar[$f] 'no writer = (\d+)'
+      if ($null -eq $lq -or $null -eq $lf -or $null -eq $lb -or $null -eq $ln)
+        { $script:ruleBad += ("twelve-era frame " + $f + ": the move-carrier line does not parse"); continue }
+      if ($lq + $lf + $lb + $ln -ne $lfl)
+        { $script:ruleBad += ("twelve-era frame " + $f + ": the carriers do not add up to the flight counter (" + $lfl + ")") }
+      $tot += $lfl; $totUn += ($lfl - $lflA)
+    }
+    Want 'twelve eras' 'flight movers' $tot 811
+    Want 'twelve eras' 'flight movers, unaligned' $totUn 336
+    $lm = 0; $la = 0
+    foreach ($f in ($lwr.Keys | Sort-Object))
+    {
+      $lm += (Val $lwr[$f] 'thrust = (\d+)')
+      $la += (Val $lwr[$f] 'thrust = \d+ \((\d+)\)')
+    }
+    Want 'twelve eras' 'own-axis thrust movers' $lm 664
+    Want 'twelve eras' 'own-axis thrust movers, aligned' $la 328
+    if (($lm - $la) -ne $totUn)
+      { $script:ruleBad += ("twelve eras: the thrust carries " + ($lm - $la) + " unaligned steps against the " +
+                            $totUn + " the flight channel produced -- the two are documented as equal") }
+  }
 }
 
 # --- C15: the carrier instrumentation is reporting only -----------------------------------
