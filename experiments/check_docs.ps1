@@ -540,6 +540,34 @@ Report-Rule 'octant counterfactual' 'FSM.txt' `
   }
 }
 
+# --- C9: the anchored axis over twelve eras: alignment held, ordering not ----------------
+Report-Rule 'octant over twelve eras' 'FSM.txt' `
+  'Over twelve eras the same anchoring holds 147/147 in all 72 frames and still loses the ordering: eight inverted frames (44, 45, 59, 68-72) against three (65-67)' `
+  'five_L7.out' {
+  param($lines)
+  # The alignment never decays, in all 72 frames, as in the five-era log.
+  $axis = Get-FrameLines $lines 'axis-align'
+  foreach ($f in ($axis.Keys | Where-Object { $_ -ge 4 }))
+  {
+    Want ("frame " + $f) 'layers with all three signs matching' (Val $axis[$f] 'sign-match 0/1/2/3 = \d+/\d+/\d+/(\d+)') 147
+  }
+  # The inversion windows: eight frames here, three in the four-macro build.
+  $ownGap = Get-Gap $lines
+  $own = @($ownGap.Keys | Where-Object { $ownGap[$_] -lt 0 } | Sort-Object)
+  if (($own -join ',') -ne '44,45,59,68,69,70,71,72')
+  { $script:ruleBad += ("this build inverts in " + $own.Count + " frame(s) (" + ($own -join ',') + "), documented 8: 44, 45, 59, 68-72") }
+  WantNear 'frame 72 (era 12)' 'gap' $ownGap[72] -0.498 0.005
+  $other = Read-TraceLog 'long2_L7.out'
+  if ($null -eq $other) { $script:ruleBad += 'the contrast log build\long2_L7.out is absent (the four-macro baseline of this comparison)' }
+  else
+  {
+    $refGap = Get-Gap $other
+    $ref = @($refGap.Keys | Where-Object { $refGap[$_] -lt 0 } | Sort-Object)
+    if (($ref -join ',') -ne '65,66,67')
+    { $script:ruleBad += ("the four-macro build inverts in " + $ref.Count + " frame(s) (" + ($ref -join ',') + "), documented 3: 65, 66, 67") }
+  }
+}
+
 # ======================================================================================
 # verdict
 # ======================================================================================

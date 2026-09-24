@@ -857,9 +857,15 @@ counterfactual"), it holds the axis alignment at **147/147** where the promoted 
 gaps **1.656** and **0.624** against 1.420 and 0.372, the Umbra mean still on its own side of the
 lattice centre at era 5 (+0.264 against -0.028).  It is *not* one of the four this section promotes,
 and every candidate number above was measured without it -- so "the four, plus this one" is a fifth
-configuration whose evidence has not been taken yet.  What is settled is that the axis decay this file
-lists as an invariant (the `119 at 18`, `113 at 24` row) is avoidable, and that avoiding it is worth
-about 40% of the era-5 gap.
+configuration whose evidence has not been taken yet -- and it now has been: over the **twelve eras** the
+anchored axis holds `axis-align` at 147/147 in all 72 frames while the promoted build walks
+147 -> 119 -> 113 -> 74 -> 56 -> 39, but the ordering is *not* protected with it.  The anchored build is
+better in eras 3-5 and worse in eras 6-10, and it inverts in **eight** frames (44, 45, 59, 68-72) against
+the promoted build's **three** (65-67), its first inversion arriving earlier (era 8 against era 11).  So
+the axis decay this file lists as an invariant (the `119 at 18`, `113 at 24` row) *is* avoidable, but
+avoiding it is not an ordering gain, and the recommendation is therefore **not** to promote it: it stays a
+measured variant (`octaxis` in the variant script), recorded here so the question does not have to be
+reopened.
 
 **My read, for what it is worth.**  The promotion costs six re-scoped statements and one
 re-measurement that this repository cannot perform (the population quantum); it buys a default
@@ -1244,8 +1250,9 @@ candidate ever wins (measured above).  Built with the probe on and run on the sa
   frame 30 (`0/0/0/0`, i.e. `m == 0`, in frames 1-3) -- it never decays, where the placement build
   walks 147 -> 119 -> 113 -> 101.  The owner line says why: `octant=147`, so there is no
   placement axis left to be pulled off the ray;
-* **the ordering decays more slowly**: era-end gaps **1.923** (era 3), **1.656** (era 4) and
-  **0.624** (era 5), against 1.881, 1.420 and 0.372 for the same scenario without the macro.  At era 5
+* **over the five eras read, the ordering decays more slowly**: era-end gaps **1.923** (era 3), **1.656**
+  (era 4) and **0.624** (era 5), against 1.881, 1.420 and 0.372 for the same scenario without the macro --
+  and this is exactly the reading the twelve-era run below revises.  At era 5
   the Umbra mean is still on its own side of the lattice centre (**+0.264**, where the placement build
   has crossed to -0.028), the era's max |CoM| is 0.303 against 0.367, and the era's flight steps are
   fewer and better aligned (75 movers, 44 aligned) than the placement build's (90, 48);
@@ -1255,21 +1262,53 @@ candidate ever wins (measured above).  Built with the probe on and run on the sa
   16, growing to 46), but the two effects are not separated exactly, and those two extra
   installations are part of the measured difference.
 
-So the earlier verdict is corrected: the axis was charge-correlated *while the displacements were
-not* -- that part of the old section stands -- but the axis is not causally inert afterwards, and
-`POLAR_AXIS_FROM_CHARGE` is a **live candidate** rather than a falsified one.  It also closes the
-`m == 0` fixed point on its own (the seed path is compiled in under either macro), so it is an
-*alternative* to `POLAR_SEED_FROM_PLACEMENT`, not a rider on it: the axis anchored to the charge
-instead of to wherever the transport left the centre.
+**Over twelve eras the ordering is not protected -- which is why the long window had to be run.**  The
+same five-macro configuration at 72 frames (`build\five_L7.out`; the baseline is `build\long2_L7.out`,
+the log of the twelve-era table above, whose frames 1-30 this run reproduces line for line -- verified,
+302 annotated lines each):
 
-**The next step this suggests** is neither "correlate the axis" (done, twice, and the counterfactual
-shows what it buys) nor "leave it" (the same counterfactual shows what that costs).  It is to decide
-where an anchored axis belongs: as a fifth promoted macro beside the four of the decision pack -- in
-which case the promotion's evidence has to be re-read with it on, since every candidate number in this
-file was measured without it -- or as an experimental variant whose result is recorded and left
-switched off.  What is settled is the price of the present rule: four eras of transport cost about a
-third of the axis alignment and about 40% of the era-5 gap, and both losses are avoided by electing
-the octant.
+| era | end frame | gap, four macros | gap, four + anchored axis |
+|---|---|---|---|
+| 1 | 6 | +3.063 | +3.063 |
+| 2 | 12 | +2.883 | +2.883 |
+| 3 | 18 | +1.881 | +1.923 |
+| 4 | 24 | +1.420 | **+1.656** |
+| 5 | 30 | +0.372 | **+0.624** |
+| 6 | 36 | +0.409 | +0.342 |
+| 7 | 42 | +0.606 | +0.063 |
+| 8 | 48 | +0.402 | +0.239 |
+| 9 | 54 | +0.403 | +0.149 |
+| 10 | 60 | +0.746 | +0.150 |
+| 11 | 66 | **-0.194** | +0.056 |
+| 12 | 72 | +0.220 | **-0.498** |
+
+Read together with the two facts that decide it:
+
+* **the axis alignment never decays** in the anchored build: `axis-align` is `0/0/0/147` in all 72
+  frames, against 147 -> 119 -> 113 -> 74 -> 56 -> 39 for the four-macro run.  So the mechanical half of
+  the counterfactual holds over the whole run, not only over the five eras first measured;
+* **the ordering does not follow it.**  The anchored build is better in eras 3-5 and worse in eras 6-10;
+  the baseline inverts in **three** frames (65-67, the window the invariant row records) while the
+  anchored build inverts in **eight** (44, 45, 59, and 68-72), its first inversion arriving *earlier*
+  (frame 44, era 8) than the baseline's (frame 65, era 11).  Its displacements are fewer and better
+  aligned in most eras (era 8: 66 movers, 50 aligned, against 40 and 21) and its era's max |CoM| is
+  comparable, so the ordering loss is not a per-step alignment deficit -- the same conclusion this
+  section reached from the other direction.
+
+**So the counterfactual answers the question it was run for, and the answer is no.**  Anchoring the axis
+removes the axis decay and changes the *shape* of the ordering's decay, but it does not preserve the
+ordering over twelve eras: the gap still floors and inverts, and inverts more often.  The earlier verdict
+is therefore corrected in one direction and confirmed in the other -- the macro is **not** inert (it
+changes the trajectory from frame 16 on, and it is the reason the alignment survives), but its change is
+not an ordering gain.  It stays a measured experimental variant, which `octaxis` in the variant script
+builds; promoting it would move every candidate number in this file for no demonstrated gain in the thing
+those numbers measure.
+
+**It remains an alternative way to close the phase**, not a rider on `POLAR_SEED_FROM_PLACEMENT`: the
+install-the-octant branch is compiled in under either macro, so it closes the `m == 0` fixed point on its
+own, with the axis anchored to the charge instead of to wherever the transport left the centre.  That is
+its honest standing: a second closer of the phase whose distinguishing property -- the axis never drifting
+-- has now been measured to be worth less than one era of the ordering's life.
 
 ## Step 3: the magnitude of the charge step
 
@@ -1339,11 +1378,11 @@ and the in-loop `s2B` counters (logs in `build\*.log`).  What it measured:
 **Multi-era and candidate runs.**  The harness is the same source in every candidate measurement on
 this page; only the macros change, and no source is edited.  Five scripts make that reproducible:
 
-* `experiments\trace_build_variants.bat` builds, from a developer prompt, the eight variants used here
+* `experiments\trace_build_variants.bat` builds, from a developer prompt, the nine variants used here
   -- `ref` (counters only, the reference transport channel), `disp` (the dispersion with **no** polar
   seed, the "fires once per era" build of the decision pack), `polar` (`POLAR_SEED_FROM_PLACEMENT`),
   `base` (dispersal + polar seed, the 94-displacement baseline), `aonly`, `own`, `bothab`, `axis`
-  (the election probe, measurement only) -- as
+  (the election probe, measurement only) and `octaxis` (the four plus the anchored axis) -- as
   `build\trace_<name>.exe`, one `cl` line each (the flags travel in a variable, never through `call`
   arguments, which would strip the quotes of `/D "..."`);
 * `experiments\era_summary.ps1 -Log <log> [-Era 6]` folds any trace log into the per-era table used

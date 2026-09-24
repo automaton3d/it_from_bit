@@ -44,6 +44,11 @@ rem agree with the octant of the layer's own charge word.  Measurement only, no 
 rem folded by experiments\axis_summary.ps1 (README, "Who owns the standing axis").
 set FLAGS=%BASE% %DISP% %PAIRS% %PLC% /D "AXIS_ELECTION_TRACE"
 call :build axis
+rem The fifth candidate configuration: the four macros plus POLAR_AXIS_FROM_CHARGE, i.e. what the
+rem promotion would build if the anchored axis joined them.  Measured over the twelve eras against
+rem the bothab run (README, "The counterfactual").
+set FLAGS=%BASE% %DISP% %PAIRS% %PLC% /D "POLAR_AXIS_FROM_CHARGE"
+call :build octaxis
 goto :eof
 
 :build
