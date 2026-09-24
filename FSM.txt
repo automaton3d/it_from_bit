@@ -1,0 +1,630 @@
+FSM.txt -- the finite state machines of the automaton, in plain text
+====================================================================
+
+WHAT THIS IS
+  A walk-through of the state machines the simulator actually runs, written to be read
+  next to a running simulation (or next to a trace log).  Every statement is traceable to
+  the source; the pointers below are file:line at the commit this file was written
+  against, so they can be re-checked when the code moves.
+
+      frame driver ....... src/model/simulation.cpp     update_lattice_cpu()   ~960
+      tick dispatcher .... same function, the k branches                        ~1045
+      stage bounds ....... src/model/initSim.cpp        calculateParameters()  ~353
+      breathing clock .... src/include/model/simulation.h  effective_t()       ~463
+      kind transitions ... src/include/model/chief_transition.h
+      encounter .......... src/model/interaction.cpp    encounter()            ~2451
+      stage bodies ....... src/model/interaction.cpp    diffuse/relocate/reissue/flood
+      polarisation ....... src/model/polarization.cpp   tick()                 ~753
+      commit + transport . src/model/simulation.cpp     applyMomentum()        ~450
+      candidate mechanisms  guarded by #ifdef; listed in section 9
+
+  This describes the REFERENCE configuration (no macro defined).  Mechanisms that are
+  compiled off are marked [CANDIDATE]; the further probes are marked [PROBE].
+
+
+1. CLOCKS AND FIELDS
+--------------------
+
+  k        tick index, 0 .. FRAME-1.  One tick = one full memory pass over all
+           W x ELX x ELY x ELZ cells.  k is stored per cell and advances every tick:
+           draft.k = (curr.k + 1) % FRAME.
+
+  frame    one complete k cycle.  A new light frame begins on the tick where k wraps to
+           0; simulation() returns true exactly then (src/model/simulation.cpp ~1155).
+
+  t        the breathing clock of the layer, 0 .. 2*RMAX-1.  It advances only at the
+           frame edge (when draft.k == 0):
+               if (a == W_USED && t <= RMAX)  t++            (outward leg, keeps counting)
+               else                           t = (t+1) % (2*RMAX)
+           (src/model/simulation.cpp ~1065).
+
+  f        = effective_t(t), the active shell radius: a triangle wave,
+               cycle = 2*RMAX;  phase = t % cycle;
+               f = phase if phase <= RMAX else cycle - phase
+           (src/include/model/simulation.h ~463).  Period 2*RMAX, amplitude RMAX.  This
+           is the local light clock: a cell is on the active shell iff its propagated
+           integer radius equals f (c.r == effective_t(c.t)).
+
+  era      one full out-and-back of the shell.  By the t cycle this is 2*RMAX light frames
+           (6 at L=7, 8 at L=9), but the measured wall-clock cycle of the shell is one
+           frame longer for affiliated cells -- see the note at the end of section 7.
+
+  a        affinity counter of the cell.  a == W_USED marks a cell affiliated to a source
+           ("full"); anything else is an orphan (see the diffuse stage).  Values are
+           integers; W_USED = 3*L*L (147 at L=7, 243 at L=9).
+
+  r2, r    squared and linear integer radius from the center of the cell's own layer,
+           maintained incrementally by update_pulsating_wavefront() (no square roots).
+           r is what places a cell on the active shell.
+
+  s2B      sieve bit of the cell;  s2b_target is the modulus (16384 for the reference
+           runs).  Recomputing it per frame is  d.s2B = active and trigger  (the sieve is
+           recomputed, not carried forward).
+
+  kind     the source kind of a layer: K (chief), S (singleton), D (delegate), P (half of
+           a pair).  See section 4.
+
+  ch       the six-bit charge word  w1 w0 q c2 c1 c0  (most significant first).
+           c2 c1 c0 is the color; 000B = N (neutrino), 111B = Nbar (antineutrino).
+           w1 is the sector bit: w1 = 0 is Orbis, w1 = 1 is Umbra.
+
+  m[3]     momentum direction vector of the layer.  Immutable inside a frame (the code
+           comments say so: "m itself is immutable here; applyMomentum only consumes
+           reloc"), and RE-ELECTED once per era per layer, at the expansion limit
+           (t == RMAX on the frame edge).  Measured alignment of the three signs of m
+           with the layer's own charge octant at L=7, in the candidate build: 147 of 147
+           from the first election (frame 4) through the era-2 cascade (frame 14), then
+           119 at frame 18, 113 at 24, 74 at 38, 56 at 54, 39 at 72 -- i.e. the first two
+           eras elect on the octant and the later eras do not, which is consistent with
+           POLAR_SEED_FROM_PLACEMENT seeding the axis from the placement once and the
+           later turnarounds electing out of the W ledger instead.  Not yet probed
+           directly; it is a candidate for the next instrumentation pass.
+
+  reloc[3] the PENDING displacement of a layer, in cells.  Written by the walk funnels
+           and by the cohesion table, consumed once per frame by applyMomentum(), which
+           zeroes it on the center cell of any layer it moves.
+
+  c[3]     the relocation offset field used by the relocate stage.
+
+  flags    pB, sB   polarisation bits carried by a cell;
+           homB, kB  homing and collapse latches (written by the encounter, cleared by
+                     the reissue stage);
+           bB        "bound" flag;
+           bstamp    arrival stamp written by the polarisation walker;
+           active    derived: cell is on the active shell;
+           spin_target, parent, leader_w   group bookkeeping (section 4).
+
+  L, W      lattice side and number of layers, W = 3*L*L.  RMAX = L/2, CENTER = (L-1)/2.
+
+
+2. THE TICK FSM -- one call of update_lattice_cpu()
+---------------------------------------------------
+
+  update_lattice_cpu():
+    |  [CANDIDATE] COLOR_ENCOUNTER_FSM, if defined, replaces this whole body with
+    |  colorFsmTick() and returns.
+    |
+    |  PHASE 1 -- distance field
+    |    update_pulsating_wavefront()        incremental r2/r from the moving centers
+    |    pulse_tick++                        monotone tick counter
+    |    chargesSampleTurnarounds()           [PROBE] read-only cavity ledger
+    |
+    |  PHASE 2 -- wave / polarisation pair
+    |    phase_step()                        v += (laplacian u >> s); u += v; damping;
+    |                                        active  <=>  r == effective_t(t)
+    |    swap(lattice_curr, lattice_draft)    promote the phase output to the live state
+    |
+    |  PHASE 3 -- momentum election and broadcast (runs on the live lattice)
+    |    beginSourceTick()                    open the per-tick source transactions
+    |    polarization::tick()                 per layer: elect at the expansion limit;
+    |                                        walkerStep() stamps arrival ticks b(x);
+    |                                        diffusePass() every second tick
+    |
+    |  PHASE 4 -- the FSM loop: for w, for x, for y, for z
+    |      draft = curr                        (copy the cell)
+    |      curr.x[] = (x, y, z, w)              keep the address explicit
+    |      neighbors = forward, north, west, down, south, east, up (wrapped)
+    |      dispatch on curr.k:                  +----------------------------------
+    |                                           | k < ENCOUNTER      -> encounter()
+    |                                           | k < GSLOT_Z        -> (glider slots:
+    |                                           |                       reserved, empty)
+    |                                           | k < DIFFUSION      -> diffuse()
+    |                                           | k < RELOC          -> relocate()
+    |                                           | k < REISSUE        -> reissue()
+    |                                           | k < FLOOD          -> flood()
+    |                                           +----------------------------------
+    |                                        (section 3 gives the k ranges and the bodies)
+    |      draft.k = (curr.k + 1) % FRAME
+    |      if draft.k == 0: advance the breathing clock t (see section 1)
+    |      [PROBE] S2B_TRACE counters
+    |
+    |  PHASE 5 -- commit
+    |    commitSourceTick()                   close the transactions, drain the impulse
+    |                                        queue onto `reloc`
+    |    applyChargeConjugation()             the M/Mbar hook; an exact no-op at mm_eps = 0
+    |    applyMomentum()                      consume reloc: move the source center, zero
+    |                                        reloc on the center cell it moved
+
+  swap_lattices()      (called right after, src/model/simulation.cpp ~1109)
+    copy draft -> curr for the whole block;
+    if the representative cell has k == 0:  rebuild `partner` from `curr`
+                                           and report a new light frame;
+    if k < ENCOUNTER:                      rotatePartners()  (which layer's word a cell
+                                           is compared against rotates over the layers)
+
+  simulation() = update_lattice(); return swap_lattices();   -- one tick per call, and
+  the caller (the GUI loop, or `while (!simulation()) {}` in the trace harness) counts a
+  light frame every time it returns true.
+
+
+3. THE STAGE TABLE (the k bands)
+--------------------------------
+
+  The bounds are computed once, in calculateParameters() (src/model/initSim.cpp ~353),
+  from EL, W_USED and RMAX.  At L=7 (EL=7, W=147, RMAX=3) they are: ENCOUNTER=147,
+  GSLOT_X=153, GSLOT_Y=159, GSLOT_Z=165, SLOT1=168, SLOT2=186, SLOT3=204, SLOT4=498,
+  SLOT5=516, SLOT6=522, SLOT7=528, SLOT8=534, RELOC=534, REISSUE=535,
+  FLOOD=FRAME=553.
+
+    formula                        L=7    band (k)      stage / body
+    ---------------------------    ----   -----------   -------------------------------
+    ENCOUNTER = W_USED             147    0..146        encounter()  -- section 5
+    GSLOT_X = ENCOUNTER + 2*RMAX   153    147..164      glider slots: empty (reserved for
+    GSLOT_Y = GSLOT_X   + 2*RMAX   159                  the antipodal transport schedule,
+    GSLOT_Z = GSLOT_Y   + 2*RMAX   165                  not exercised by the reference)
+    SLOT1   = GSLOT_Z + RMAX       168    165..515      diffuse(): five sub-blocks, see
+    SLOT2   = SLOT1 + 3*(EL-1)     186                  below -- orphan propagation, the
+    SLOT3   = SLOT2 + 3*(EL-1)     204                  homing latch, the c-vector
+    SLOT4   = SLOT3 + 2*W_USED     498                  diffusion, the kB/cB relocation
+    SLOT5   = SLOT4 + 3*(EL-1)     516                  and the re-affiliation test
+    DIFFUSION = SLOT5              516    516..533      relocate(): grid relocation driven
+    SLOT6   = DIFFUSION + (EL-1)   522                  by c[]; the source transport itself
+    SLOT7   = SLOT6 + (EL-1)       528                  is the reloc[] impulse consumed by
+    SLOT8   = SLOT7 + (EL-1)       534                  applyMomentum() at the frame end
+    RELOC   = SLOT8                534    534           reissue(): one tick -- clears
+    REISSUE = RELOC + 1            535                  kB/homB/bB, leads the affinity in
+                                                       from the neighbors farther out,
+                                                       then consumes cB: an orphan inside
+                                                       r2 < 4 has its clock reset to 0
+    FLOOD   = REISSUE + 3*(EL-1)   553    535..552      flood(): every non-virgin cell's
+    FRAME   = FLOOD                553                  clock t is pulled to the minimum of
+                                                       its six neighbors -- the
+                                                       synchronising force, and the carrier
+                                                       of any clock reset
+
+  Reading the table: the dispatch is a chain of `curr.k < BOUND` tests, so each body owns
+  the band up to the next bound.  A cell's k advances by one per tick and wraps at FRAME,
+  which is why the same band visits every cell in the same tick of every frame: the bands
+  ARE the phase machine, and the state a cell carries (kind, ch, t, m, reloc) is what the
+  next frame's bands read.
+
+  The five sub-blocks inside the diffuse band, in order (each is a `curr.k < SLOTn` test):
+
+    k < SLOT1   ORPHAN PROPAGATION.  A cell whose neighbor is full (a == W_USED) and no
+                farther out than itself (r2 >= neighbor r2) becomes full too and adopts
+                NO_LEADER_W: the affinity spreads outward, one radius ring per sub-block.
+    k < SLOT2   orphan propagation again (the second ring) PLUS THE HOMING LATCH: if one
+                of the six neighbors carries homB, the cell takes that neighbor's c[axis]
+                plus one (mod EL) and toggles sB -- this is what FEEDS c[].
+    k < SLOT3   the c-VECTOR DIFFUSION: c[] is copied in from every neighbor with a
+                non-zero c (and kB with it), plus the third ring of orphan propagation.
+    k < SLOT4   the kB/cB RELOCATION: when the FORWARD neighbor carries kB and shares the
+                cell's affinity, c[] becomes that neighbor's c[] PLUS the per-axis offset
+                to it (delta_x, delta_y, delta_z), and kB/cB are propagated with it: the
+                collapse traveling one step through the W dimension.
+    k < SLOT5   RE-AFFILIATION: a cell that is full and sits at r2 < t*t becomes its own
+                source again (a <- its own w).  (The comment in the code notes that the
+                triangle phase f is NOT diffused here.)
+
+  The four "time slots" of the paper's diagram (Sect. 6.5) map onto the bands like this:
+
+    paper's slot                                   band(s) and sub-blocks in the code
+    --------------------------------------------   ------------------------------
+    1  propagate orphans outward, cB inward,       diffuse k < SLOT1 and k < SLOT2
+       homing sB using homB                        (orphan rings + the homing latch)
+    2  in 3D: diffuse the c vector and kB,         diffuse k < SLOT3 (c and kB copies)
+       wave phase f (local, triangular)            and k < SLOT4 (the kB/cB relocation
+                                                   step through W); f itself is not
+                                                   diffused, it is recomputed per cell
+    3  in W dimension: diffuse kB, wave phase f    the partner rotation of swap_lattices
+                                                   (runs while k < ENCOUNTER, at the head
+                                                   of the frame) + reissue
+    4  in 3D: consume the cB bit, adjust t for      reissue (clears kB/homB/bB; a cell on
+       the new wavefront, reset propagation status  the active shell adopts the affinity of
+                                                   any neighbor farther out; a cell that
+                                                   carries cB and is an orphan inside
+                                                   r2 < 4 gets t = 0) and flood (pulls t
+                                                   down to the six-neighbor minimum:
+                                                   the synchronising force of the clock)
+
+  On top of that, relocate consumes c[] axis by axis -- SLOT6 (x, from north), SLOT7 (y,
+  from west), SLOT8 (z, from down): each takes one unit off c[axis] and SLIDES the state
+  pattern into itself (`draft = neighbor`), i.e. a topological relocation that keeps the
+  address.  In the reference build this slide is inert in practice: c[] is fed only by the
+  homing latch and the diffusion blocks above, and the writers that gave it the archived
+  kernel's values sit behind HOMB_PRODUCER_FSM, which no reference build defines.  What
+  DOES transport in the reference is the reloc[] impulse consumed by applyMomentum() at
+  the frame edge.
+
+
+4. THE KIND FSM (K / S / D / P)
+-------------------------------
+
+  K = chief of an island;  S = singleton;  D = delegate (points at a chief through
+  `parent` and `leader_w`);  P = one half of a pair.  Kind changes are written by
+  chiefContact() (src/include/model/chief_transition.h), which reads ONLY the numerical
+  order of w, the charge word ch, the parent linkage and the kind -- never ISLAND_SIZE,
+  never L, never the seed family.
+
+  Transitions as implemented (main = the cell being processed, mirror = its contact):
+
+    T1   S meets K, same charge word      -> the S becomes a D of that K
+    T2   D meets D, same ch, main.w < mirror.w
+                                          -> the lower-address D is PROMOTED to K
+                                             (the symmetric contact demotes the other to
+                                             its D).  This is the transition the paper
+                                             calls delegate promotion, and it is what
+                                             caps a group at population 2
+    T3   S meets D, same charge word      -> the S becomes a D of that D's parent
+    T4   S meets S, same charge word      -> the lower address becomes K, the other its D
+    T5   K meets K, same ch, main.w > mirror.w
+                                          -> the higher-address K is demoted to a D of
+                                             the lower one
+
+  (The paper names this family "the membership transitions T1--T5" in Sect. 8.2 and
+  identifies T2 as the delegate promotion; it does not print the other four, so the labels
+  T1/T3/T4/T5 above are this document's enumeration of the code's tests.  The one that
+  carries the population bound of the paper's Sect. 8.2 is T2, the one guarded by
+  PARENT_SELECTIVE_FSM and DD_INTRA_ISLAND_FIX.)
+
+  Guards: a contact between different charge words never changes kind; main.w == mirror.w
+  is skipped; `promotesDelegate` requires main.w < mirror.w so the two directions of the
+  contact resolve to exactly one K; and an existing K or D identity is never overwritten
+  by the generic minimum-address rule (only S cells are elected by it).
+
+  Measured consequence: a frozen co-located state has at most one non-singleton group per
+  charge word, and every such group has population <= 2.  At the reference plateau
+  K = W - 8 and D = 8 (L=7: 139 + 8 = 147).
+
+
+5. THE ENCOUNTER STAGE (the k band 0..W-1) AND ITS SIX BRANCHES
+----------------------------------------------------------------
+
+  This is the band the whole transport lives in: W ticks out of FRAME.  Every cell of
+  every layer runs encounter() once per frame; the partner is the cell at the same (x,y,z)
+  in the layer selected by the rotating partner map, so the stage compares a layer with
+  another layer's copy of the same position.
+
+  encounter(curr, draft, partner):
+    if not (electricContact or magneticContact):  return      (no reaction)
+    if collapse:      draft.kB = draft.cB = true              (collapse flag inward;
+                                                               the reissue stage consumes it)
+    else (adiabatic): exchange leader identity and light clock, then the pair drift:
+                      moveOneStep(currDraft, toward partner) and the mirrored move
+    then, by (curr.kind, partner.kind), one of six branches:
+
+    branch             what it does
+    ----------------   ---------------------------------------------------------------
+    1  K x K           repel: one light-step away from the partner, booked as reloc
+    2  K x S           the K itself does nothing here -- the transition happens from the
+                       other side (branch 3) when the pair is evaluated with the S current
+    3  S x K           the S becomes a D of that K (parent = partner.w, leader adopted,
+                       spin_target = 1, i.e. "outward"), and steps one cell toward it
+    4  S x S           same field sign Q  -> repel one light-step away
+                       opposite Q         -> both become D delegates of the dominant
+                       leader (no step)
+    5  S x D / D x S   the S becomes a D of the D's chief, the D re-emits, and both step
+                       one cell toward each other
+    6  D x D           same chief  -> spin_target / leader identity are synchronised
+                       different chiefs -> re-emit, repel one step, and exchange
+                       momentum: the PARTNER's m is added into the receiving layer's
+                       reloc (this is the reference transport, and the only writer of
+                       reloc in the reference build)
+
+  The kind transitions proper (T1..T5 of section 4) are applied by chiefContact() inside
+  this handler, on the same-contact pair; the branches above are the REACTIONS (steps,
+  flags, momentum), and they are what book `reloc`.
+
+  Where the displacement comes from, in one line: the walk funnels book `reloc` with the
+  sign of the SHORTEST offset to the partner (moveOneStep / moveOneStepAway / the contact
+  re-emission), and applyMomentum() consumes it at the frame edge.  The direction is
+  therefore the partner's direction, not the layer's own -- which is why the reference
+  cascade lands on the layer's own charge octant in only one or two of the three signs
+  (measured L=7 era 1: 94 displacements, 0/15/79/0; era 2: 80 of 96 with no matching
+  sign at all).
+
+  The cohesion side: pairs of K/D that share a chief are resolved by
+  resolveInternalContacts(), whose moves[] table books `bookImpulse` with a SINGLE-AXIS
+  face step (never a diagonal displacement).  Measured at L=7: 14 such impulses at the
+  era-1 cascade and 14 at frames 8-9, and they are exactly the layers that come out
+  "one sign" or "two signs" against a diagonal octant.
+
+  [CANDIDATE] PAIR_SAME_OCTANT adds `((chA ^ chB) & 7) == 0` as a gate to the movers of
+  this handler (the adiabatic drift, the K x K repulsion, the S x K absorption step, the
+  S x S repulsion and the S x D pair step, plus the mediated kick); in the current source
+  it also gates the momentum exchange of branch 6, which STOPS the transport altogether
+  (measured: moved = 0 in every frame).
+
+
+6. THE PAIR FSM (R1 .. R6) AND THE POLARISATION SUB-MACHINE
+------------------------------------------------------------
+
+  A layer is either a free source or one half of a pair.  Pair formation asks, for the
+  two charge words a and b (six bits each: w1 w0 q c2 c1 c0):
+
+    R1  graviton        (a ^ b) == 111111B          six complementary bits
+    R2  gluon           q differs, w1 equal, w0 differs, color XOR == 111B
+    R3  neutrino        a == 000000B and b == 000000B
+    R4  antineutrino    a == 111111B and b == 111111B
+    R5  up quark        q=0, w1=0, w0=1 both, same color, color not 000B and not 111B
+    R6  up quark        q=1, w1=1, w0=0 both, same color, color not 000B and not 111B
+
+  The paper's Algorithm 3 (cluster formation) uses the same predicates: it refuses R3/R4
+  pairs, refuses R1 (graviton), refuses R5/R6 (up quark), and admits exactly the R2
+  geometry (`w1` equal, `q` different, `w0` different, color XOR = 111B), with no
+  cluster when either half carries a pending impulse (`reloc != 0`).  The trace harness
+  re-implements the six predicates (experiments/first_era_trace.cpp) to count, per frame,
+  how many distinct charge words exist and how many of them admit at least one pair rule
+  against another word present in the lattice (measured at L=7: 8 words, 56 addresses).
+
+  The polarisation sub-machine (src/model/polarization.cpp), per layer and per tick:
+    elect(w)       at the expansion limit (t == RMAX on the frame edge, and the layer is
+                   not a bound propeller): a direction is elected out of the W ledger
+    walkerStep(w)  the helical walker advances; it stamps arrival ticks bstamp around the
+                   elected axis, which phase_step() reconstructs as the transverse pair
+                   on the next tick
+    diffusePass(w) every second tick the news spreads one neighborhood; when the field
+                   converges the walker goes dark (monotone -- it does not oscillate)
+    seedAxis(w)    [CANDIDATE] under POLAR_SEED_FROM_PLACEMENT the election is seeded from
+                   the layer's placement, which closes the fixed point: m != 0 on every
+                   layer from the first era on
+
+  In the reference build the zero-polarisation seed is the fixed point of this loop, so no
+  axis is ever elected there: m == 0 on all W layers in every frame, and no layer is
+  displaced at all (seven eras read at L=7).
+
+
+7. THE ERA TIMELINE (what happens when)
+----------------------------------------
+
+  Numbering t, f and the eras for L=7 (RMAX=3).  Read from build\long2_L7.out (candidate)
+  and build\long2ref_L7.out (reference); `active/layer` is the table's `active` column
+  divided by W, `dt` its column of the same name:
+
+    frame   active/layer   r_clk   dt   what the measurement shows
+    -----   ------------   -----   --   ------------------------------------------------
+    1       1              1       1    the seed: every W source one singleton at the
+                                         lattice center, a single clock value, K=D=P=0
+    2       26             2       1    first full shell; the ledger settles at its
+                                         plateau (K=W-8, D=8, S=0, P=0) and stays there
+                                         for the rest of the era; [CANDIDATE] the charge
+                                         dispersion fires here -- with the polar seed only
+                                         here, without it once per era (f8, f14, f20 too)
+    3       66             3       1    no transport in the reference (reloc == 0)
+    4       158            2       1    [CANDIDATE, with the polar seed] the election
+                                         publishes m != 0 (147/147 layers), pol != 0 on
+                                         13671 cells -- from this frame on
+    5       66             1       1    quiet
+    6       26             1       2    the clock SPLITS (dt = 2) and the era-1 cascade
+                                         lands: 0 displacements in the reference, 94 in
+                                         the transport-enabled baseline, 46 with (a)+(b)
+    7       1              1       1    back to one cell per layer at the center
+    8       26             2       1    the next outward leg
+    9       66             3       1
+    10      158            2       1
+    11      66             1       2    the era-2 cascade (flight 6 + cohesion 2 = 8
+                                         displacements with (a)+(b))
+    12      26             0       3    the clock at its most split (dt = 3)
+    13      1              1       1    recentered
+    14      26             2       2    first frame where the candidate's ledger moves
+                                         off the plateau (K=136, D=11)
+
+  Two readings that matter when following a run:
+
+  * the layer clock's cycle in the wall-clock sense is not exactly 2*RMAX for affiliated
+    cells: the t-advance rule keeps counting on the outward leg (`if a == W_USED &&
+    t <= RMAX`), so the measured shell sequence at L=7 spans SEVEN frames (1, 26, 66, 158,
+    66, 26, 1 cells per layer) and the clock splits (dt > 1) exactly on the frames where
+    the shell turns over (f6, f11, f12).  Those are the frames the cascades land on;
+  * the ledger (K, D, S, P) is the SLOW variable: it holds at the plateau for many frames
+    and only moves when a cascade re-shapes the groups, whereas the shell counts are the
+    fast variable and change every frame.  In the reference neither ever moves after the
+    plateau, and dt stays at 1 for all 42 frames read -- the definition of the frozen
+    state.
+
+
+
+8. READING A TRACE LOG (experiments/first_era_trace.cpp)
+---------------------------------------------------------
+
+  Run:  build\first_era_trace.exe <L> <s2b_target> <frames>     (from the repo root)
+
+  One header line, then one table row per light frame, then a block of annotated lines.
+
+  HEADER   # first-era trace  L= W_USED= RMAX= ISLAND_SIZE= CENTER= s2b_target=
+
+  TABLE    # frame r_clk active shell_rf lost gain lost_s2B lost_K lost_S lost_D lost_P
+           #       s2B_tot K D S P_halves dev dt t_share
+
+    frame        light frame index, 1-based
+    r_clk        the breathing phase read at the layer centers (the loop ends on the last
+                 layer, so this is that layer's effective_t)
+    active       cells carrying the model's own `active` flag
+    shell_rf     the same predicate computed self-consistently by the harness: cells with
+                 r >= 0 and r == f.  The two columns agree in every run measured
+    lost / gain  cells that lost / gained the active flag since the previous frame
+    lost_K/S/D/P of the cells that left the shell, their kind before leaving (as stored:
+                 K=0, S=1, D=2, P=3)
+    s2B_tot      cells flagged by the sieve
+    K, D, S, P   the ledger over the W layers: chiefs, delegates, singletons, pair halves
+    dev          cells with r >= 0 whose r differs from f (off the shell they would occupy
+                 if their clock kept step with their radius)
+    dt           number of DISTINCT t values among cells with r >= 0 -- 1 means every cell
+                 shares the layer's breathing phase, > 1 means the clock has split
+    t_share      the largest population of a single t value (equal to the cell count when
+                 dt == 1)
+
+  ANNOTATED LINES, one per frame:
+
+    # frame N move-align: moved=... sign-match 0/1/2/3 = a/b/c/d
+        layers displaced this frame, bucketed by how many of the three signs of their
+        displacement agree with the octant of their own charge word.  d = fully aligned.
+    # frame N move-split: flight=... | cohesion=...
+        the same buckets, separated by channel: `flight` = impulses from the pair rules,
+        `cohesion` = impulses booked by the cohesion table (s2bTraceCohesionFlag).
+    # frame N move-drift: flight on its octant side (all 3 axes) = ... | off side (<3) = ...
+        whether the layer's center is still on its octant's side of the lattice center in
+        all three axes ("on side") or has crossed it in at least one ("off side").
+    # frame N move-mask: one writer = ... (octant-aligned ...) | two or more writers = ...
+        how many distinct movers touched each layer, from the writer mask
+        (1 walk funnel, 2 relay, 4 relay contact, 8 cohesion, 16 dispersion, 32 own-axis
+        thrust; bit 64 is the queue drain and is excluded).
+    # frame N separation: occupiedCenters=... sources=... moved-this-frame=...
+                          cB= kB= homB= reloc!=0(sources)= m!=0(sources)=.../... 
+                          m!=0(cells)=... pol!=0(cells)=...
+        the co-location census and the state counters.  occupiedCenters = distinct source
+        centers; `moved-this-frame` = displacement decision taken this frame;
+        `reloc!=0(sources)` = layers with a pending impulse at the commit.
+    # frame N positions: Orbis n=... mean=(x,y,z) | Umbra n=... mean=(...) | CoM-(centre)=...
+        the two sectors' mean offsets and the center of mass, all torus-normalized.
+    # frame N classes: k0(n=..)d=(..) ...
+        mean displacement per color class (class = (w / ISLAND_SIZE) % 8, the seed's own
+        family map); with a unit step every class sits at distance 1.
+    # frame N axis-align: m==0=... sign-match 0/1/2/3 = ...
+        over the W layer centers: how many carry m == 0, and how many of the three momentum
+        signs agree with the charge octant.
+    # frame N clocks: resets= [reemit= ... reloc-at-centre= ... applied= ... cB= ...
+                             flood-to-0= ...]
+        the clock and impulse counters: `resets` = clocks set back to 0 (a frame-edge
+        reissue), `applied` = impulses consumed by applyMomentum, `flood-to-0` = clock
+        resets caused by the flood stage.
+    # frame N charge words (word : addresses): ...     -> distinct words= ... addresses
+                                                          that admit a pair rule= ...
+        the roster of charge words and the R1..R6 pairability count.
+    # period of <series> : N frames                 -> the harness looks for a repeat
+        (frozen state detection) over the series it collected.
+    # totals: lost=... gained=... of the lost cells ... carried s2B
+    #   whole-lattice (r - f) summed over the run (r-f : cell-frames):
+
+  Built with the counters:  nmake trace-first-era   (adds S2B_TRACE; see the Makefile)
+  Built with the candidates: nmake CANDIDATES=1 trace-first-era
+
+
+9. CANDIDATE MECHANISMS AND PROBES (registry)
+----------------------------------------------
+
+  All of them are /D macros, compiled off unless named, and none reads an address, a hash,
+  the scan order or an RNG -- so a promoted build stays deterministic.
+
+    macro                       what it changes                              status
+    -------------------------   ------------------------------------------   ------------
+    CHARGE_DISPERSION_FSM       adds the one-step dispersion along each      [CANDIDATE]
+                                layer's own charge octant, while m == 0
+                                and the shell has left the center.  Alone
+                                the phase never closes, so it fires once per
+                                ERA (README, "The dispersion alone, measured");
+                                with POLAR_SEED_FROM_PLACEMENT it fires once
+                                per run, at frame 2
+    POLAR_SEED_FROM_PLACEMENT   seeds the axis election from the layer's    [CANDIDATE]
+                                placement, closing the m == 0 fixed point
+    PAIR_SAME_OCTANT            gates the encounter movers on the shared    [CANDIDATE]
+                                color triplet
+    PAIR_OWN_AXIS_EXCHANGE      replaces the D x D cross-tribe momentum     [CANDIDATE]
+                                exchange by a thrust along the receiver's
+                                own octant, same per-axis magnitude
+    PAIR_OCTANT_REANCHOR        re-anchors a booked step to the layer's     [CANDIDATE]
+                                octant when shortestDelta disagrees
+    CHARGE_STEP_MAGNITUDE       dispersion step of |m| instead of 1         [CANDIDATE]
+    CHARGE_STEP_SUBBLOCK        dispersion inside the sub-block phase       [CANDIDATE]
+    PHASE_DISTINCT_FSM          identity = (charge word, breathing phase)   [CANDIDATE]
+    DD_INTRA_ISLAND_FIX         D x D promotes only across islands          [CANDIDATE]
+    PARENT_SELECTIVE_FSM        D x D does not promote at all               [CANDIDATE]
+    HOMB_PRODUCER_FSM           the archived CUDA transport (c[]-driven      not built
+                                topological relocation) and the timed
+                                dispersion of the paper's Sect. 5.4
+    IMPULSE_NO_INHERIT          probe: stops re-applying inherited          [PROBE]
+                                reloc at the commit
+    S2B_TRACE                   the counters the harness reads              measurement
+    S2B_DUMP_PENDING            prints every impulse pending at the commit  [PROBE]
+    COLOR_ENCOUNTER_FSM         replaces the whole tick by colorFsmTick()   [CANDIDATE]
+
+  Build:   nmake                        (reference: no macro -- the paper's configuration)
+           nmake CANDIDATES=1           (the four transport candidates together)
+           nmake REFERENCE=1            (the same reference, named explicitly; objects go to
+                                         obj_reference\ -- the escape hatch if the default is
+                                         ever flipped.  CANDIDATES=1 and REFERENCE=1 stop the
+                                         build with U1050 rather than silently combining.)
+           nmake CANDIDATES=1 trace-first-era
+           experiments\trace_build_variants.bat   (seven single-purpose variants by flags:
+                                                   ref, disp, polar, base, aonly, own, bothab)
+  Fold a log into a per-era table:  experiments\era_summary.ps1 -Log <log> -Era <frames>
+
+
+10. NUMBERS TO RE-CHECK WHEN SOMETHING CHANGES
+-----------------------------------------------
+
+  These are the invariants the current description rests on.  If one of them moves, the
+  paragraph above it is no longer true.
+
+    frame 2, any L            K = W-8, D = 8, S = 0, P = 0, dt = 1, t_share = all cells
+    frames 1-4, any L         active per layer 1, 26, 66, 158 (the torus counts)
+    every frame, reference    m == 0 on all W layers; 0 displacements; dt = 1 (<= 42 frames)
+    any config at L=7         8 distinct charge words, 56 addresses admitting a pair rule
+    dispersion (candidate)    with POLAR_SEED_FROM_PLACEMENT: fires once, at frame 2:
+                              147/147 (L=7) and 243/243 (L=9) aligned.  ALONE (the `disp`
+                              variant) the phase never closes and it fires once per ERA
+    dispersion alone (disp)   L=7, 24 frames: fires at f2, f8, f14, f20 -- 147/147 octant-
+                              aligned every time, the ledger frozen at K=139, D=8, dt=1 in
+                              all 24 frames, m == 0 / pol == 0 in all of them; the class
+                              offsets grow +1 per era (1, 2, 3) and at f20 the centers wrap
+                              the torus (offsets invert to -3/+3, 147/147 read "off side")
+    m alignment (candidate)   147/147 from frame 4 to frame 14, then decaying: 119 at 18,
+                              113 at 24, 74 at 38, 56 at 54, 39 at 72 (L=7)
+    era-1 cascade (candidate) 32 flight steps, all aligned; 14 cohesion steps (7/7)
+    twelve eras (candidate)   gap 3.06 -> 1.42 (era 4) -> floors 0.2-0.75; one negative
+                              window, frames 65-67
+    L=9 (candidate)           dispersal 243/243 aligned; gap 2.00 -> 1.38 -> 0.98 over 2 eras
+
+  Where each one is written down: README.md, sections "The first era, measured" (the
+  reference numbers), "Item 3 of the follow-up list" (the twelve eras), "Decision pack"
+  (promotion impact) and "Twelve eras at L=9" (the larger lattice).
+
+
+11. WHERE EACH PIECE IS WRITTEN UP IN THE PAPER
+------------------------------------------------
+
+    this file, section            paper (it_from_bit.tex)
+    ---------------------------   ------------------------------------------------
+    1 clocks and fields           Sect. 3.1-3.4 (cell structure, host lattices,
+                                  purity constraints, charges), Sect. 5.1 (dynamic
+                                  radius and the Euclidean metric), Sect. 5.2 (the
+                                  wave cloud)
+    2 the tick FSM                Sect. 6.7 (algorithmic summary of one light frame),
+                                  Sect. 6.6 (main lattice updating and partner refresh)
+    3 the stage table             Sect. 6.5 (diffusion, translation and collapse in one
+                                  reading) -- the four time slots of its diagram are
+                                  the diffuse/relocate/reissue/flood bands
+    4 the kind FSM                Sect. 6.1 (bubble, pair, singleton, cluster),
+                                  Sect. 8.2 (is the island population quantized?)
+    5 the encounter stage         Sect. 6.4 (encounter) with 6.4.1 (superposing),
+                                  6.4.2 (distinct bubbles) and 6.4.3 (inter-sector
+                                  interactions)
+    6 the pair FSM                Sect. 6.1 (the pair rules R1..R6), Sect. 5.3 (emergent
+                                  polarization pair), Algorithm 3 for the cluster test
+    7 the era timeline            Sect. 8.4 (candidate mechanisms for the encounter's
+                                  transport), README "Item 3 of the follow-up list"
+    8 reading a trace log         the harness itself, experiments/first_era_trace.cpp
+    9 the candidate registry      Sect. 8.4 (candidates), Sect. 9.4 (limitations and open
+                                  problems), Sect. 9.5 (future inclusions)
+    10 the invariants             Sect. 8.4, README "Decision pack", Appendix A (inputs,
+                                  status and sensitivity)
+
+  Caveat that belongs with all of it: the paper describes the REFERENCE configuration;
+  every [CANDIDATE] line in this file is a measurement on a build that defines the macro,
+  and the pairs (measurement, claim) are listed in README.md with their logs.
+
+
+
+
+
+
