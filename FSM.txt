@@ -595,7 +595,11 @@ WHAT THIS IS
                                 topological relocation) and the timed
                                 dispersion of the paper's Sect. 5.4
     IMPULSE_NO_INHERIT          probe: stops re-applying inherited          [PROBE]
-                                reloc at the commit
+                                reloc at the commit; measured null -- zero
+                                carried and byte-identical frames, so the
+                                residual is not inherited (README, "The
+                                inherited-impulse probe"); folded by
+                                experiments\inherit_summary.ps1
     S2B_TRACE                   the counters the harness reads              measurement
     AXIS_ELECTION_TRACE         probe: attributes each installed m to the    [PROBE]
                                 election that produced it (classic field
@@ -675,15 +679,27 @@ WHAT THIS IS
                               68-72) against three (65-67) -- no ordering gain
                               (build\five_L7.out against build\long2_L7.out)
     era-1 cascade (candidate) 32 flight steps, all aligned; 14 cohesion steps (7/7)
+    displacement channel       not inherited: the probe log is byte-identical to
+                               the promoted run over 20 frames at L=7 and
+                               reseed-carried-reloc = 0 in every frame; over
+                               twelve eras 475 of 811 flight steps are fully
+                               aligned, 277/331 on the octant's side against
+                               198/480 off it, so the drift bucket concentrates
+                               the residual without explaining it
+                               (build\inherit_L7.out against
+                               build\both_L7_repro.out; build\long2_L7.out)
     twelve eras (candidate)   gap 3.06 -> 1.42 (era 4) -> floors 0.2-0.75; one negative
                               window, frames 65-67
     L=9 (candidate)           dispersal 243/243 aligned; gap 2.00 -> 1.38 -> 0.98 over 2 eras
 
   Where each one is written down: README.md, sections "The first era, measured" (the
   reference numbers), "Item 3 of the follow-up list" (the twelve eras), "Decision pack"
-  (promotion impact), "Twelve eras at L=9" (the larger lattice) and "Finite-size scaling,
-  first pass" (the plateau ratio and the era-1 trends at L=5, 7, 9 -- and the price of the two
-  measurements that pass leaves out, the L=11 era-1 dynamics and the L=13 static row).
+  (promotion impact), "Twelve eras at L=9" (the larger lattice), "The inherited-impulse
+  probe" and "The twelve-era decomposition" (the displacement channel: the probe that
+  refutes the inherited-impulse reading, and the disposition of the flight steps over the
+  twelve eras) and "Finite-size scaling, first pass" (the plateau ratio and the era-1 trends
+  at L=5, 7, 9 -- and the price of the two measurements that pass leaves out, the L=11 era-1
+  dynamics and the L=13 static row).
 
 
 11. WHERE EACH PIECE IS WRITTEN UP IN THE PAPER

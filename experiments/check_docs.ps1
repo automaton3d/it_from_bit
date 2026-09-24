@@ -648,6 +648,95 @@ Report-Rule 'finite-size table' 'README.md' `
   }
 }
 
+# --- C12: the inherited-impulse probe (it is zero, and the frames do not move) -----------
+Report-Rule 'the inherited-impulse probe' 'README.md' `
+  'the probe log and the log of the same run without the macro are **byte-identical** (same SHA-256, `build\inherit_L7.out` against `build\both_L7_repro.out`), and `reseed-carried-reloc = 0` in each of the 20 frames' `
+  'inherit_L7.out' {
+  param($lines)
+  $clk = Get-FrameLines $lines 'clocks'
+  if ($clk.Count -ne 20) { $script:ruleBad += ("20 frames documented, the log has " + $clk.Count) }
+  foreach ($f in ($clk.Keys | Sort-Object))
+  {
+    # The probe's own count of what it dropped, and the passive sum of |reloc| over the centre cells at
+    # the same reseed (printed whether or not the macro is on).  Both are documented as zero.
+    Want ("frame " + $f) 'impulses inherited at the reseed' (Val $clk[$f] 'reseed-carried-reloc=(\d+)') 0
+    Want ("frame " + $f) '|reloc| carried on the lattice at the reseed' (Val $clk[$f] 'captured-sum=(\d+)') 0
+  }
+  # The carrier arithmetic the README quotes for frame 14: what was applied is the queue plus the frame's
+  # own bookings (64 + 8 = 72), and the 64 is a queue length, not a number of layers carrying a reloc.
+  if ($null -eq $clk[14]) { $script:ruleBad += 'the probe log has no frame 14 clocks line' }
+  else
+  {
+    $x = $clk[14]
+    $applied = Val $x 'applied=(\d+)'; $pending = Val $x 'pending-impulse=(\d+)'
+    $booked = Val $x 'booked-on-lattice=(\d+)'
+    Want 'frame 14' 'impulses in the queue' $pending 64
+    Want 'frame 14' 'bookings made by the frame' $booked 8
+    Want 'frame 14' 'impulses applied' $applied 72
+    if ($pending + $booked -ne $applied)
+      { $script:ruleBad += ("frame 14: the queue (" + $pending + ") plus the frame's bookings (" + $booked +
+                            ") do not add up to what was applied (" + $applied + ")") }
+  }
+  # The byte-identity claim, and the same zero in the baseline (which has no probe macro compiled).
+  $probeText = Read-Text 'build\inherit_L7.out'
+  $baseText = Read-Text 'build\both_L7_repro.out'
+  if ($null -eq $baseText) { $script:ruleBad += 'the baseline log build\both_L7_repro.out is absent (the promoted run this probe is compared with)' }
+  elseif ($probeText -ne $baseText) { $script:ruleBad += 'the probe log is no longer byte-identical to its baseline' }
+  $baseline = Read-TraceLog 'both_L7_repro.out'
+  if ($null -ne $baseline)
+  {
+    foreach ($f in ((Get-FrameLines $baseline 'clocks').Keys | Sort-Object))
+      { Want ("baseline frame " + $f) '|reloc| carried on the lattice at the reseed' (Val (Get-FrameLines $baseline 'clocks')[$f] 'captured-sum=(\d+)') 0 }
+  }
+}
+
+# --- C13: the twelve-era decomposition of the flight channel ------------------------------
+Report-Rule 'twelve-era decomposition' 'README.md' `
+  '| **all** | **811** | **475 (58.6 %)** | **331 (277 = 83.7 %)** | **480 (198 = 41.3 %)** |' `
+  'long2_L7.out' {
+  param($lines)
+  $split = Get-FrameLines $lines 'move-split'
+  $drift = Get-FrameLines $lines 'move-drift'
+  if ($split.Count -ne 72) { $script:ruleBad += ("72 frames documented, the log has " + $split.Count) }
+  $fl = 0; $fl3 = 0; $on = 0; $onAl = 0; $off = 0; $offAl = 0
+  foreach ($f in ($split.Keys | Sort-Object))
+  {
+    $fl += Val $split[$f] 'flight=(\d+)'
+    $fl3 += Val $split[$f] 'flight=\d+\s+0/1/2/3 = \d+/\d+/\d+/(\d+)'
+    $d = $drift[$f]
+    if ($null -eq $d) { $script:ruleBad += ("frame " + $f + ": the move-split line has no move-drift companion"); continue }
+    $on += Val $d 'on its octant side \(all 3 axes\) = (\d+)'
+    $onAl += Val $d 'octant-aligned = (\d+)\s+\|\s+off side'
+    $off += Val $d 'off side \(<3 axes\) = (\d+)'
+    $offAl += Val $d 'off side \(<3 axes\) = \d+, octant-aligned = (\d+)'
+  }
+  # The invariant that ties the two lines together: every flight mover is in exactly one drift bucket.
+  # Without it a line that silently stops parsing would still produce a plausible total.
+  if ($on + $off -ne $fl)
+    { $script:ruleBad += ("the drift buckets (" + $on + " + " + $off + ") do not add up to the flight counter (" + $fl + ")") }
+  if ($off -eq 0) { $script:ruleBad += 'the off-side bucket is empty everywhere: the drift lines are not being read' }
+  # The documented totals.
+  Want 'all twelve eras' 'flight movers' $fl 811
+  Want 'all twelve eras' 'flight fully aligned' $fl3 475
+  Want 'all twelve eras' 'on-side movers' $on 331
+  Want 'all twelve eras' 'on-side aligned' $onAl 277
+  Want 'all twelve eras' 'off-side movers' $off 480
+  Want 'all twelve eras' 'off-side aligned' $offAl 198
+  # The three shares of the totals row, and the reading it draws: the bucket concentrates the
+  # misalignment (on side well above off side) but does not account for it.
+  WantNear 'all twelve eras' 'flight aligned %' (100.0 * $fl3 / $fl) 58.6 0.05
+  WantNear 'all twelve eras' 'on-side aligned %' (100.0 * $onAl / $on) 83.7 0.05
+  WantNear 'all twelve eras' 'off-side aligned %' (100.0 * $offAl / $off) 41.3 0.05
+  if ((100.0 * $onAl / $on) -le (100.0 * $offAl / $off)) { $script:ruleBad += 'the on-side share is no longer above the off-side share, which is what the table concludes' }
+  # The first era is the one the alignment claim is about, and it is fully one-sided.
+  $era1 = @($split.Keys | Sort-Object | Select-Object -First 6)
+  $e1fl = 0; $e1fl3 = 0; $e1off = 0
+  foreach ($f in $era1) { $e1fl += Val $split[$f] 'flight=(\d+)'; $e1fl3 += Val $split[$f] 'flight=\d+\s+0/1/2/3 = \d+/\d+/\d+/(\d+)'; $e1off += (Val $drift[$f] 'off side \(<3 axes\) = (\d+)') }
+  Want 'era 1 (frames 1-6)' 'flight movers' $e1fl 179
+  Want 'era 1 (frames 1-6)' 'flight fully aligned' $e1fl3 179
+  Want 'era 1 (frames 1-6)' 'off-side movers' $e1off 0
+}
+
 # ======================================================================================
 # verdict
 # ======================================================================================

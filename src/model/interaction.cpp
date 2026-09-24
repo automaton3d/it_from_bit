@@ -707,15 +707,20 @@ namespace automaton
     // (bookImpulse/reemitSourceAt write reloc on the source-centre cell) and sourceBefore
     // has just captured them, so the re-seed cannot lose them.  See the NOTE above.
     //
-    // Candidate (/D IMPULSE_NO_INHERIT).  OFF in the reference build.
+    // Candidate (/D IMPULSE_NO_INHERIT).  OFF in the reference build and in the promoted default.
     //
-    // The capture above also *inherits* whatever reloc the lattice cell still carries, and the
-    // commit then copies it into the draft, where applyMomentum applies it a second time.  In the
-    // (a)+(b) runs that showed up as flight displacements with no booker in the frame: at frame 14
-    // the queue held 8 bookings (the cohesion table) while 64 layers carried a reloc at the commit
-    // and 72 impulses were applied (64 + 8) -- and none of the walk funnels had run (their counters
-    // are zero).  This probe counts the inherited ones and, with the macro on, drops them: the
-    // impulse queue is the carrier, so a frame's displacements come from that frame's bookings.
+    // This block was added to test the reading that the off-octant flight steps of the later eras were
+    // stale impulses the commit re-applied: the capture above *inherits* whatever reloc the lattice cell
+    // still carries, and the commit copies it into the draft.  The test came out negative, and the
+    // reading was wrong.  At L = 7 over 20 frames the build with this macro is byte-identical to the
+    // build without it (build\inherit_L7.out against build\both_L7_repro.out) and `carried` is zero in
+    // every frame; the passive sum of |reloc| over the centre cells at the same reseed
+    // (s2bTraceReapplySum, printed as `captured-sum`) is zero in every frame too.  What the counters
+    // that motivated the reading actually describe is the QUEUE: frame 14 carries pending-impulse=64 and
+    // booked-on-lattice=8 against applied=72, i.e. 64 + 8 = 72, and g_pendingImpulses is the designed
+    // carrier of a booking made in an earlier frame.  The macro is kept because it is the probe that
+    // settled the question: with it on, a frame's displacements can only come from that frame's bookings
+    // and from the queue.  (README, "The inherited-impulse probe".)
 #ifdef IMPULSE_NO_INHERIT
     {
       unsigned carried = 0;

@@ -546,15 +546,94 @@ macro no build defines: the three sites inside `applyMomentum` itself
 `partner.reloc[axis] -= sign`) sit inside `HOMB_CONSUMER_TRANSPORT`, `ADDRESS_TARGET_FSM` and
 `ORPHAN_MEDIATOR_SUSTAIN` respectively.
 
-So the residual is **not a step booked this frame**: the impulses are *inherited* -- the commit's
-`dst.reloc = s.reloc` copies whatever `sourceAfter` holds, `sourceAfter` is re-seeded from
-`lattice_curr` each tick, and `applyMomentum` zeroes `reloc` only on the **centre** cell of a layer it
-moves.  That makes the off-octant residual a **second application of stale impulses**, i.e. a defect
-rather than a design choice.
+So the residual is **not a step booked this frame**.  What it is was the question the next probe had to
+answer, and that probe has now been built and run (twice, in two configurations) -- see the next
+subsection.  The reading this paragraph first carried -- that the impulses are *inherited*, a second
+application of a stale `reloc` copied through `sourceAfter`, "a defect rather than a design choice" -- is
+**refuted by that probe**: the quantity is zero in every frame it was measured.
 
-**Next step (one probe)**: count, at the commit, how many of the pending impulses were already present
-at the end of the previous frame -- or simply zero the draft's `reloc` for the layers the commit
-writes.  Either confirms the inheritance and removes the residual.
+## The inherited-impulse probe: it is zero, and the "64" was the queue
+
+`/D IMPULSE_NO_INHERIT` counts, at every reseed, how many layers still carry a `reloc` on their centre
+cell, and drops it -- so a frame's displacements can only come from that frame's bookings and from the
+pending queue.  The variant is registered in `experiments\trace_build_variants.bat` as `inherit` (the
+promoted configuration plus the macro); `build\cmdline_inherit.txt` records the exact command line, and
+`experiments\inherit_summary.ps1` folds the comparison (per-frame table, the first frame that differs,
+and whether the two files are byte-identical).
+
+**Measured: it changes nothing whatever.**  At `L = 7`, 20 frames, the probe log and the log of the same
+run without the macro are **byte-identical** (same SHA-256, `build\inherit_L7.out` against
+`build\both_L7_repro.out`), and `reseed-carried-reloc = 0` in each of the 20 frames -- including the four
+frames the question is about, where the flight channel is not fully aligned (frame 12: 3 of 6; frame 14:
+41 of 48; frame 18: 19 of 30; frame 20: 2 of 6).  The passive counter of the same quantity is also zero:
+`captured-sum` (`s2bTraceReapplySum`, the sum of `|reloc|` over the centre cells at the reseed) reads 0 in
+every frame of both runs, and it is printed whether or not the macro is on.  An earlier probe of the
+(b)-alone configuration reads the same way (`build\ninh_L7.log`, built as `build\first_era_ninh.exe`, 24
+frames, zero in every frame, its frames identical to `build\owndraft_L7.log`).
+
+**And the line the inheritance reading was drawn from says so itself.**  Frame 14 of the promoted
+configuration is:
+
+```
+reloc-at-centre=72 applied=72 ... commit: pending-impulse=64, |reloc| at commit=1026
+| booked-on-lattice=8 drained=8 writeback-sum=8 ... reseed-carried-reloc=0
+```
+
+The earlier reading took "64 layers carry a reloc at the commit" from this line.  There is no such field:
+the 64 is `pending-impulse`, the **queue**, and 64 + 8 = 72 closes exactly with `applied = 72` and
+`booked-on-lattice = 8`.  `g_pendingImpulses` is the designed carrier (it is cleared only by
+`resetSourceTransactions`, so a new run never inherits a booking), and a frame's displacements therefore
+do include bookings made in *earlier* frames -- which is what the queue is for.
+
+**So the off-octant flight steps are neither an off-octant booking nor an inherited one.**  The first was
+excluded by the re-anchoring test above (three funnels, frames identical); the second is excluded here
+(zero, in two configurations).  What the queue does point at is the remaining candidate: an impulse booked
+from one frame's geometry and applied in a *later* one, when the layer's own picture has moved -- and the
+centres are re-derived constantly (frame 14 alone: `resets = 54378`, `flood-to-0 = 53050`, `capture-sum =
+0`).  The harness cannot separate the two carriers today: a mover whose impulse came from the drain and a
+mover with no impulse at all both report "one writer" (`bits <= 1`, and the drain bit is excluded from that
+count on purpose).  **The next instrument is a reporting change, not a model change**: split the `move-mask`
+line by carrier -- drain bit set (a queued booking landing now), *no* writer bit (a centre that moved with
+no impulse behind it), or a writer bit (booked this frame) -- each with its octant-aligned share.  Whichever
+class the off-octant steps land in names the mechanism.
+
+## The twelve-era decomposition: the drift bucket concentrates it, and does not explain it
+
+The drift test above was read over frames 6-18 of the (b)-alone configuration.  The same two counters
+(`move-drift`, `move-split`; folded by `experiments\era_summary.ps1`) over all twelve eras of the promoted
+configuration at `L = 7` (log `build\long2_L7.out`) give:
+
+| era | flight moved | fully aligned | on its octant side (aligned) | off side (aligned) |
+|---|---|---|---|---|
+| 1 | 179 | 179 | 179 (179) | 0 (0) |
+| 2 | 12 | 9 | 8 (7) | 4 (2) |
+| 3 | 78 | 60 | 34 (30) | 44 (30) |
+| 4 | 59 | 24 | 14 (6) | 45 (18) |
+| 5 | 90 | 48 | 26 (20) | 64 (28) |
+| 6 | 79 | 35 | 23 (9) | 56 (26) |
+| 7 | 43 | 19 | 7 (4) | 36 (15) |
+| 8 | 40 | 21 | 8 (7) | 32 (14) |
+| 9 | 44 | 18 | 10 (7) | 34 (11) |
+| 10 | 24 | 7 | 1 (1) | 23 (6) |
+| 11 | 109 | 38 | 12 (4) | 97 (34) |
+| 12 | 54 | 17 | 9 (3) | 45 (14) |
+| **all** | **811** | **475 (58.6 %)** | **331 (277 = 83.7 %)** | **480 (198 = 41.3 %)** |
+
+Three readings:
+
+* **the drift bucket concentrates the misalignment but does not account for it.**  Off-side layers align
+  41.3 % of the time against 83.7 % on side -- a strong signal in the predicted direction -- but 54 of the
+  336 off-octant flight steps (16 %) sit in layers that are still on their octant's side of the centre in
+  all three axes, and 282 of them (84 %) are off side.  So "the shortest offset to a partner flips once a
+  centre has crossed the lattice centre" is a real contributor and not the whole mechanism;
+* **the residual shrinks with the promotion.**  The frame-14 signature of the (b)-alone configuration (the
+  one the drift and re-anchoring tests were read on) is `on 25 (23 aligned) | off 23 (1 aligned)`; the
+  promoted configuration's is `on 25 (22) | off 23 (19)` -- the own-axis thrust already carries most
+  off-side steps along the octant, so the promoted default starts from a much smaller residual (7 of 48
+  flight steps at frame 14) rather than from a broken one;
+* **and it is not inherited** -- the probe above measures zero carried impulses in every frame of the same
+  window, so the 336 off-octant steps are not stale material from earlier frames.
+
 
 ## Multi-era run with (a)+(b): the split holds its sign, not its size
 
@@ -937,10 +1016,11 @@ What the twelve eras say:
 * **the flight channel is aligned at the cascades, not everywhere.**  The 100 % alignment is
   reproduced exactly where it was claimed (147/147 at the dispersal, frame 2; 32/32 at the era-1
   cascade, frame 6; 6/6 at frame 11), but from era 3 on the aligned share of the flight steps drops
-  (41 of 48 at frame 14, 39 of 64 at frame 30, 23 of 63 at frame 65).  Those later eras are the
-  **inherited-impulse** regime documented above (`S2B_DUMP_PENDING`), not a second transport
-  mechanism, and the claim "every flight displacement is octant-aligned" is a statement about the
-  cascade;
+  (41 of 48 at frame 14, 39 of 64 at frame 30, 23 of 63 at frame 65).  The mechanism behind those later
+  steps is **not inheritance** -- the probe above measures zero carried impulses in every frame, and the
+  twelve-era decomposition puts the aligned share at 475 of 811 -- so "every flight displacement is
+  octant-aligned" is a statement about the cascade, and the residual is the carrier question that probe
+  left open;
 * **the centre of mass is not stationary**: its offset (norm) wanders up to 0.52 cells (era 10) while
   the census stays at the reference plateau in every frame;
 * **the reference build has no split at all.**  The control run reports `m != 0 = 0/147`,
@@ -1017,10 +1097,13 @@ The twelve-era log contradicts the first -- the plateau holds through frame 13 a
 to `K = 124`, `D = 23` by frame 72, so what holds is the *saturation* `K + D = W = 3L^2` -- and qualifies
 the second: the dispersal and the era-1 cascade are fully aligned (147 of 147, and 32 of 32 flight steps),
 but the later cascades' aligned share runs 29-77% per era (era 5: 48 of 90; era 12: 17 of 54).  The claim
-that the off-octant steps are inherited impulses is not established by any run in this repository, and the
-bullet now says so.  `it_from_bit.tex` was corrected accordingly (39 pages, 0 errors, 0 undefined
-references after the change), and `nmake check-docs` recomputes those numbers from this log as rule C10 --
-the paper's sentence and the trace now agree by machine, not by reading.
+that the off-octant steps are inherited impulses is **refuted** by the probe above (zero carried impulses
+in every frame, byte-identical logs), and no mechanism is offered in its place: what the twelve eras give
+is the decomposition table above -- 475 of 811 flight steps aligned, 83.7 % on side against 41.3 % off
+side.  `it_from_bit.tex` was corrected accordingly (39 pages, 0 errors, 0 undefined references after the
+change), and `nmake check-docs` recomputes those numbers from this log as rule C10, the decomposition as
+rule C13 and the probe as rule C12 -- the paper's sentence and the trace now agree by machine, not by
+reading.
 
 ## Finite-size scaling, first pass: the plateau is derivable, the transport is not
 
@@ -1082,8 +1165,11 @@ Three trends, each with three points:
    over the dispersal are 100%, 131%, 117%, and the aligned share of the era falls 100% -> 96.4% ->
    88.1%.  The era's own cascade peak makes the point sharply: none at `L = 5`, 46 movers with 39
    aligned at `L = 7` (85%), and 33 movers with **none** aligned at `L = 9`.  The bigger the lattice,
-   the more of the era's displacement is off-octant -- which is the direction the manuscript's own
-   caveat about inherited impulses points at, and it is now a measured trend rather than an aside.
+   the more of the era's displacement is off-octant -- a measured trend whose mechanism is now *excluded*
+   rather than named: it is not an off-octant booking (re-anchoring the funnels changes nothing) and not an
+   inherited impulse (the probe measures zero).  The remaining candidate is the pending queue landing after
+   the booking's geometry has moved, and the instrument that would settle it is the carrier split of the
+   `move-mask` line described above.
    Note what these percentages are *not*: the momentum channel stays charge-parallel throughout
    (`axis-align` is 243/243 at `L = 9` from the first election to frame 9, see "Who owns the standing
    axis" below), so what falls with the lattice size is the alignment of the **displacements**, not
@@ -1105,9 +1191,12 @@ Three trends, each with three points:
 (`K = W - 8`, derived from `D = 8`) or invariant over four sizes (the ~38% fraction) -- confirmation, not
 discovery.  The `L = 11` dynamics is the only one of the two that could turn a three-point trend into a
 rule, and the trend in question -- the era-1 aligned share falling as the lattice grows -- is a property
-of the *displacement* channel, whose mechanism this repository has not established either: a fourth point
-would sharpen a trend without explaining it.  Both stay one command away (`build\trace_ref.exe 11 16384 10`,
-`build\trace_ref.exe 13 16384 2`) with the costs above, for whoever wants either.
+of the *displacement* channel, whose mechanism this repository has narrowed but not established: it is not
+an off-octant booking and not inherited material ("The inherited-impulse probe" above), and the live
+candidate is the pending queue landing after the booking's geometry has moved, which no lattice size
+would settle -- a fourth point would sharpen the trend without explaining it.  Both stay one command away
+(`build\trace_ref.exe 11 16384 10`, `build\trace_ref.exe 13 16384 2`) with the costs above, for whoever
+wants either.
 
 ## (a) Same-octant pairing: halves the cascade, does not yet align it
 

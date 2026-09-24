@@ -135,6 +135,13 @@ NVCC = nvcc
 !IFNDEF VCPKG_ROOT
 VCPKG_ROOT = E:/vcpkg/installed/x64-windows
 !ENDIF
+# Careful: a VCPKG_ROOT coming from the environment WINS over the default above, and the vcpkg shipped
+# inside Visual Studio (VC\vcpkg) has no freetype, so it links with
+#   LINK : fatal error LNK1181: cannot open input file 'freetype.lib'
+# Fix it on the command line, which overrides the environment as well:
+#   nmake VCPKG_ROOT=E:/vcpkg/installed/x64-windows
+# (A developer prompt sets VCPKG_ROOT to the bundled tree; a plain shell may not set it at all, in
+# which case the default above is used and the build works without any argument.)
 
 !IFNDEF CUDA_PATH
 CUDA_PATH = C:\PROGRA~1\NVIDIA~2\CUDA\v13.2

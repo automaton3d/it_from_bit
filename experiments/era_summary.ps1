@@ -3,11 +3,17 @@
 # One era of the L=7 seed is 2*RMAX = 6 light frames, so era k ends at frame 6k.
 # The sector split is read at the END of each era (the paper's convention); the flight and
 # cohesion counters are summed over the era's frames, with the octant-aligned share (3 of 3).
+# The second table is the disposition of those flight movers against the octant of their own charge
+# word: how many are still on their octant's side of the lattice centre in all three axes ("on side")
+# and how many have crossed it in at least one ("off side"), each with its aligned share.  That is the
+# decomposition the README reads the drift mechanism from (the drift bucket concentrates the misaligned
+# steps; it does not account for them).  Both counts come from the model's own annotations of the log
+# (move-drift, move-split, move-mask), so nothing is re-derived here.
 # -ExecutionPolicy Bypass is needed because the default policy refuses script files; the culture
 # is pinned below because a pt-BR host would print the decimal separator as a comma.
 param([Parameter(Mandatory=$true)][string]$Log, [int]$Era = 6)
 [System.Threading.Thread]::CurrentThread.CurrentCulture = [System.Globalization.CultureInfo]::InvariantCulture
-$pos = @{}; $ms = @{}
+$pos = @{}; $ms = @{}; $dr = @{}; $mk = @{}
 foreach ($line in Get-Content -LiteralPath $Log) {
   if ($line -match '^#\s+frame (\d+) positions: Orbis n=(\d+) mean=\(([-\d.]+),([-\d.]+),([-\d.]+)\) \| Umbra n=(\d+) mean=\(([-\d.]+),([-\d.]+),([-\d.]+)\) \| CoM-\(centre\)=\(([-\d.]+),([-\d.]+),([-\d.]+)\)') {
     $pos[[int]$Matches[1]] = [pscustomobject]@{ oy=[double]$Matches[4]; uy=[double]$Matches[8]
@@ -16,6 +22,14 @@ foreach ($line in Get-Content -LiteralPath $Log) {
   elseif ($line -match '^#\s+frame (\d+) move-split: flight=(\d+)\s+0/1/2/3 = (\d+)/(\d+)/(\d+)/(\d+)\s+\|\s+cohesion=(\d+)\s+0/1/2/3 = (\d+)/(\d+)/(\d+)/(\d+)') {
     $ms[[int]$Matches[1]] = [pscustomobject]@{ fl=[int]$Matches[2]; fl3=[int]$Matches[6]
                                                coh=[int]$Matches[7]; coh3=[int]$Matches[11] }
+  }
+  elseif ($line -match '^#\s+frame (\d+) move-drift: flight on its octant side \(all 3 axes\) = (\d+), octant-aligned = (\d+)\s+\|\s+off side \(<3 axes\) = (\d+), octant-aligned = (\d+)') {
+    $dr[[int]$Matches[1]] = [pscustomobject]@{ on=[int]$Matches[2]; onAl=[int]$Matches[3]
+                                               off=[int]$Matches[4]; offAl=[int]$Matches[5] }
+  }
+  elseif ($line -match '^#\s+frame (\d+) move-mask: one writer = (\d+) \(octant-aligned (\d+)\)\s+\|\s+two or more writers = (\d+) \(octant-aligned (\d+)\)') {
+    $mk[[int]$Matches[1]] = [pscustomobject]@{ one=[int]$Matches[2]; oneAl=[int]$Matches[3]
+                                               many=[int]$Matches[4]; manyAl=[int]$Matches[5] }
   }
 }
 $frames = ($pos.Keys | Sort-Object)
@@ -36,3 +50,34 @@ for ($k = 1; $k -le $maxEra; $k++) {
   Write-Output ("| {0} | {1} | {2:+0.000;-0.000} | {3:+0.000;-0.000} | {4:0.000} | {5} | {6}/{7}, {8}/{9} |" -f $k, $hi, $p.oy, $p.uy, $cmax, $casc, $fl, $fl3, $coh, $coh3)
 }
 Write-Output ("frames parsed: {0} (1..{1})" -f $frames.Count, $frames[-1])
+
+# Second table: the disposition of each era's flight movers against the octant of their own charge word,
+# with the writer-mask split alongside.  This is the decomposition of README, "The twelve-era
+# decomposition: the drift bucket concentrates it, and does not explain it".
+Write-Output ""
+Write-Output ("| era | flight moved | fully aligned | on its octant side (aligned) | off side (aligned) | one writer (aligned) | two or more (aligned) |")
+Write-Output ("|---|---|---|---|---|---|---|")
+$tt = @{ fl=0; fl3=0; on=0; onAl=0; off=0; offAl=0; one=0; oneAl=0; many=0; manyAl=0 }
+for ($k = 1; $k -le $maxEra; $k++) {
+  $lo = $Era * ($k - 1) + 1; $hi = $Era * $k
+  $s = @{ fl=0; fl3=0; on=0; onAl=0; off=0; offAl=0; one=0; oneAl=0; many=0; manyAl=0 }
+  for ($f = $lo; $f -le $hi; $f++) {
+    if ($ms[$f]) { $s.fl += $ms[$f].fl; $s.fl3 += $ms[$f].fl3 }
+    if ($dr[$f]) { $s.on += $dr[$f].on; $s.onAl += $dr[$f].onAl; $s.off += $dr[$f].off; $s.offAl += $dr[$f].offAl }
+    if ($mk[$f]) { $s.one += $mk[$f].one; $s.oneAl += $mk[$f].oneAl
+                   $s.many += $mk[$f].many; $s.manyAl += $mk[$f].manyAl }
+  }
+  foreach ($key in $s.Keys) { $tt[$key] += $s[$key] }
+  if ($s.fl -eq 0 -and $s.on -eq 0 -and $s.off -eq 0) { continue }
+  Write-Output ("| {0} | {1} | {2} | {3} ({4}) | {5} ({6}) | {7} ({8}) | {9} ({10}) |" -f `
+    $k, $s.fl, $s.fl3, $s.on, $s.onAl, $s.off, $s.offAl, $s.one, $s.oneAl, $s.many, $s.manyAl)
+}
+Write-Output ("| **all** | **{0}** | **{1}** | **{2} ({3})** | **{4} ({5})** | **{6} ({7})** | **{8} ({9})** |" -f `
+  $tt.fl, $tt.fl3, $tt.on, $tt.onAl, $tt.off, $tt.offAl, $tt.one, $tt.oneAl, $tt.many, $tt.manyAl)
+if ($tt.on -gt 0) {
+  Write-Output ("on-side rows: {0} moved, {1} aligned = {2:N1}%   |   off-side rows: {3} moved, {4} aligned = {5:N1}%" -f `
+    $tt.on, $tt.onAl, (100.0 * $tt.onAl / $tt.on), $tt.off, $tt.offAl, (100.0 * $tt.offAl / $tt.off))
+}
+if ($tt.fl -gt 0) {
+  Write-Output ("flight rows over the eras: {0} moved, {1} aligned = {2:N1}%" -f $tt.fl, $tt.fl3, (100.0 * $tt.fl3 / $tt.fl))
+}

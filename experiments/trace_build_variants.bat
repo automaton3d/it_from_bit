@@ -16,6 +16,13 @@ set SRC=experiments\first_era_trace.cpp src\config.cpp src\model\initSim.cpp src
 set BASE=/nologo /std:c++20 /O2 /EHsc /MD /D "NOMINMAX" /D "S2B_TRACE"
 set DISP=/D "CHARGE_DISPERSION_FSM"
 set PLC=/D "POLAR_SEED_FROM_PLACEMENT"
+rem The two pair rules of the promoted configuration.  They were used as %PAIRS% below but never
+rem defined, so cmd expanded the variable to nothing and the `axis` and `octaxis` variants were built
+rem WITHOUT them -- i.e. not the four-macro + probe configurations the README describes them as.  The
+rem recorded evidence is unaffected (it was built before this refactor: build\cmdline_axis.txt and
+rem build\axisL7_bothab.out are from the explicit-macro builds, and axisL7_bothab.out matches
+rem long2_L7.out frame for frame at frames 6 and 12); what was broken was the reproduction path.
+set PAIRS=/D "PAIR_SAME_OCTANT" /D "PAIR_OWN_AXIS_EXCHANGE"
 
 rem The flags go through the FLAGS variable, never through `call` arguments: cmd strips the quotes
 rem of quoted arguments and keeps only %1..%9, which silently drops /D "..." macros.
@@ -38,6 +45,14 @@ set FLAGS=%BASE% %DISP% /D "PAIR_OWN_AXIS_EXCHANGE" %PLC%
 call :build own
 set FLAGS=%BASE% %DISP% /D "PAIR_SAME_OCTANT" /D "PAIR_OWN_AXIS_EXCHANGE" %PLC%
 call :build bothab
+rem The displacement-channel probe: the promoted configuration plus /D IMPULSE_NO_INHERIT, which
+rem drops, at the reseed, the reloc a lattice cell still carries -- so a frame's displacements come
+rem from that frame's bookings and not from what an earlier frame left on the lattice.  The harness
+rem counter `reseed-carried-reloc` then reports what was dropped, per frame.  This is the probe named
+rem in README "(6) Re-anchoring the step"; its log is build\inherit_L7.out, read against the same run
+rem of the promoted configuration (build\both_L7_repro.out from trace_bothab.exe).
+set FLAGS=%BASE% %DISP% %PAIRS% %PLC% /D "IMPULSE_NO_INHERIT"
+call :build inherit
 rem The election probe: the bothab configuration plus /D AXIS_ELECTION_TRACE, which records
 rem which path installed each layer's m -- the classic field candidate, the placement rule, the
 rem address bootstrap or the charge-octant install -- and how many signs of the installed axis
