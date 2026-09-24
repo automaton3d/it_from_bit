@@ -556,19 +556,21 @@ WHAT THIS IS
 9. CANDIDATE MECHANISMS AND PROBES (registry)
 ----------------------------------------------
 
-  All of them are /D macros, compiled off unless named, and none reads an address, a hash,
-  the scan order or an RNG -- so a promoted build stays deterministic.
+  All of them are /D macros and none reads an address, a hash, the scan order or an RNG -- so a
+  promoted build stays deterministic.  SINCE 2026-09-24 the four rows at the top of the table carry
+  status `default`: they are the default build (README, "Decision pack"), and the reference
+  configuration is built with `nmake REFERENCE=1`.  Everything else is compiled off unless named.
 
     macro                       what it changes                              status
     -------------------------   ------------------------------------------   ------------
-    CHARGE_DISPERSION_FSM       adds the one-step dispersion along each      [CANDIDATE]
+    CHARGE_DISPERSION_FSM       adds the one-step dispersion along each      default
                                 layer's own charge octant, while m == 0
                                 and the shell has left the center.  Alone
                                 the phase never closes, so it fires once per
                                 ERA (README, "The dispersion alone, measured");
                                 with POLAR_SEED_FROM_PLACEMENT it fires once
                                 per run, at frame 2
-    POLAR_SEED_FROM_PLACEMENT   seeds the axis election from the layer's    [CANDIDATE]
+    POLAR_SEED_FROM_PLACEMENT   seeds the axis election from the layer's    default
                                 placement, closing the m == 0 fixed point
     POLAR_AXIS_FROM_CHARGE      anchors the axis to the layer's charge      [CANDIDATE]
                                 octant instead of to the centre the transport
@@ -577,9 +579,9 @@ WHAT THIS IS
                                 twelve eras, but does NOT protect the ordering
                                 (8 inverted frames against 3) -- measured, not
                                 promoted (README, "The counterfactual")
-    PAIR_SAME_OCTANT            gates the encounter movers on the shared    [CANDIDATE]
+    PAIR_SAME_OCTANT            gates the encounter movers on the shared    default
                                 color triplet
-    PAIR_OWN_AXIS_EXCHANGE      replaces the D x D cross-tribe momentum     [CANDIDATE]
+    PAIR_OWN_AXIS_EXCHANGE      replaces the D x D cross-tribe momentum     default
                                 exchange by a thrust along the receiver's
                                 own octant, same per-axis magnitude
     PAIR_OCTANT_REANCHOR        re-anchors a booked step to the layer's     [CANDIDATE]
@@ -603,13 +605,14 @@ WHAT THIS IS
     S2B_DUMP_PENDING            prints every impulse pending at the commit  [PROBE]
     COLOR_ENCOUNTER_FSM         replaces the whole tick by colorFsmTick()   [CANDIDATE]
 
-  Build:   nmake                        (reference: no macro -- the paper's configuration)
-           nmake CANDIDATES=1           (the four transport candidates together)
-           nmake REFERENCE=1            (the same reference, named explicitly; objects go to
-                                         obj_reference\ -- the escape hatch if the default is
-                                         ever flipped.  CANDIDATES=1 and REFERENCE=1 stop the
-                                         build with U1050 rather than silently combining.)
-           nmake CANDIDATES=1 trace-first-era
+  Build:   nmake                        (DEFAULT since 2026-09-24: the four macros together)
+           nmake REFERENCE=1            (the reference: no macro -- the configuration the paper
+                                         quotes; objects go to obj_reference\, so a configuration
+                                         never reuses the other's objects)
+           nmake CANDIDATES=1           (the pre-promotion name of the default, kept as an alias;
+                                         REFERENCE=1 and CANDIDATES=1 stop the build with U1050
+                                         rather than silently combining)
+           nmake trace-first-era
            nmake check-docs              (the lint: cited paths, the registry against the
                                           #ifdefs, and the invariants against build\*.out)
            nmake check-trace             (the regression: four configurations, one era at L=7,
@@ -679,7 +682,8 @@ WHAT THIS IS
   Where each one is written down: README.md, sections "The first era, measured" (the
   reference numbers), "Item 3 of the follow-up list" (the twelve eras), "Decision pack"
   (promotion impact), "Twelve eras at L=9" (the larger lattice) and "Finite-size scaling,
-  first pass" (the plateau ratio and the era-1 trends at L=5, 7, 9).
+  first pass" (the plateau ratio and the era-1 trends at L=5, 7, 9 -- and the price of the two
+  measurements that pass leaves out, the L=11 era-1 dynamics and the L=13 static row).
 
 
 11. WHERE EACH PIECE IS WRITTEN UP IN THE PAPER

@@ -686,7 +686,20 @@ therefore be read on the flight column alone, which is what it was meant to meas
 
 "Promoting" means making the four candidate macros (`CHARGE_DISPERSION_FSM`,
 `POLAR_SEED_FROM_PLACEMENT`, `PAIR_SAME_OCTANT`, `PAIR_OWN_AXIS_EXCHANGE`) part of the default build
-instead of `#ifdef`-guarded options.  This section is the evidence for that decision: which canonical
+instead of `#ifdef`-guarded options.
+
+**Applied on 2026-09-24.**  The promotion was executed: the four macros are now the default build
+(`nmake`), and the reference configuration is built explicitly with `nmake REFERENCE=1`.  The `#ifdef`
+guards themselves were left in place -- only the default flags moved -- so both configurations still
+come from the same sources, and neither can silently reuse the other's objects (`obj\` versus
+`obj_reference\`).  `nmake CANDIDATES=1`, the pre-promotion name of the default, is kept as an alias so
+that the documents and scripts citing it still build the same configuration.  The price the decision
+accepted is the list of statements below: the paper's one build-switch sentence was updated, the rest of
+the list was reviewed as statements about the *reference* configuration (which promoting the default does
+not change), and the one re-measurement this repository cannot perform is left where it was, declared.
+The evidence that follows is what the decision rested on, unchanged.
+
+This section is the evidence for that decision: which canonical
 numbers survive, which do not, what the build mechanics are, and what would have to be re-measured.
 All numbers below come from the trace harness (census columns of its per-frame table) in three
 configurations at `L = 7` and `L = 9`, all with the sieve closed (`S = 16384`):
@@ -747,35 +760,37 @@ become the default):
    framing -- declared option versus rule -- changes even though its content does not;
 6. this README's own "reference plateau" numbers (first-era section) are invariant, as shown above.
 
-**Mechanics, implemented and verified.**  The Makefile carries the promotion as a switch:
+**Mechanics, implemented and verified.**  The Makefile carries the switch, and since 2026-09-24 the
+default is the promoted build:
 
 ```
-nmake                  # reference build: no macro, the configuration the paper quotes
-nmake CANDIDATES=1     # promoted build: the four macros on CFLAGS
-nmake REFERENCE=1      # the same reference build, named explicitly (obj_reference\)
+nmake                  # promoted build (default): the four macros on CFLAGS
+nmake REFERENCE=1      # the reference build, the configuration the paper quotes (obj_reference\)
+nmake CANDIDATES=1     # the pre-promotion name of the default, kept as an alias
 ```
 
 All three write the same output names (`build\automaton.exe`, `build\first_era_trace.exe`), because
-promoting *is* replacing the default; object files go to separate trees (`obj\`, `obj_candidates\`,
-`obj_reference\`) so a configuration can never silently reuse the other's objects (nmake does not
-track flag changes).  The explicit `REFERENCE=1` is the escape hatch for the day the default is
-flipped: the reference stays buildable *by name* instead of by the absence of a flag, and the two
-switches are mutually exclusive (`nmake CANDIDATES=1 REFERENCE=1` stops at `U1050` instead of
-silently choosing one).  Verified end to end: `nmake CANDIDATES=1 trace-first-era` builds, and its
-frame-2 trace reads `flight=147`, `0/0/0/147` (the candidate signature) with the census still at
-`K = 139`, `D = 8`; `nmake trace-first-era` restores the reference binary (`occupiedCenters=1`, no
-displacement at frame 2), and so does `nmake REFERENCE=1 trace-first-era`.
+promoting *is* replacing the default; object files go to separate trees (`obj\` for the default,
+`obj_reference\` for the reference) so a configuration can never silently reuse the other's objects
+(nmake does not track flag changes).  Verified end to end after the flip: `nmake trace-first-era` reads
+the candidate signature at frame 2 (`flight=147`, `0/0/0/147`, census still `K = 139`, `D = 8`),
+`nmake REFERENCE=1 trace-first-era` reads the reference signature (`occupiedCenters=1`, no displacement,
+`m == 0` on all layers), and `nmake CANDIDATES=1 trace-first-era` builds the same configuration as the
+default and prints the same message.
 
-Not implemented, deliberately: inverting the guards in the sources so that the candidate behaviour
-is the default and the reference numbers need a flag.  That has a much larger blast radius (every log
-label, the paper's reference-build statements, and -- importantly -- the behaviour of the simulator
-the paper points readers to at its published address).
+Not done, deliberately: inverting the guards in the sources so that the candidate behaviour is the
+unconditional code path.  The promotion was made through the *default flags* instead, which leaves every
+`#ifdef` in place, keeps the reference one flag away (`nmake REFERENCE=1`) and keeps both configurations
+coming from the same sources.  Inverting the guards would have a much larger blast radius (every log
+label, the paper's reference-build statements, and -- importantly -- the behaviour of the simulator the
+paper points readers to at its published address), and it buys nothing the flags do not.
 
 **One operational fact for the decision.**  These mechanisms are **compile-time only**: their names
 appear nowhere outside the `#ifdef`s of the model sources -- not in `automaton.cfg`, not in the GUI
-code.  Promoting them is therefore a build decision; if the intent is instead "let a user switch the
-transport on", that is a separate and larger change (a configuration key feeding the guards, plus the
-paper's reproducibility statement about the reference build).
+code.  Promoting them is therefore a build decision, and that is the form the promotion took; if the
+intent is instead "let a user switch the transport on", that is a separate and larger change (a
+configuration key feeding the guards, plus the paper's reproducibility statement about the reference
+build).
 
 ### The dispersion alone, measured (the `disp` variant)
 
@@ -1078,15 +1093,21 @@ Three trends, each with three points:
    above showed for the ordering, and consistent with the ledger leaving its plateau earlier as the
    lattice grows.
 
-**What is not here, and what it costs.**  The `L = 11` *static* row is now read -- two frames, about ten
-minutes of initialization plus about four minutes per frame, after the first attempt was abandoned when
-six jobs shared the CPU -- and it is what settles the pairable fraction (38.0% at a fourth size, so the
-invariant holds over a `W` span of 4.8x).  What is still missing is the *dynamics* at `L = 11`: its era-1
-window is ten frames, i.e. about forty minutes per configuration as measured here, and `L = 13` would cost
-about 2.6 times that per frame.  The runs are a one-command matter (`build\trace_ref.exe 11 16384 2`) and
-the fold is the script above; those extra sizes are what would settle whether the aligned share keeps
-falling and whether the freeze keeps arriving earlier, the two trends the table below reads with three
-points each.
+**Quantified future work: the two measurements this pass leaves out.**  Costs measured on this machine
+(one job at a time; the per-frame cost scales with `W x L^3`):
+
+| measurement | frames | cost measured here | what it would settle |
+|---|---|---|---|
+| `L = 11`, era 1, reference and promoted | 10 | ~10 min of initialization + ~4 min per frame = **~50 min per configuration**, ~1 h 40 for both | the 4th point of each era-1 trend: the election frame (the `RMAX + 1` rule predicts f6), the aligned share and the cascade peak (100 / 96.4 / 88.1% at `L = 5, 7, 9`), and the first frame off the plateau |
+| `L = 13`, static row, reference | 2 | ~25 min of initialization + 2 frames at ~10 min = **~45 min** | the 5th point of the plateau ratio (`K/W = 1 - 8/(3*169) = 98.42%`) and of the pairable fraction at `W = 507`, i.e. 1.4x wider than `L = 11` |
+
+**Not run, on this evidence.**  The `L = 13` row would *confirm* two relations that are already exact
+(`K = W - 8`, derived from `D = 8`) or invariant over four sizes (the ~38% fraction) -- confirmation, not
+discovery.  The `L = 11` dynamics is the only one of the two that could turn a three-point trend into a
+rule, and the trend in question -- the era-1 aligned share falling as the lattice grows -- is a property
+of the *displacement* channel, whose mechanism this repository has not established either: a fourth point
+would sharpen a trend without explaining it.  Both stay one command away (`build\trace_ref.exe 11 16384 10`,
+`build\trace_ref.exe 13 16384 2`) with the costs above, for whoever wants either.
 
 ## (a) Same-octant pairing: halves the cascade, does not yet align it
 

@@ -8,8 +8,9 @@ rem   experiments\trace_build_variants.bat
 rem
 rem Each variant produces build\trace_<name>.exe; run it as
 rem   build\trace_<name>.exe <L> <s2b_target> <frames>
-rem (the reference build of the paper is the GUI/automaton.exe with NO macro defined, i.e. the
-rem "ref" variant plus the counters).
+rem (the default build of the repository is the *promoted* configuration -- the four macros together;
+rem the paper's reference configuration is `nmake REFERENCE=1`, and the GUI/automaton.exe follows
+rem whatever the Makefile's default is).
 set INC=/I"src\include" /I"src\include\zlib" /I"src" /I"E:/vcpkg/installed/x64-windows/include" /I"E:/vcpkg/installed/x64-windows/include/freetype2"
 set SRC=experiments\first_era_trace.cpp src\config.cpp src\model\initSim.cpp src\model\simulation.cpp src\model\interaction.cpp src\model\utils.cpp src\model\geometry.cpp src\model\polarization.cpp src\model\charges.cpp src\model\attractor.cpp src\model\wavefront.cpp
 set BASE=/nologo /std:c++20 /O2 /EHsc /MD /D "NOMINMAX" /D "S2B_TRACE"

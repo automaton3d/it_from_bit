@@ -156,7 +156,7 @@ for ($i = 0; $i -lt $fsm.Count; $i++)
   if ($regStart -ge 0 -and $fsm[$i] -match '^\s*Build:\s') { $regEnd = $i; break }
 }
 $registry = [ordered]@{}
-$statusTokens = @('[CANDIDATE]', '[PROBE]', 'measurement', 'not built')
+$statusTokens = @('[CANDIDATE]', '[PROBE]', 'measurement', 'not built', 'default')
 if ($regStart -lt 0 -or $regEnd -lt 0)
 {
   Report 'ERROR' 'B. registry: the section 9 table header or its "Build:" block was not found in FSM.txt'

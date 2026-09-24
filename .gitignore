@@ -2,9 +2,9 @@
 obj/
 build/
 
-# The `nmake CANDIDATES=1` object tree (README, "Decision pack"): separate from
-# obj/ on purpose, so the two configurations cannot share objects, and ignored
-# for the same reason as obj/.
+# The pre-promotion candidate object tree.  `nmake CANDIDATES=1` used to build here; since the
+# promotion (README, "Decision pack", 2026-09-24) the default is that configuration and it builds
+# into obj/, so this tree is what the old command left behind -- kept ignored, like obj/.
 obj_candidates/
 
 # The `nmake REFERENCE=1` escape (Makefile, same block): the reference build under its own

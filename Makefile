@@ -15,42 +15,37 @@ ENABLE_CUDA = 0
 !ENDIF
 
 # ================================================
-# Configuracao de candidatos (README: "Decision pack")
-#   nmake                 -> build de referencia: nenhum macro, e o que o paper cita
-#   nmake CANDIDATES=1    -> build promovida: dispersao de carga + seed polar + as duas
-#                            regras de par (CHARGE_DISPERSION_FSM, POLAR_SEED_FROM_PLACEMENT,
-#                            PAIR_SAME_OCTANT, PAIR_OWN_AXIS_EXCHANGE)
-#   nmake REFERENCE=1     -> a mesma build de referencia, dita explicitamente e com a sua
-#                            propria arvore de objectos (obj_reference\).  Existe para que
-#                            inverter o default seja uma linha: troque os dois ramos abaixo
-#                            de lugar e a referencia continua buildavel por este nome, em
-#                            vez de por ausencia de flag.
-# Os tres nomes de saida sao os mesmos (build\automaton.exe, build\first_era_trace.exe),
-# porque promover e exatamente substituir o default; objectos vao para obj_candidates\ ou
-# obj_reference\ para que uma configuracao nunca reutilize objectos da outra (nmake nao
-# segue flags).
+# Configuracao de candidatos (README: "Decision pack") -- PROMOVIDA em 2026-09-24
+#   nmake                 -> build promovida (DEFAULT desde 2026-09-24): dispersao de carga +
+#                            seed polar + as duas regras de par (CHARGE_DISPERSION_FSM,
+#                            POLAR_SEED_FROM_PLACEMENT, PAIR_SAME_OCTANT,
+#                            PAIR_OWN_AXIS_EXCHANGE)
+#   nmake REFERENCE=1     -> a build de referencia: nenhum macro, e o que o paper cita.  A flag
+#                            existia antes da promocao justamente para isto: a referencia
+#                            continua buildavel por nome, em vez de por ausencia de flag, e com
+#                            a sua propria arvore de objectos (obj_reference\).
+#   nmake CANDIDATES=1    -> alias de compatibilidade: constroi o mesmo que o default (a flag
+#                            antiga, mantida para os documentos e scripts que a citam).
+# Os nomes de saida sao os mesmos (build\automaton.exe, build\first_era_trace.exe), porque
+# promover e exatamente substituir o default; objectos vao para obj\ (default/promovida) ou
+# obj_reference\ (referencia), para que uma configuracao nunca reutilize objectos da outra
+# (nmake nao segue flags).
 # ================================================
 
-!IFDEF CANDIDATES
 !IFDEF REFERENCE
-!ERROR CANDIDATES=1 e REFERENCE=1 sao mutuamente exclusivos: escolha um dos dois.
+!IFDEF CANDIDATES
+!ERROR REFERENCE=1 e CANDIDATES=1 sao mutuamente exclusivos: escolha um dos dois.
 !ENDIF
 !ENDIF
 
-!IFDEF CANDIDATES
-CANDIDATE_FLAGS = /D "CHARGE_DISPERSION_FSM" /D "POLAR_SEED_FROM_PLACEMENT" /D "PAIR_SAME_OCTANT" /D "PAIR_OWN_AXIS_EXCHANGE"
-OBJ_DIR = obj_candidates
-!MESSAGE [config] candidatos: CHARGE_DISPERSION_FSM POLAR_SEED_FROM_PLACEMENT PAIR_SAME_OCTANT PAIR_OWN_AXIS_EXCHANGE
-!ELSE
 !IFDEF REFERENCE
 CANDIDATE_FLAGS =
 OBJ_DIR = obj_reference
-!MESSAGE [config] referencia explicita (REFERENCE=1), sem macro
+!MESSAGE [config] referencia (REFERENCE=1): nenhum macro -- a que o paper cita
 !ELSE
-CANDIDATE_FLAGS =
+CANDIDATE_FLAGS = /D "CHARGE_DISPERSION_FSM" /D "POLAR_SEED_FROM_PLACEMENT" /D "PAIR_SAME_OCTANT" /D "PAIR_OWN_AXIS_EXCHANGE"
 OBJ_DIR = obj
-!MESSAGE [config] referencia (default, sem macro -- a que o paper cita)
-!ENDIF
+!MESSAGE [config] promovida (default): CHARGE_DISPERSION_FSM POLAR_SEED_FROM_PLACEMENT PAIR_SAME_OCTANT PAIR_OWN_AXIS_EXCHANGE
 !ENDIF
 
 # ================================================
