@@ -597,7 +597,8 @@ WHAT THIS IS
 
   Where each one is written down: README.md, sections "The first era, measured" (the
   reference numbers), "Item 3 of the follow-up list" (the twelve eras), "Decision pack"
-  (promotion impact) and "Twelve eras at L=9" (the larger lattice).
+  (promotion impact), "Twelve eras at L=9" (the larger lattice) and "Finite-size scaling,
+  first pass" (the plateau ratio and the era-1 trends at L=5, 7, 9).
 
 
 11. WHERE EACH PIECE IS WRITTEN UP IN THE PAPER

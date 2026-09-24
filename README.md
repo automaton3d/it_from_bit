@@ -977,7 +977,80 @@ tables' column held the largest single *component* (frame 6: 0.067 as a norm aga
 component; frame 12: 0.135 against 0.109).  The two conventions differ; the values above are the
 norm.
 
+## Finite-size scaling, first pass: the plateau is derivable, the transport is not
+
+Item (iii) of the manuscript's open problems (Sect. 9.4) asks for a finite-size scaling study of the
+dimensionless observables and notes that the only relation measured so far is the saturation of the
+ledger in the frozen plateau, `K + D = W = 3L^2`.  This is a first pass at it: the same harness at
+`L = 5, 7, 9` in the reference and in the promoted configuration, one era each (frames = `L`, six at
+`L = 5`; sieve closed, `S = 16384`), folded by
+`experiments\scaling_summary.ps1 -Logs build\scale_ref_L5.out,...` (logs `build\scale_ref_L*.out`,
+`build\scale_bothab_L*.out`; each run is `build\check_<cfg>.exe <L> 16384 <L>`, i.e. the harness with
+the same macros as the `check-trace` configurations).
+
+**The static observables do not scale -- they are fixed by the seed.**  Frame 2, identical in both
+configurations:
+
+| L | W = 3L^2 | K | D | S, P | K + D | K/W | D/W | charge words | pairable addresses | pairable / W |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 5 | 75 | 67 | 8 | 0, 0 | 75 | 89.33% | 10.67% | 8 | 29 | 38.7% |
+| 7 | 147 | 139 | 8 | 0, 0 | 147 | 94.56% | 5.44% | 8 | 56 | 38.1% |
+| 9 | 243 | 235 | 8 | 0, 0 | 243 | 96.71% | 3.29% | 8 | 93 | 38.3% |
+| 15 | 675 | 667 | 8 | 0, 0 | 675 | 98.81% | 1.19% | not read | not read | not read |
+
+The `L = 15` row is not a new run: it is the reading the frozen-state item of the manuscript already
+quotes (`K = 667`, `D = 8`, "no candidate macro involved"), cited here because it is the fourth point
+of the same relation and it costs nothing.  Two statements come out of the four:
+
+* **`D = 8` at every size, so `K = W - 8` exactly**, i.e. the plateau ratio is not a measured
+  parameter but `K/W = 1 - 8/(3L^2)` (89.33, 94.56, 96.71, 98.81%).  The eight delegates are the
+  seed's own eight: the roster is eight words at every size, the family map makes the word a function
+  of `island mod 8`, and the same eight are what the dispersal separates.  Nothing new appears as the
+  lattice grows -- what grows is the number of chiefs, one per additional layer.
+* **The pairable fraction is size-independent**: 29/75, 56/147 and 93/243 are all about 38%.  The
+  *count* of addresses admitting a pair rule grows with `W` (29, 56, 93), the *fraction* does not.
+  That is the charge-combination census of the same open problem in its cheapest form; turning it
+  into a cross-section prediction would need the unit mapping, which is not in this repository.
+
+**The transport does scale -- against the lattice.**  The promoted configuration (the four macros),
+same runs, era 1 = frames `1..L-1`:
+
+| L | era (frames) | dispersal at f2 (aligned) | elected | era-1 movers | era-1 aligned | cascade peak | first frame off the plateau | gap at the era end |
+|---|---|---|---|---|---|---|---|---|
+| 5 | 4 | 75 / 75 | f3 | 75 | 100.0% | none | not within 6 frames | 2.000 |
+| 7 | 6 | 147 / 147 | f4 | 193 | 96.4% | f6: 46 (39 aligned) | f14 (era 3) | 3.063 |
+| 9 | 8 | 243 / 243 | f5 | 285 | 88.1% | f7: 33 (**0** aligned) | f8 (era 1; K = 234, D = 9) | 1.378 |
+
+Three trends, each with three points:
+
+1. **the election lands at `RMAX + 1`** (f3, f4, f5 for `RMAX = 2, 3, 4`), one frame after the shell
+   passes the half radius.  `RMAX + 1` is also the first frame on which the polarisation the
+   election reads has had time to be rebuilt from the placement, so this is a relation rather than a
+   coincidence of the three sizes;
+2. **the era's transport grows faster than the dispersal and its alignment collapses**: era-1 movers
+   over the dispersal are 100%, 131%, 117%, and the aligned share of the era falls 100% -> 96.4% ->
+   88.1%.  The era's own cascade peak makes the point sharply: none at `L = 5`, 46 movers with 39
+   aligned at `L = 7` (85%), and 33 movers with **none** aligned at `L = 9`.  The bigger the lattice,
+   the more of the era's displacement is off-octant -- which is the direction the manuscript's own
+   caveat about inherited impulses points at, and it is now a measured trend rather than an aside;
+3. **the freeze breaks earlier**: not inside the six frames read at `L = 5`, at era 3 (f14) at
+   `L = 7`, and by the **last frame of era 1** at `L = 9`.  The same direction the `L = 9` control
+   above showed for the ordering, and consistent with the ledger leaving its plateau earlier as the
+   lattice grows.
+
+**What is not here, and what it costs.**  `L = 11` and `L = 13` were attempted and abandoned inside
+the session's budget, and the cost is the reason to write it down: a frame costs about a minute at
+`L = 9` on an idle machine, the `L = 11` run spent five minutes in initialization alone (one full
+charge census per layer, over 363 layers) without completing frame 1 while six jobs shared the CPU,
+and its era-1 window is ten frames -- so the static rows of the table above cost roughly an hour of
+wall clock at that size, and the `L = 13` column about 2.6 times that.  The runs are a one-command
+matter and the fold is the script; what the extra sizes would settle is whether the aligned share
+keeps falling, whether the freeze keeps arriving earlier, and whether the pairable fraction stays at
+38% (which is the one number here that looks like a genuine invariant).
+
 ## (a) Same-octant pairing: halves the cascade, does not yet align it
+
+
 
 The first design of the corrected step, implemented as `/D PAIR_SAME_OCTANT`: every mover of the
 encounter's contact handler -- the adiabatic drift, the K x K repulsion, the S x K absorption step,
@@ -1134,7 +1207,7 @@ halves), the number of distinct charge words, the structurally pairable addresse
 and the in-loop `s2B` counters (logs in `build\*.log`).  What it measured:
 
 **Multi-era and candidate runs.**  The harness is the same source in every candidate measurement on
-this page; only the macros change, and no source is edited.  Four scripts make that reproducible:
+this page; only the macros change, and no source is edited.  Five scripts make that reproducible:
 
 * `experiments\trace_build_variants.bat` builds, from a developer prompt, the seven variants used here
   -- `ref` (counters only, the reference transport channel), `disp` (the dispersion with **no** polar
@@ -1168,6 +1241,12 @@ this page; only the macros change, and no source is edited.  Four scripts make t
   cascade at f6, `bothab` 46), and the comparison can be exact because the model is deterministic.
   An intended difference is accepted with `nmake refresh-trace-golden`, and the report quotes the light
   frame of the first difference, so a failure says where the dynamics moved.
+
+* `experiments\scaling_summary.ps1 -Logs <log>,...` folds a set of trace logs into the finite-size
+  table (below): the frame-2 ledger, the plateau ratio `K/W`, the charge-word roster and the pairable
+  addresses for every log, plus the era-1 dynamics -- when the election lands, what the era's cascade
+  did, where the freeze breaks -- for the logs that move.  `L` and `W` are read from each log's own
+  header, so a row is never labelled by hand.
 * the shell advances **one cell per light frame** from radius 0 to RMAX and back, and the
   per-layer shell counts are the exact lattice counts 1, 26, 66, 158, 234 for radii 0..4, so one
   era is `2 RMAX` frames (6 at `L = 7`, 8 at `L = 9`, i.e. `L - 1` on the odd lattices the seed
