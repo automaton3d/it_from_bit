@@ -580,10 +580,14 @@ reloc-at-centre=72 applied=72 ... commit: pending-impulse=64, |reloc| at commit=
 ```
 
 The earlier reading took "64 layers carry a reloc at the commit" from this line.  There is no such field:
-the 64 is `pending-impulse`, the **queue**, and 64 + 8 = 72 closes exactly with `applied = 72` and
-`booked-on-lattice = 8`.  `g_pendingImpulses` is the designed carrier (it is cleared only by
-`resetSourceTransactions`, so a new run never inherits a booking), and a frame's displacements therefore
-do include bookings made in *earlier* frames -- which is what the queue is for.
+the 64 is `pending-impulse` (`s2bTraceCommitPending`), which counts the layers whose **encounter booking**
+this frame's commit installs into the draft (`interaction.cpp:1422` counts, `:1438` assigns
+`dst.reloc = sourceAfter[w].reloc`) -- not the queue: the queue's deliveries are the `drained` field (8 in
+this frame, and `writeback-sum` their magnitude, both written by the drain at `:1491-1508`).  The
+arithmetic still closes exactly: **64 encounter bookings + 8 queue deliveries = 72 impulses applied**, and
+the encounter count exceeds the movers (48) for the reason the drain's own comment gives -- the walk books
+*opposite* steps for the two partners, so a layer can be booked and end the frame with a zero net (the
+`net-layers` counter is the movers' number).
 
 **So the off-octant flight steps are neither an off-octant booking nor an inherited one.**  The first was
 excluded by the re-anchoring test above (three funnels, frames identical); the second is excluded here
@@ -797,6 +801,43 @@ these frames, so the movement does not come from the relay either.  The instrume
 per-frame record of which cell a layer's centre *is* (its identity, not its position), which is a small
 harness-side addition to the same trace block; until then, the honest statement is that the impulse
 channel is octant-clean and the remaining movement is centre re-selection.
+
+## Who can move a centre: exactly one writer, and it is not the census
+
+The question "which rule re-chooses a layer's centre when no impulse and no reseat fired" has a short
+answer in this tree: **none** -- and that is worth writing down, because the residual invites the other
+reading.
+
+* **`lcenters[w]` has four writers**, and only one of them runs in a headless trace: `applyMomentum()`
+  (`simulation.cpp:827-829`), the impulse consumer; the seed (`initSim.cpp:447,457`), the GUI bridge
+  (`bridge.cpp:98`) and the replay loader (`replay.cpp:206`) are not in the loop.  `trackCenter()`
+  (`simulation.cpp:137`) writes it too and **has no callers at all**: it is dead code from the abandoned
+  centre-tracking path.
+* **the consumer is a whole-bubble translation, not a re-selection.**  `applyMomentum()` reads `reloc`
+  from the draft cell at `lcenters[w]`, wraps the step on the 3-torus, translates *every* cell of that
+  layer (with its `r²`/`r`, charge word, affinity and clock), sets `dest.x[]` to the target, updates
+  `lcenters` and zeroes the reloc it consumed.  There is no path that picks a different cell to be the
+  centre.
+* **the marker the census reads cannot drift either.**  The census (`attractor.cpp:35-45`) collects the
+  cells with `r2 == 0` and **throws** ("census: invalid or duplicate source") if two of them claim one
+  layer, so a run in which a centre were re-chosen would die loudly rather than drift.  `r2 == 0` is only
+  ever *stamped* at `lcenters[w]` (seed `initSim.cpp:94`, the field update `simulation.cpp:250`), and the
+  incremental relaxation can only *lower* `r²` (its increment is `2a+1 >= 1`), so it can never create a
+  second zero.
+* **what actually moves a node, then, is the reloc the frame edge installs**, and that reloc has two
+  sources, in this order inside `commitSourceTick()`: first the assign loop copies the **encounter's own
+  booking** from the source-level working copy into the draft (line 1438; `sourceCenterDraft()` is
+  `sourceAfter[c.x[3]]`, `interaction.cpp:231`), and *then* the drain adds the **queue's deliveries**
+  (`bookImpulse()` from the walk funnels, the relay, the cohesion table and the dispersion, lines
+  1461-1508).  `applyMomentum()` runs immediately after and consumes the sum.
+
+So the displacement a frame shows is *the sum of that frame's encounter bookings and the queue's
+deliveries*, and a queue delivery was booked in an **earlier** frame.  That is the mechanism behind the
+measured mismatch between a mover's displacement and the thrust written in the same frame: the writer mask
+and the word probe look at the frame's booking, while the motion can be an older queued one.  Which of the
+two channels produced each of the 278 relocation cases is the one thing still to measure, and the probe for
+it is one print at the frame edge: dump the **installed** reloc per layer (the value `applyMomentum`
+consumes, with its source: encounter or drain) next to the mover's measured delta.
 
 ## Multi-era run with (a)+(b): the split holds its sign, not its size
 

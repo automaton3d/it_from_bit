@@ -750,6 +750,17 @@ WHAT THIS IS
                                (build\thrustword_L7_20.out,
                                build\thrustvec_L7_20.out,
                                build\thrustvec_L7_72.out)
+    centre of a layer          one writer, and it is not the census: lcenters[] is
+                               written by applyMomentum (simulation.cpp:827), the
+                               seed, the GUI bridge and the replay loader only --
+                               trackCenter() has no callers (dead code, rule C18) --
+                               and the census only reads the r2==0 marker, aborting
+                               on a duplicate source.  The frame edge installs the
+                               encounter booking into the draft (64 layers at frame
+                               14) and then the queue's deliveries (8), and
+                               applyMomentum consumes the sum, so a displacement can
+                               be an older queued booking rather than the frame's
+                               thrust (README, "Who can move a centre")
     era-1 cascade (candidate) 32 flight steps, all aligned; 14 cohesion steps (7/7)
     displacement channel       not inherited: the probe log is byte-identical to
                                the promoted run over 20 frames at L=7 and

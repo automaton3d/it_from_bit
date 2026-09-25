@@ -670,11 +670,11 @@ Report-Rule 'the inherited-impulse probe' 'README.md' `
     $x = $clk[14]
     $applied = Val $x 'applied=(\d+)'; $pending = Val $x 'pending-impulse=(\d+)'
     $booked = Val $x 'booked-on-lattice=(\d+)'
-    Want 'frame 14' 'impulses in the queue' $pending 64
-    Want 'frame 14' 'bookings made by the frame' $booked 8
+    Want 'frame 14' 'encounter bookings installed at the commit' $pending 64
+    Want 'frame 14' 'impulse bookings made by the frame' $booked 8
     Want 'frame 14' 'impulses applied' $applied 72
     if ($pending + $booked -ne $applied)
-      { $script:ruleBad += ("frame 14: the queue (" + $pending + ") plus the frame's bookings (" + $booked +
+      { $script:ruleBad += ("frame 14: the encounter bookings (" + $pending + ") plus the frame's own bookings (" + $booked +
                             ") do not add up to what was applied (" + $applied + ")") }
   }
   # The byte-identity claim, and the same zero in the baseline (which has no probe macro compiled).
@@ -1018,6 +1018,39 @@ Report-Rule 'the impulse is not the displacement' 'README.md' `
     Want 'twelve eras' 'unaligned total (the two components)' (($vs - $vsA) + $vd) 336
   }
 }
+
+# --- C18: the centre has one mover, and the census only reads (source-level, no log) ------
+# This one checks the sources, not a log: the claim is structural.  It pins the three facts the
+# README's "Who can move a centre" section rests on -- that trackCenter() is a definition with no
+# callers, that the census still aborts on a duplicate source, and that the section is still written.
+# (Top level, not a { } block: a bare script block is an expression, so it would never run.)
+# The count is of CALL sites, not mentions: `(?<!void\s)trackCenter\s*\(` skips the definition and a
+# comment that names the function without calling it (simulation.cpp:689 does exactly that).
+$centreBad = @()
+$centreClaim = 'writes it too and **has no callers at all**'
+$centreDoc = Read-Text 'README.md'
+if ($null -eq $centreDoc -or -not (($centreDoc -replace '\s+', ' ').Contains($centreClaim)))
+  { $centreBad += 'the claim "trackCenter ... has no callers at all" is no longer written in README.md' }
+$centreCalls = 0; $centreDefs = 0
+foreach ($f in (Get-ChildItem (Join-Path $root 'src') -Recurse -File -Include *.cpp, *.h, *.inc, *.cu))
+{
+  $t = [System.IO.File]::ReadAllText($f.FullName)
+  $centreCalls += ([regex]::Matches($t, '(?<!void\s)trackCenter\s*\(')).Count
+  $centreDefs  += ([regex]::Matches($t, 'void\s+trackCenter\s*\(')).Count
+}
+if ($centreCalls -ne 0)
+  { $centreBad += ("trackCenter has " + $centreCalls + " call site(s), documented as none") }
+if ($centreDefs -ne 1)
+  { $centreBad += ("trackCenter has " + $centreDefs + " definitions, documented as exactly one (simulation.cpp)") }
+$centreAtt = Read-Text 'src\model\attractor.cpp'
+if ($null -eq $centreAtt -or -not $centreAtt.Contains('census: invalid or duplicate source'))
+  { $centreBad += 'the census no longer aborts on a duplicate source (the README relies on that)' }
+if ($centreBad.Count -eq 0) { Report 'OK' 'C. the centre has one mover   [source-level: trackCenter, the census throw]' }
+else { foreach ($b in $centreBad) { Report 'ERROR' ("C. the centre has one mover " + $b) } }
+
+# ======================================================================================
+# verdict
+# ======================================================================================
 
 # ======================================================================================
 # verdict
