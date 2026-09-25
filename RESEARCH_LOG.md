@@ -795,7 +795,7 @@ Two things this settles, and one consequence:
   cascade frames, less than half in the later eras -- and not as a measure of transport alignment.
 
 **What is left, precisely.**  Why a centre is re-derived at all without an impulse: the layer's source
-centre is re-chosen every tick (the census of chiefs and delegates, README "Included in the paper:
+centre is re-chosen every tick (the census of chiefs and delegates, RESEARCH_LOG.md "Included in the paper:
 subsection 8.4"), and the relay's own reseat counters (`reseat-step`, `reseat-at-contact`) are zero in
 these frames, so the movement does not come from the relay either.  The instrument that would name it is a
 per-frame record of which cell a layer's centre *is* (its identity, not its position), which is a small
@@ -1041,7 +1041,7 @@ become the default):
    through the two candidate macros, which is why their outcome is a declared multiplicity rather
    than a derived quantum"): promotion moves the partition into the default rule, so the sentence's
    framing -- declared option versus rule -- changes even though its content does not;
-6. this README's own "reference plateau" numbers (first-era section) are invariant, as shown above.
+6. this log's own "reference plateau" numbers (first-era section) are invariant, as shown above.
 
 **Mechanics, implemented and verified.**  The Makefile carries the switch, and since 2026-09-24 the
 default is the promoted build:
@@ -1149,7 +1149,7 @@ once, at frame 2" is a statement about the DISP + POLAR_SEED build.
 
 **A fifth candidate, added after this pack was written.**  `POLAR_AXIS_FROM_CHARGE` anchors the axis to
 the layer's own charge octant instead of to the centre the transport left it on, and it closes the
-`m == 0` fixed point on its own.  Measured against the four macros together (README, "The
+`m == 0` fixed point on its own.  Measured against the four macros together (RESEARCH_LOG.md, "The
 counterfactual"), it holds the axis alignment at **147/147** where the promoted build walks
 147 -> 119 -> 113 -> 101 over five eras, and the ordering decays more slowly with it: era-4 and era-5
 gaps **1.656** and **0.624** against 1.420 and 0.372, the Umbra mean still on its own side of the
@@ -1724,7 +1724,7 @@ this page; only the macros change, and no source is edited.  Five scripts make t
   separator), so the script pins the invariant culture itself.
 
 * `experiments\check_docs.ps1` (`nmake check-docs`) is the lint over the claims themselves: the cited
-  paths, checked against this tree, the README's "lives in" table and `experiments\check_docs.allow`
+  paths, checked against this tree, this log's "lives in" table and `experiments\check_docs.allow`
   (a cited path that is neither present nor declared fails); the FSM.txt registry against the
   `#ifdef`/`defined()` of the sources, both directions (a registry macro with no `#ifdef` and a
   Makefile `/D` the sources never test both fail); and the machine-checkable rows of FSM.txt section 10
