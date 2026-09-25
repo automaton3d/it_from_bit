@@ -1,11 +1,11 @@
-# inherit_summary.ps1 -- fold for the IMPULSE_NO_INHERIT probe (README, "The inherited-impulse probe").
+# inherit_summary.ps1 -- fold for the IMPULSE_NO_INHERIT probe (RESEARCH_LOG.md, "The inherited-impulse probe").
 #   powershell -NoProfile -ExecutionPolicy Bypass -File experiments\inherit_summary.ps1 `
 #     -Probe build\inherit_L7.out -Baseline build\both_L7_repro.out
 # Compares two first_era_trace logs of the same configuration, one built with -D IMPULSE_NO_INHERIT and
 # one without, frame by frame, on the lines the displacement-channel question is read from: the flight
 # alignment (move-split), the drift buckets (move-drift), the writer mask (move-mask) and the probe's own
 # counter reseed-carried-reloc.  Prints the per-frame table, the first frame at which anything differs,
-# and whether the two files are byte-identical -- which is the claim the README makes.  The probe build is
+# and whether the two files are byte-identical -- which is the claim the RESEARCH_LOG.md makes.  The probe build is
 # the `inherit` variant of experiments\trace_build_variants.bat.
 #
 # NB: the parsed tables must not be called $P/$B while the paths are $Probe/$Baseline -- PowerShell

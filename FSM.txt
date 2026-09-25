@@ -77,7 +77,7 @@ WHAT THIS IS
            119 at frame 18, 113 at 24, 74 at 38, 56 at 54, 39 at 72.
 
            WHERE THAT DECAY COMES FROM is now measured (/D AXIS_ELECTION_TRACE, the
-           `axis` variant; README, "Who owns the standing axis"), and it is not what the
+           `axis` variant; RESEARCH_LOG.md, "Who owns the standing axis"), and it is not what the
            row above used to guess.  Of 704 installations in five eras, NOT ONE came from
            the classic (pol_u,pol_v) candidate: every axis is installed by the placement
            rule, whose axis IS the offset from the lattice centre to the layer's centre.
@@ -109,7 +109,7 @@ WHAT THIS IS
            (65-67), its first inversion at era 8 against era 11, and its era-end gaps are
            better in eras 3-5 and worse in eras 6-10.  So the macro is not causally inert
            (frame 16 on, and it is why the axis survives), but anchoring the axis is not
-           an ordering gain: it stays a measured variant, not a promoted one (README,
+           an ordering gain: it stays a measured variant, not a promoted one (RESEARCH_LOG.md,
            "The counterfactual"; logs build\axisL7_octant.out, build\five_L7.out).
 
   reloc[3] the PENDING displacement of a layer, in cells.  Written by the walk funnels
@@ -581,7 +581,7 @@ WHAT THIS IS
 
   All of them are /D macros and none reads an address, a hash, the scan order or an RNG -- so a
   promoted build stays deterministic.  SINCE 2026-09-24 the four rows at the top of the table carry
-  status `default`: they are the default build (README, "Decision pack"), and the reference
+  status `default`: they are the default build (RESEARCH_LOG.md, "Decision pack"), and the reference
   configuration is built with `nmake REFERENCE=1`.  Everything else is compiled off unless named.
 
     macro                       what it changes                              status
@@ -590,7 +590,7 @@ WHAT THIS IS
                                 layer's own charge octant, while m == 0
                                 and the shell has left the center.  Alone
                                 the phase never closes, so it fires once per
-                                ERA (README, "The dispersion alone, measured");
+                                ERA (RESEARCH_LOG.md, "The dispersion alone, measured");
                                 with POLAR_SEED_FROM_PLACEMENT it fires once
                                 per run, at frame 2
     POLAR_SEED_FROM_PLACEMENT   seeds the axis election from the layer's    default
@@ -601,7 +601,7 @@ WHAT THIS IS
                                 its own and holds axis-align at 147/147 for
                                 twelve eras, but does NOT protect the ordering
                                 (8 inverted frames against 3) -- measured, not
-                                promoted (README, "The counterfactual")
+                                promoted (RESEARCH_LOG.md, "The counterfactual")
     PAIR_SAME_OCTANT            gates the encounter movers on the shared    default
                                 color triplet
     PAIR_OWN_AXIS_EXCHANGE      replaces the D x D cross-tribe momentum     default
@@ -620,7 +620,7 @@ WHAT THIS IS
     IMPULSE_NO_INHERIT          probe: stops re-applying inherited          [PROBE]
                                 reloc at the commit; measured null -- zero
                                 carried and byte-identical frames, so the
-                                residual is not inherited (README, "The
+                                residual is not inherited (RESEARCH_LOG.md, "The
                                 inherited-impulse probe"); folded by
                                 experiments\inherit_summary.ps1
     S2B_TRACE                   the counters the harness reads              measurement
@@ -683,7 +683,7 @@ WHAT THIS IS
     frame 2, any L            K = W-8, D = 8, S = 0, P = 0, dt = 1, t_share = all cells
     plateau ratio, any L      D = 8, so K = W-8 and K/W = 1-8/(3L^2): 89.33 / 94.56 / 96.71 /
                               97.80 / 98.81 % at L = 5 / 7 / 9 / 11 / 15 (logs
-                              build\scale_ref_L*.out; README, "Finite-size scaling, first pass")
+                              build\scale_ref_L*.out; RESEARCH_LOG.md, "Finite-size scaling, first pass")
     pair-rule fraction, any L the addresses admitting a pair rule are about 38% of W at every size
                               measured: 29/75, 56/147, 93/243, 138/363 -- and unchanged when
                               ISLAND_SIZE changes (2 at L=7, 3 at L=11)
@@ -706,7 +706,7 @@ WHAT THIS IS
                               0 of 704 installations came from the classic path; the
                               misaligned layers step at the turnarounds (0 -> 28 -> 34
                               -> 46 after frames 16, 22, 28) and the `base` build reaches
-                              58/100/132 at the same frames (README, "Who owns the
+                              58/100/132 at the same frames (RESEARCH_LOG.md, "Who owns the
                               standing axis"; logs build\axisL7_bothab.out,
                               build\axisL7_base.out).  The counterfactual, with the
                               axis anchored to the octant instead: 147/147 to frame
@@ -760,7 +760,7 @@ WHAT THIS IS
                                14) and then the queue's deliveries (8), and
                                applyMomentum consumes the sum, so a displacement can
                                be an older queued booking rather than the frame's
-                               thrust (README, "Who can move a centre")
+                               thrust (RESEARCH_LOG.md, "Who can move a centre")
     era-1 cascade (candidate) 32 flight steps, all aligned; 14 cohesion steps (7/7)
     displacement channel       not inherited: the probe log is byte-identical to
                                the promoted run over 20 frames at L=7 and
@@ -775,7 +775,7 @@ WHAT THIS IS
                               window, frames 65-67
     L=9 (candidate)           dispersal 243/243 aligned; gap 2.00 -> 1.38 -> 0.98 over 2 eras
 
-  Where each one is written down: README.md, sections "First-era measurements (headless trace)" (the
+  Where each one is written down: RESEARCH_LOG.md, sections "First-era measurements (headless trace)" (the
   reference numbers), "Multi-era trace: what the movement does" and "Item 3 of the follow-up list" (the
   twelve eras and the larger lattice), "Decision pack" (promotion impact), "The inherited-impulse
   probe", "The twelve-era decomposition", "The carrier of the flight steps", "The thrust's decision
@@ -806,16 +806,16 @@ WHAT THIS IS
     6 the pair FSM                Sect. 6.1 (the pair rules R1..R6), Sect. 5.3 (emergent
                                   polarization pair), Algorithm 3 for the cluster test
     7 the era timeline            Sect. 8.4 (candidate mechanisms for the encounter's
-                                  transport), README "Item 3 of the follow-up list"
+                                  transport), RESEARCH_LOG.md "Item 3 of the follow-up list"
     8 reading a trace log         the harness itself, experiments/first_era_trace.cpp
     9 the candidate registry      Sect. 8.4 (candidates), Sect. 9.4 (limitations and open
                                   problems), Sect. 9.5 (future inclusions)
-    10 the invariants             Sect. 8.4, README "Decision pack", Appendix A (inputs,
+    10 the invariants             Sect. 8.4, RESEARCH_LOG.md "Decision pack", Appendix A (inputs,
                                   status and sensitivity)
 
   Caveat that belongs with all of it: the paper describes the REFERENCE configuration;
   every [CANDIDATE] line in this file is a measurement on a build that defines the macro,
-  and the pairs (measurement, claim) are listed in README.md with their logs.
+  and the pairs (measurement, claim) are listed in RESEARCH_LOG.md with their logs.
 
 
 

@@ -15,7 +15,7 @@ ENABLE_CUDA = 0
 !ENDIF
 
 # ================================================
-# Configuracao de candidatos (README: "Decision pack") -- PROMOVIDA em 2026-09-24
+# Configuracao de candidatos (RESEARCH_LOG.md: "Decision pack") -- PROMOVIDA em 2026-09-24
 #   nmake                 -> build promovida (DEFAULT desde 2026-09-24): dispersao de carga +
 #                            seed polar + as duas regras de par (CHARGE_DISPERSION_FSM,
 #                            POLAR_SEED_FROM_PLACEMENT, PAIR_SAME_OCTANT,

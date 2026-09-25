@@ -6,7 +6,7 @@
 # The second table is the disposition of those flight movers against the octant of their own charge
 # word: how many are still on their octant's side of the lattice centre in all three axes ("on side")
 # and how many have crossed it in at least one ("off side"), each with its aligned share.  That is the
-# decomposition the README reads the drift mechanism from (the drift bucket concentrates the misaligned
+# decomposition the RESEARCH_LOG.md reads the drift mechanism from (the drift bucket concentrates the misaligned
 # steps; it does not account for them).  Both counts come from the model's own annotations of the log
 # (move-drift, move-split, move-mask), so nothing is re-derived here.
 # -ExecutionPolicy Bypass is needed because the default policy refuses script files; the culture
@@ -78,7 +78,7 @@ for ($k = 1; $k -le $maxEra; $k++) {
 Write-Output ("frames parsed: {0} (1..{1})" -f $frames.Count, $frames[-1])
 
 # Second table: the disposition of each era's flight movers against the octant of their own charge word,
-# with the writer-mask split alongside.  This is the decomposition of README, "The twelve-era
+# with the writer-mask split alongside.  This is the decomposition of RESEARCH_LOG.md, "The twelve-era
 # decomposition: the drift bucket concentrates it, and does not explain it".
 Write-Output ""
 Write-Output ("| era | flight moved | fully aligned | on its octant side (aligned) | off side (aligned) | one writer (aligned) | two or more (aligned) |")
@@ -111,7 +111,7 @@ if ($tt.fl -gt 0) {
 # Third table: what CARRIED each flight displacement (the harness line `move-carrier`).  The classes
 # are disjoint and cover every flight mover: queue = the pending queue's drain (bit 64, a booking made
 # in an earlier frame landing now), frame = a writer fired in this frame, both, none = the center moved
-# with neither.  This is the attribution the drift buckets could not give (README, "The carrier of the
+# with neither.  This is the attribution the drift buckets could not give (RESEARCH_LOG.md, "The carrier of the
 # flight steps").
 Write-Output ""
 if ($cr.Count -eq 0) {

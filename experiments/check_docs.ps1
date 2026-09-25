@@ -4,9 +4,9 @@
 # checks the three kinds of claim that CAN be checked mechanically, and then says explicitly
 # what it does not check -- the coverage is never assumed to be wider than it is.
 #
-#   A. cited paths.  Every path the documents quote (README.md, FSM.txt, the Makefile, the
+#   A. cited paths.  Every path the documents quote (RESEARCH_LOG.md, FSM.txt, the Makefile, the
 #      manuscript, the build scripts and the source comments) resolves to a file in this tree,
-#      or is declared as living elsewhere -- the README's "lives in" table, or
+#      or is declared as living elsewhere -- the RESEARCH_LOG.md's "lives in" table, or
 #      experiments\check_docs.allow -- or is a generated artifact (build\, obj\).
 #   B. registry vs sources.  Every macro of the FSM.txt registry (section 9) is defined by an
 #      #ifdef/#ifndef in the sources, and every macro the Makefile turns on exists.  The other
@@ -14,11 +14,11 @@
 #      INFO with its count: the registry is a curated list, not an inventory, and the number is
 #      printed so the difference stays visible instead of growing unnoticed.
 #   C. invariants vs logs.  The machine-checkable rows of FSM.txt section 10 (and the candidate
-#      rows the README quotes from the same logs) are recomputed from the trace logs in build\.
+#      rows the RESEARCH_LOG.md quotes from the same logs) are recomputed from the trace logs in build\.
 #      A log that is not in the working tree is reported as NOT BUILT, not as a failure: build\
 #      is generated and never committed, so a fresh clone legitimately has none of them.
 #
-# NOT checked: the prose of the manuscript and of the README beyond the rows encoded in C, the
+# NOT checked: the prose of the manuscript and of the RESEARCH_LOG.md beyond the rows encoded in C, the
 # LaTeX build, and anything that needs the study archive (E:\alpha), which is not part of this
 # repository.  The rows of C are listed with the document and section they come from, so a
 # failing row points at the sentence that has to be re-scoped, not only at the number.
@@ -70,21 +70,21 @@ function Get-OwnSources
 # ======================================================================================
 # The documents that quote evidence paths.  The sources are included on purpose: the
 # references that rot are exactly the ones written in a code comment.
-$docPaths = @('README.md', 'FSM.txt', 'Makefile', 'it_from_bit.tex', 'build_gui.bat', 'build.bat')
+$docPaths = @('RESEARCH_LOG.md', 'RESEARCH_LOG.md', 'FSM.txt', 'Makefile', 'it_from_bit.tex', 'build_gui.bat', 'build.bat')
 $docPaths += (Get-OwnSources | ForEach-Object { $_.FullName.Substring($root.Length + 1) })
 
-# Declared as living elsewhere: the README's "lives in" table (by file name), plus
+# Declared as living elsewhere: the RESEARCH_LOG.md's "lives in" table (by file name), plus
 # experiments\check_docs.allow (glob patterns, one per line).
 $declared = @{}
 $inTable = $false
-foreach ($line in ((Read-Text 'README.md') -split "`r?`n"))
+foreach ($line in ((Read-Text 'RESEARCH_LOG.md') -split "`r?`n"))
 {
   if ($line -match '\|\s*quoted in the text\s*\|\s*lives in\s*\|') { $inTable = $true; continue }
   if ($inTable)
   {
     if ($line -notmatch '^\s*\|') { $inTable = $false; continue }
     foreach ($m in [regex]::Matches($line, '[A-Za-z0-9_./\\-]+\.(md|csv|py|c|cpp|ps1)'))
-      { $declared[[System.IO.Path]::GetFileName($m.Value.Replace('/','\'))] = 'README "lives in"' }
+      { $declared[[System.IO.Path]::GetFileName($m.Value.Replace('/','\'))] = 'RESEARCH_LOG.md "lives in"' }
   }
 }
 $allowPath = Join-Path $root 'experiments\check_docs.allow'
@@ -375,7 +375,7 @@ Report-Rule 'candidate m-alignment' 'FSM.txt' `
     { Want ("frame " + $f) 'layers fully aligned' (Val $axis[$f] 'sign-match 0/1/2/3 = \d+/\d+/\d+/(\d+)') $decay[$f] }
 }
 
-# --- C3: the twelve era-end gaps, i.e. the README's twelve-era table --------------------
+# --- C3: the twelve era-end gaps, i.e. the RESEARCH_LOG.md's twelve-era table --------------------
 Report-Rule 'twelve-era gaps' 'FSM.txt' `
   'twelve eras (candidate) gap 3.06 -> 1.42 (era 4) -> floors 0.2-0.75; one negative window, frames 65-67' `
   'long2_L7.out' {
@@ -431,7 +431,7 @@ Report-Rule 'dispersion alone, L=7' 'FSM.txt' `
 }
 
 # --- C5: the dispersion alone at L=9 ----------------------------------------------------
-Report-Rule 'dispersion alone, L=9' 'README.md' `
+Report-Rule 'dispersion alone, L=9' 'RESEARCH_LOG.md' `
   'f2 books 243 steps, 243/243 aligned' `
   'disp_L9.out' {
   param($lines)
@@ -603,7 +603,7 @@ Report-Rule 'twelve-era ledger' 'it_from_bit.tex' `
 }
 
 # --- C11: the finite-size table (the plateau and the roster at several sizes) ------------
-Report-Rule 'finite-size table' 'README.md' `
+Report-Rule 'finite-size table' 'RESEARCH_LOG.md' `
   '`D = 8` at every size, so `K = W - 8` exactly' `
   'scale_ref_L9.out' {
   param($lines)
@@ -649,7 +649,7 @@ Report-Rule 'finite-size table' 'README.md' `
 }
 
 # --- C12: the inherited-impulse probe (it is zero, and the frames do not move) -----------
-Report-Rule 'the inherited-impulse probe' 'README.md' `
+Report-Rule 'the inherited-impulse probe' 'RESEARCH_LOG.md' `
   'the probe log and the log of the same run without the macro are **byte-identical** (same SHA-256, `build\inherit_L7.out` against `build\both_L7_repro.out`), and `reseed-carried-reloc = 0` in each of the 20 frames' `
   'inherit_L7.out' {
   param($lines)
@@ -662,7 +662,7 @@ Report-Rule 'the inherited-impulse probe' 'README.md' `
     Want ("frame " + $f) 'impulses inherited at the reseed' (Val $clk[$f] 'reseed-carried-reloc=(\d+)') 0
     Want ("frame " + $f) '|reloc| carried on the lattice at the reseed' (Val $clk[$f] 'captured-sum=(\d+)') 0
   }
-  # The carrier arithmetic the README quotes for frame 14: what was applied is the queue plus the frame's
+  # The carrier arithmetic the RESEARCH_LOG.md quotes for frame 14: what was applied is the queue plus the frame's
   # own bookings (64 + 8 = 72), and the 64 is a queue length, not a number of layers carrying a reloc.
   if ($null -eq $clk[14]) { $script:ruleBad += 'the probe log has no frame 14 clocks line' }
   else
@@ -691,7 +691,7 @@ Report-Rule 'the inherited-impulse probe' 'README.md' `
 }
 
 # --- C13: the twelve-era decomposition of the flight channel ------------------------------
-Report-Rule 'twelve-era decomposition' 'README.md' `
+Report-Rule 'twelve-era decomposition' 'RESEARCH_LOG.md' `
   '| **all** | **811** | **475 (58.6 %)** | **331 (277 = 83.7 %)** | **480 (198 = 41.3 %)** |' `
   'long2_L7.out' {
   param($lines)
@@ -738,7 +738,7 @@ Report-Rule 'twelve-era decomposition' 'README.md' `
 }
 
 # --- C14: the carrier of the flight steps (not the queue -- the own-axis thrust) ----------
-Report-Rule 'carrier of the flight steps' 'README.md' `
+Report-Rule 'carrier of the flight steps' 'RESEARCH_LOG.md' `
   'Every unaligned flight step carries the own-axis thrust bit (32)' `
   'carrier_L7_20.out' {
   param($lines)
@@ -763,7 +763,7 @@ Report-Rule 'carrier of the flight steps' 'README.md' `
                             ") do not add up to the flight counter (" + $fl + ")") }
     $un += ($fl - $flA)
   }
-  # The documented window totals.  The carrier rows of the README's table stop at frame 18 (the last
+  # The documented window totals.  The carrier rows of the RESEARCH_LOG.md's table stop at frame 18 (the last
   # complete era); the writer rows cover the whole 20 frames, which is why the two ragged totals differ.
   $t = @{ q=0; qA=0; f=0; fA=0; b=0; bA=0; n=0; nA=0 }
   foreach ($f in ($split.Keys | Sort-Object | Where-Object { $_ -le 18 }))
@@ -846,7 +846,7 @@ Report-Rule 'carrier of the flight steps' 'README.md' `
 }
 
 # --- C15: the carrier instrumentation is reporting only -----------------------------------
-Report-Rule 'the carrier instrument is reporting only' 'README.md' `
+Report-Rule 'the carrier instrument is reporting only' 'RESEARCH_LOG.md' `
   'reporting only: the new log, with its two added lines removed, is **identical line for line** to the log of the same run before the change (`build\carrier_L7_20.out` against `build\both_L7_repro.out`)' `
   'carrier_L7_20.out' {
   param($lines)
@@ -873,7 +873,7 @@ Report-Rule 'the carrier instrument is reporting only' 'README.md' `
 }
 
 # --- C16: the thrust decision point (the word it reads, the vector it writes) --------------
-Report-Rule 'the thrust decision point' 'README.md' `
+Report-Rule 'the thrust decision point' 'RESEARCH_LOG.md' `
   'every thrust call through frame 14 -- 256 of them, in the eras where the flight channel reads 49 % aligned -- is a three-axis step along the octant of the word the layer keeps' `
   'thrustword_L7_20.out' {
   param($lines)
@@ -895,7 +895,7 @@ Report-Rule 'the thrust decision point' 'README.md' `
     if ($pa -ne 0 -or $ag -ne 0)
       { $script:ruleBad += ("frame " + $f + ": " + $pa + " partial and " + $ag + " against bookings, documented none") }
   }
-  # The cumulative row the README quotes.
+  # The cumulative row the RESEARCH_LOG.md quotes.
   $x = $thr[14]
   if ($null -eq $x) { $script:ruleBad += 'the log has no frame 14 move-thrust line' }
   else
@@ -908,7 +908,7 @@ Report-Rule 'the thrust decision point' 'README.md' `
   # The twelve-era half of the claim, when that log is present: the thrust still never aims AGAINST the
   # octant, but in the later eras a share of its calls is partial -- a step along fewer than three of the
   # octant's axes, which no 3-of-3 test can accept whatever the direction.  That is the first of the two
-  # components the README names.
+  # components the RESEARCH_LOG.md names.
   $long = Read-TraceLog 'thrustword_L7_72.out'
   if ($null -eq $long)
     { Report 'INFO' 'C. the thrust decision point: build\thrustword_L7_72.out is not built here, so the twelve-era half of the claim is not checked' }
@@ -940,7 +940,7 @@ Report-Rule 'the thrust decision point' 'README.md' `
 }
 
 # --- C17: the impulse is not the displacement --------------------------------------------
-Report-Rule 'the impulse is not the displacement' 'README.md' `
+Report-Rule 'the impulse is not the displacement' 'RESEARCH_LOG.md' `
   '(83 %) are relocations** -- displacements that do not follow the impulse the layer was given at all -- and **58 follow a partial-axis impulse**' `
   'thrustvec_L7_20.out' {
   param($lines)
@@ -964,7 +964,7 @@ Report-Rule 'the impulse is not the displacement' 'README.md' `
     if ($diff -ne ($fl - $flA))
       { $script:ruleBad += ("frame " + $f + ": " + $diff + " mover(s) disagree with their impulse against " + ($fl - $flA) + " unaligned flight movers") }
   }
-  # The frames the README tabulates.
+  # The frames the RESEARCH_LOG.md tabulates.
   foreach ($case in @(@(6, 32, 32, 0, 0), @(12, 3, 3, 3, 0), @(14, 41, 41, 7, 0), @(18, 19, 19, 11, 0)))
   {
     $x = $vec[$case[0]]
@@ -1021,16 +1021,16 @@ Report-Rule 'the impulse is not the displacement' 'README.md' `
 
 # --- C18: the centre has one mover, and the census only reads (source-level, no log) ------
 # This one checks the sources, not a log: the claim is structural.  It pins the three facts the
-# README's "Who can move a centre" section rests on -- that trackCenter() is a definition with no
+# RESEARCH_LOG.md's "Who can move a centre" section rests on -- that trackCenter() is a definition with no
 # callers, that the census still aborts on a duplicate source, and that the section is still written.
 # (Top level, not a { } block: a bare script block is an expression, so it would never run.)
 # The count is of CALL sites, not mentions: `(?<!void\s)trackCenter\s*\(` skips the definition and a
 # comment that names the function without calling it (simulation.cpp:689 does exactly that).
 $centreBad = @()
 $centreClaim = 'writes it too and **has no callers at all**'
-$centreDoc = Read-Text 'README.md'
+$centreDoc = Read-Text 'RESEARCH_LOG.md'
 if ($null -eq $centreDoc -or -not (($centreDoc -replace '\s+', ' ').Contains($centreClaim)))
-  { $centreBad += 'the claim "trackCenter ... has no callers at all" is no longer written in README.md' }
+  { $centreBad += 'the claim "trackCenter ... has no callers at all" is no longer written in RESEARCH_LOG.md' }
 $centreCalls = 0; $centreDefs = 0
 foreach ($f in (Get-ChildItem (Join-Path $root 'src') -Recurse -File -Include *.cpp, *.h, *.inc, *.cu))
 {
@@ -1044,7 +1044,7 @@ if ($centreDefs -ne 1)
   { $centreBad += ("trackCenter has " + $centreDefs + " definitions, documented as exactly one (simulation.cpp)") }
 $centreAtt = Read-Text 'src\model\attractor.cpp'
 if ($null -eq $centreAtt -or -not $centreAtt.Contains('census: invalid or duplicate source'))
-  { $centreBad += 'the census no longer aborts on a duplicate source (the README relies on that)' }
+  { $centreBad += 'the census no longer aborts on a duplicate source (the RESEARCH_LOG.md relies on that)' }
 if ($centreBad.Count -eq 0) { Report 'OK' 'C. the centre has one mover   [source-level: trackCenter, the census throw]' }
 else { foreach ($b in $centreBad) { Report 'ERROR' ("C. the centre has one mover " + $b) } }
 

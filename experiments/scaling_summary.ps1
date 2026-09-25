@@ -104,7 +104,7 @@ foreach ($rel in $list)
   }
   $eraEnd = $L - 1
   # Era 1 = frames 1..L-1.  The movers are counted from the move-align lines (flight + cohesion,
-  # the way the README's "(a)/(b)" tables count them) and bucketed by how many of the three
+  # the way the RESEARCH_LOG.md's "(a)/(b)" tables count them) and bucketed by how many of the three
   # signs agree with the layer's own octant.
   $eraMoved = 0; $eraAligned = 0; $peakFrame = 0; $peakMoved = 0; $peakAligned = 0
   foreach ($f in ($aln.Keys | Where-Object { $_ -ge 2 -and $_ -le $eraEnd }))
