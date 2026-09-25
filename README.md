@@ -1,10 +1,174 @@
-# `it_from_bit` -- standalone build of the paper **and** the simulator
+# It from Bit — simulator and paper
 
-*Physics emerging from a cellular automaton.*
+Hi all,
 
-Created 20 Sep 2026 as a **basic version of the project to re-evaluate it**: the construction and the
-measurements of the rule set, the simulator that produces them (CPU build, with the GUI), and nothing
-else. No experiment tree, no harnesses, no attic, no retired material.
+I'm developing a toy model of the universe based on the cellular automaton paradigm.  The underlying
+research ideas are described in the paper this repository builds:
+
+**https://doi.org/10.5281/zenodo.3818302**
+
+This repository contains the standalone effort to implement a computationally small version of the
+proposed universal automaton **and** the paper that describes it, so that every number the text quotes
+can be recomputed from the same tree.  The implementation is intentionally compact and the underlying
+rules are independent of the model's memory size; the project is written in C++ and the core automaton
+lives in `src/model/`.
+
+It was created on 20 Sep 2026 as a **basic version of the project to re-evaluate it**: the construction
+and the measurements of the rule set, the simulator that produces them (CPU build, with the GUI), the
+paper, and nothing else -- no experiment tree, no attic, no retired material.  The working log -- every
+measurement, and the number that says which reading of it survives -- is the long form below.
+
+---
+
+## 🚀 Build and Run
+
+### Requirements
+
+* Windows
+* MSVC (Visual Studio or Build Tools) with `nmake`
+* a **vcpkg** tree that carries `freetype`, with `VCPKG_ROOT` pointing at it.  The copy bundled with
+  Visual Studio has none, so if the link stops at `LNK1181: cannot open input file 'freetype.lib'`,
+  build with `nmake VCPKG_ROOT=E:/vcpkg/installed/x64-windows`
+* an OpenGL-capable GPU (for the GUI)
+* (optional) CUDA Toolkit
+* (for the paper) MiKTeX or TeX Live, with `pdflatex` and `biber`
+
+### Build
+
+Open a **Developer Command Prompt for Visual Studio** and run:
+
+```text
+nmake
+```
+
+That is the **promoted configuration** -- the four macros `CHARGE_DISPERSION_FSM`,
+`POLAR_SEED_FROM_PLACEMENT`, `PAIR_SAME_OCTANT`, `PAIR_OWN_AXIS_EXCHANGE` -- which is what the paper's
+Sect. 8.4 candidate bullet describes.  The paper's *reference* configuration (no macro at all) is one
+switch away, and gets its own object tree:
+
+```text
+nmake REFERENCE=1        # the reference build the paper quotes (objects in obj_reference\)
+nmake CANDIDATES=1       # alias of the default, kept so older notes keep working
+nmake trace-first-era    # the headless trace harness -> build\first_era_trace.exe
+build_gui.bat            # the GUI alone
+```
+
+### Run
+
+```text
+nmake run
+build\automaton.exe
+```
+
+The harness takes its scenario on the command line -- `build\first_era_trace.exe <L> <s2b_target>
+<frames>` -- and prints one annotated block per light frame; `FSM.txt` lists every field of those blocks.
+
+### Verify
+
+```text
+nmake check-docs     # the lint: the documents against the sources and the trace logs (18 rules)
+nmake check-trace    # the regression: four configurations against experiments\golden\
+nmake check-odr      # two translation units, so a header cannot define with external linkage
+nmake check-extras   # the auxiliary gates
+```
+
+`check-docs` checks the cited paths, the macro registry against the `#ifdef`s, and the machine-checkable
+claims against the logs in `build\` -- a log that is not built is a note, never a failure.  `check-trace`
+compares whole logs line by line; the model has no RNG, no address dependence and no scan-order
+dependence, so a difference is a change in the dynamics and never noise.
+
+---
+
+## 📁 Project structure
+
+```text
+it_from_bit.tex        # the paper: Sections 1-8, the Conclusion, the Nomenclature, Appendix A
+manuscript.bib         # its bibliography (39 entries, read by biber)
+it_from_bit.pdf        # what build.bat produces: 39 pages, 0 errors, 0 undefined references
+automaton.cfg          # the runtime configuration (scenario, lattice, sieve)
+
+src/
+  model/               # the automaton: simulation, interaction, charges, polarization, geometry,
+                       # the attractor census, the wavefront
+  include/model/       # its headers
+  include/             # GUI and render headers (glm, glad, GLFW, zlib and stb are vendored there)
+  *.cpp                # rendering, GUI, input, recorder and replay, statistics
+
+experiments/           # the trace harness, the variant builds, the lint, the golden expectations
+FSM.txt                # the finite-state-machine map: every rule, macro, mask bit and traced counter
+Makefile               # nmake: build, run, check-docs, check-trace, check-odr, trace-first-era
+build.bat, build_gui.bat
+
+build/                 # the executable and its assets (generated, ignored)
+obj/, obj_reference/   # one object tree per configuration (generated, ignored)
+```
+
+---
+
+## 🧠 Features
+
+- 3D cellular automaton with a charge word per cell and per layer
+- OpenGL visualisation and a custom GUI (panels, subregion boxes, HUD, replay recorder)
+- tomographic slicing (XY, YZ, ZX) and a cell inspector
+- deterministic transport: no RNG, no address dependence, no scan-order dependence
+- optional CUDA backend; the CPU builds do not need it
+- one build switch between the promoted configuration and the paper's reference
+- a headless harness that prints, per light frame, the census, the clock, the charge-word roster and
+  every displacement channel, annotated by writer
+- two gates that keep the documents honest: the 18-rule lint and the golden-log regression
+
+---
+
+## 🔬 Research goals
+
+- compute the Poincaré cycle for `L = 8`, `L = 16` and `L = 32` (the physical universe is estimated at
+  `L = 2^269`)
+- investigate charge quantization at `L = 32`
+- plot the entropy cycle
+- and, measurably here: the finite-size behaviour of the frozen plateau and of the transport, the
+  ordering the dispersal establishes and what destroys it, and the mechanism of every displacement the
+  encounter books
+
+## 📊 What is measured so far
+
+Every line below is a measurement made in this tree, with the section that carries its evidence.
+
+- **the reference configuration moves nothing**: `m = 0` on all layers, 0 displacements, one occupied
+  centre, in every frame read (*The first era, measured*, *Decision pack*);
+- **the dispersal is exact**: frame 2 moves all 147 layers, every sign on its own charge octant, splits
+  the seed's single centre into the 8 charge words, and leaves the ledger at `K = W - 8`, `D = 8`
+  (*Included in the paper: subsection 8.4*);
+- **the era-1 cascade is aligned**: 32 flight steps, all on the octant; with the pair rules the same
+  cascade is 46 steps with 39 aligned (*The mixtures, named*);
+- **the ordering survives the pair rules for twelve eras**: the Orbis--Umbra gap floors at a few tenths
+  of a cell instead of vanishing, and the ledger's saturation `K + D = W = 3L^2` holds in every frame
+  (*Multi-era run with (a)+(b)*, *The twelve-era decomposition*);
+- **the transport is charge-aligned, and the residual is not its direction**: of 2129 thrust calls over
+  twelve eras, 0 aim against the layer's own octant; the 336 off-octant *measured* steps are 278
+  relocations that no impulse explains, plus 58 steps along a partial-axis impulse (*The carrier of the
+  flight steps*, *The thrust's decision point*);
+- **the plateau relation holds where the transport's alignment does not**: `K = W - 8` and a pairable
+  fraction near 38% at four sizes, while the era-1 aligned share falls with `L` (*Finite-size scaling,
+  first pass*);
+- **and each of those has been checked against its own failure mode**, including the readings that had
+  to be withdrawn (*The inherited-impulse probe*, *Who can move a centre*).
+
+## 📚 The long form
+
+The rest of this file is the working log, in order, and it is where the numbers above are derived:
+
+* **the paper and its reduction** -- *The paper*, and the appendix removals it records;
+* **the rule set, measured** -- *First-era measurements (headless trace)*, *Multi-era trace: what the
+  movement does*, *Included in the paper: subsection 8.4*, *Decision pack*, *Multi-era run with (a)+(b)*,
+  *Item 3 of the follow-up list*, *Finite-size scaling, first pass*;
+* **the displacement channel, one probe at a time** -- *The mixtures, named*, *The probe: the pending
+  impulses*, *(a) Same-octant pairing*, *(b) Own-axis exchange*, *(6) Re-anchoring the step*, *The
+  inherited-impulse probe*, *The twelve-era decomposition*, *The carrier of the flight steps*, *The
+  thrust's decision point*, *Who can move a centre*;
+* **the machinery that keeps it honest** -- the golden logs, the variant builds, and the rules of
+  `nmake check-docs`.
+
+The working log begins here.
 
 ## The paper
 
@@ -552,7 +716,7 @@ subsection.  The reading this paragraph first carried -- that the impulses are *
 application of a stale `reloc` copied through `sourceAfter`, "a defect rather than a design choice" -- is
 **refuted by that probe**: the quantity is zero in every frame it was measured.
 
-## The inherited-impulse probe: it is zero, and the "64" was the queue
+## The inherited-impulse probe: it is zero, and the "64" was the encounter's bookings
 
 `/D IMPULSE_NO_INHERIT` counts, at every reseed, how many layers still carry a `reloc` on their centre
 cell, and drops it -- so a frame's displacements can only come from that frame's bookings and from the
@@ -2113,3 +2277,42 @@ Note on the merge: the merge that created this tree left conflict markers in thi
 (`<<<<<<< HEAD`, `=======`, `>>>>>>> cc53489`); the two sides are merged into the single text above
 (the title from `HEAD`, the one-line description from the other side), and the duplication that merge
 left in the build-outputs paragraph was cleaned when the history was rewritten to drop the binaries.
+
+---
+
+## 👤 About
+
+I'm an independent researcher interested in fundamental physics, cellular automata, and emergent
+computation.
+
+ResearchGate:
+
+https://www.researchgate.net/
+
+---
+
+# ❤️ Support This Project
+
+If you find this research interesting and would like to help its development, you can support it in one
+of the following ways.
+
+## ☕ Buy Me a Coffee
+
+You can make a secure international donation through Buy Me a Coffee:
+
+**https://buymeacoffee.com/afurtado?new=1**
+
+Every contribution helps fund computing resources, software, and the time required to continue this
+research.
+
+## 🇧🇷 PIX (Brazil)
+
+**PIX key:** the same key as in the companion repository (`automaton3d/automaton`); a QR code is not
+carried here.
+
+Any contribution, no matter how small, is greatly appreciated and directly supports the continued
+development of this project.
+
+---
+
+*Last update: September 24, 2026.*

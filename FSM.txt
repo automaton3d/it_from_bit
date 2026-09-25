@@ -775,15 +775,13 @@ WHAT THIS IS
                               window, frames 65-67
     L=9 (candidate)           dispersal 243/243 aligned; gap 2.00 -> 1.38 -> 0.98 over 2 eras
 
-  Where each one is written down: README.md, sections "The first era, measured" (the
-  reference numbers), "Item 3 of the follow-up list" (the twelve eras), "Decision pack"
-  (promotion impact), "Twelve eras at L=9" (the larger lattice), "The inherited-impulse
-  probe", "The twelve-era decomposition" and "The carrier of the flight steps" (the
-  displacement channel: the probe that refutes the inherited-impulse reading, the disposition
-  of the flight steps over the twelve eras, and the four carrier classes plus the per-writer
-  split that put the residual on the own-axis thrust) and "Finite-size scaling, first pass"
-  (the plateau ratio and the era-1 trends at L=5, 7, 9 -- and the price of the two measurements
-  that pass leaves out, the L=11 era-1 dynamics and the L=13 static row).
+  Where each one is written down: README.md, sections "First-era measurements (headless trace)" (the
+  reference numbers), "Multi-era trace: what the movement does" and "Item 3 of the follow-up list" (the
+  twelve eras and the larger lattice), "Decision pack" (promotion impact), "The inherited-impulse
+  probe", "The twelve-era decomposition", "The carrier of the flight steps", "The thrust's decision
+  point" and "Who can move a centre" (the displacement channel) and "Finite-size scaling, first pass"
+  (the plateau ratio and the era-1 trends at L=5, 7, 9 -- and the price of the two measurements that pass
+  leaves out, the L=11 era-1 dynamics and the L=13 static row).
 
 
 11. WHERE EACH PIECE IS WRITTEN UP IN THE PAPER
