@@ -80,9 +80,9 @@ WHAT THIS IS
            `axis` variant; RESEARCH_LOG.md, "Who owns the standing axis"), and it is not what the
            row above used to guess.  Of 704 installations in five eras, NOT ONE came from
            the classic (pol_u,pol_v) candidate: every axis is installed by the placement
-           rule, whose axis IS the offset from the lattice centre to the layer's centre.
+           rule, whose axis IS the offset from the lattice center to the layer's center.
            So a layer stops matching its octant exactly when the encounter's transport
-           carries its centre off the octant ray, and the next election installs that
+           carries its center off the octant ray, and the next election installs that
            off-ray direction faithfully -- the decay is a consequence of the transport,
            not of the election choosing differently.  It is stepwise (constant inside an
            era, stepping at the turnaround: 0 -> 28 -> 34 -> 46 misaligned after the
@@ -100,7 +100,7 @@ WHAT THIS IS
            through frame 15 (the rules coincide there) and diverge exactly at the frame-16
            re-election -- and over the five eras read it slows the ordering's decay with
            it: era-end gaps 1.656 (era 4) and 0.624 (era 5) against 1.420 and 0.372, with
-           the Umbra mean still on its own side of the lattice centre at era 5 (+0.264
+           the Umbra mean still on its own side of the lattice center at era 5 (+0.264
            against -0.028).
 
            OVER TWELVE ERAS the ordering is NOT protected: the alignment still never
@@ -596,7 +596,7 @@ WHAT THIS IS
     POLAR_SEED_FROM_PLACEMENT   seeds the axis election from the layer's    default
                                 placement, closing the m == 0 fixed point
     POLAR_AXIS_FROM_CHARGE      anchors the axis to the layer's charge      [CANDIDATE]
-                                octant instead of to the centre the transport
+                                octant instead of to the center the transport
                                 left it on; closes the m == 0 fixed point on
                                 its own and holds axis-align at 147/147 for
                                 twelve eras, but does NOT protect the ordering
@@ -635,7 +635,7 @@ WHAT THIS IS
                                 with both words (needs S2B_TRACE; the counter
                                 behind it is always on, so the harness line
                                 `move-thrust` works without this macro)
-    THRUST_VEC_TRACE            probe: prints, per mover, whether the centre [PROBE]
+    THRUST_VEC_TRACE            probe: prints, per mover, whether the center [PROBE]
                                 displacement the harness measures follows the
                                 vector the thrust actually wrote (sign test on
                                 every axis the impulse touches), plus the
@@ -702,7 +702,7 @@ WHAT THIS IS
     m alignment (candidate)   147/147 from frame 4 to frame 14, then decaying: 119 at 18,
                               113 at 24, 74 at 38, 56 at 54, 39 at 72 (L=7)
     m alignment, attributed    the decay is the placement rule installing the ray the
-                              transport left the centre on, not a different election:
+                              transport left the center on, not a different election:
                               0 of 704 installations came from the classic path; the
                               misaligned layers step at the turnarounds (0 -> 28 -> 34
                               -> 46 after frames 16, 22, 28) and the `base` build reaches
@@ -738,7 +738,7 @@ WHAT THIS IS
                                follow the impulse they were given (3 of 6 at
                                frame 12, 7 of 48 at 14, 11 of 30 at 18 -- and
                                exactly the unaligned ones), so the residual is
-                               centre relocation, not transport direction.  Over
+                               center relocation, not transport direction.  Over
                                the twelve eras the 336 unaligned movers split
                                into 278 relocations (the displacement does not
                                follow the impulse at all) + 58 that follow a
@@ -750,7 +750,7 @@ WHAT THIS IS
                                (build\thrustword_L7_20.out,
                                build\thrustvec_L7_20.out,
                                build\thrustvec_L7_72.out)
-    centre of a layer          one writer, and it is not the census: lcenters[] is
+    center of a layer          one writer, and it is not the census: lcenters[] is
                                written by applyMomentum (simulation.cpp:827), the
                                seed, the GUI bridge and the replay loader only --
                                trackCenter() has no callers (dead code, rule C18) --

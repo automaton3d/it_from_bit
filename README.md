@@ -18,6 +18,13 @@ and the measurements of the rule set, the simulator that produces them (CPU buil
 paper, and nothing else -- no experiment tree, no attic, no retired material.  The working log -- every
 measurement, and the number that says which reading of it survives -- is the long form below.
 
+> **Language directive: American English.**  Text written in this repository -- the paper, `FSM.txt`,
+> this file, the research log, the code and its comments -- uses American English spelling (`color`,
+> `behavior`, `center`, `normalize`, `-ize`/`-yze`).  Prose that still says "centre" or "behaviour" is
+> corrected as it is touched; quotations, section titles and the harness's printed field names
+> (`reloc-at-centre`, `CoM-(centre)`) keep their spelling, because changing those would change what a log
+> says.
+
 ---
 
 ## 🚀 Build and Run
@@ -122,16 +129,16 @@ obj/, obj_reference/   # one object tree per configuration (generated, ignored)
 ## 🔬 Research goals
 
 This tree is the standalone build of the paper **and** of the simulator that produces its numbers, so
-the programme's goals are made checkable here:
+the program's goals are made checkable here:
 
 - **reproduce the construction and every number the text quotes** from one tree: the rule set, the
   encounter's transport, and the census of the frozen plateau.  The reference configuration and the
   promoted one are one build switch apart -- not a fork -- and both are built from the same sources;
 - **settle the mechanism of each displacement channel**, not its statistics: the dispersal and the era-1
   cascade are measured to the sign, and for the later eras the log reduces the residual to a single
-  question -- why a layer's centre is re-derived with no impulse behind it -- and names the probe that
+  question -- why a layer's center is re-derived with no impulse behind it -- and names the probe that
   would answer it;
-- **measure the finite-size behaviour** of the dimensionless observables: the plateau relation
+- **measure the finite-size behavior** of the dimensionless observables: the plateau relation
   `K = W - 8` and the eight-word roster hold at four sizes while the transport's alignment does not, and
   the two measurements that would sharpen it -- the `L = 11` era-1 dynamics and the `L = 13` static row
   -- are priced in the log, not run;
@@ -139,7 +146,7 @@ the programme's goals are made checkable here:
   trace logs, and a golden-log regression pins the era-1 dynamics of four configurations, so a change in
   the dynamics or a re-worded sentence fails the build.
 
-The wider programme -- the Poincaré cycle at `L = 8, 16, 32`, charge quantization at `L = 32`, the
+The wider program -- the Poincaré cycle at `L = 8, 16, 32`, charge quantization at `L = 32`, the
 entropy cycle -- lives in the companion repository (`automaton3d/automaton`); this CPU build measures up
 to `L = 11`, and the paper here is the reduced variant that carries the construction rather than the
 results.  Every measurement is in the research log.
@@ -149,7 +156,7 @@ results.  Every measurement is in the research log.
 Every line below is a measurement made in this tree, and every one of them is derived in the log.
 
 - **the reference configuration moves nothing**: `m = 0` on every layer, 0 displacements, one occupied
-  centre, in every frame read;
+  center, in every frame read;
 - **the dispersal is exact**: frame 2 moves all 147 layers, every sign on its own octant, and leaves the
   ledger at `K = W - 8`, `D = 8`; the era-1 cascade is 32 flight steps, all aligned (46 steps with 39
   aligned once the pair rules are on);

@@ -491,7 +491,7 @@ Report-Rule 'candidate at L=9' 'FSM.txt' `
 
 # --- C7: who owns the standing axis (the election probe) --------------------------------
 Report-Rule 'axis ownership' 'FSM.txt' `
-  'm alignment, attributed the decay is the placement rule installing the ray the transport left the centre on' `
+  'm alignment, attributed the decay is the placement rule installing the ray the transport left the center on' `
   'axisL7_bothab.out' {
   param($lines)
   $owner = Get-FrameLines $lines 'axis-owner'
@@ -1021,7 +1021,7 @@ Report-Rule 'the impulse is not the displacement' 'RESEARCH_LOG.md' `
 
 # --- C18: the centre has one mover, and the census only reads (source-level, no log) ------
 # This one checks the sources, not a log: the claim is structural.  It pins the three facts the
-# RESEARCH_LOG.md's "Who can move a centre" section rests on -- that trackCenter() is a definition with no
+# RESEARCH_LOG.md's "Who can move a center" section rests on -- that trackCenter() is a definition with no
 # callers, that the census still aborts on a duplicate source, and that the section is still written.
 # (Top level, not a { } block: a bare script block is an expression, so it would never run.)
 # The count is of CALL sites, not mentions: `(?<!void\s)trackCenter\s*\(` skips the definition and a
@@ -1045,8 +1045,8 @@ if ($centreDefs -ne 1)
 $centreAtt = Read-Text 'src\model\attractor.cpp'
 if ($null -eq $centreAtt -or -not $centreAtt.Contains('census: invalid or duplicate source'))
   { $centreBad += 'the census no longer aborts on a duplicate source (the RESEARCH_LOG.md relies on that)' }
-if ($centreBad.Count -eq 0) { Report 'OK' 'C. the centre has one mover   [source-level: trackCenter, the census throw]' }
-else { foreach ($b in $centreBad) { Report 'ERROR' ("C. the centre has one mover " + $b) } }
+if ($centreBad.Count -eq 0) { Report 'OK' 'C. the center has one mover   [source-level: trackCenter, the census throw]' }
+else { foreach ($b in $centreBad) { Report 'ERROR' ("C. the center has one mover " + $b) } }
 
 # ======================================================================================
 # verdict
