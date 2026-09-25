@@ -941,7 +941,7 @@ Report-Rule 'the thrust decision point' 'README.md' `
 
 # --- C17: the impulse is not the displacement --------------------------------------------
 Report-Rule 'the impulse is not the displacement' 'README.md' `
-  'every mover whose measured displacement follows its impulse is octant-aligned, and every mover whose displacement disagrees with its impulse is one of the unaligned ones' `
+  '(83 %) are relocations** -- displacements that do not follow the impulse the layer was given at all -- and **58 follow a partial-axis impulse**' `
   'thrustvec_L7_20.out' {
   param($lines)
   $vec = Get-FrameLines $lines 'move-thrustvec'
@@ -973,6 +973,49 @@ Report-Rule 'the impulse is not the displacement' 'README.md' `
     Want ("frame " + $case[0]) 'of those, aligned' (Val $x 'follows the impulse = \d+ \(octant-aligned (\d+)\)') $case[2]
     Want ("frame " + $case[0]) 'movers disagreeing with their impulse' (Val $x 'differs = (\d+)') $case[3]
     Want ("frame " + $case[0]) 'of those, aligned' (Val $x 'differs = \d+ \(octant-aligned (\d+)\)') $case[4]
+  }
+  # The twelve-era half, when that log is present: here the identity is the claim -- the unaligned movers
+  # are exactly those following a partial-axis impulse plus the relocations -- and so is the split.
+  $long = Read-TraceLog 'thrustvec_L7_72.out'
+  if ($null -eq $long)
+    { Report 'INFO' 'C. the impulse is not the displacement: build\thrustvec_L7_72.out is not built here, so the twelve-era half of the claim is not checked' }
+  else
+  {
+    $lvec = Get-FrameLines $long 'move-thrustvec'
+    $lsplit = Get-FrameLines $long 'move-split'
+    if ($lvec.Count -ne 72) { $script:ruleBad += ("72 frames documented for the twelve-era log, it has " + $lvec.Count) }
+    foreach ($f in ($lvec.Keys | Sort-Object))
+    {
+      $s = Val $lvec[$f] 'follows the impulse = (\d+)'; $sA = Val $lvec[$f] 'follows the impulse = \d+ \(octant-aligned (\d+)\)'
+      $d = Val $lvec[$f] 'differs = (\d+)'; $dA = Val $lvec[$f] 'differs = \d+ \(octant-aligned (\d+)\)'
+      $e = Val $lvec[$f] 'thrust bit with no impulse = (\d+)'
+      if ($null -eq $s -or $null -eq $d -or $null -eq $e) { $script:ruleBad += ("twelve-era frame " + $f + ": the move-thrustvec line does not parse"); continue }
+      if ($dA -ne 0) { $script:ruleBad += ("twelve-era frame " + $f + ": " + $dA + " mover(s) disagree with their impulse and are aligned") }
+      if ($e -ne 0) { $script:ruleBad += ("twelve-era frame " + $f + ": " + $e + " mover(s) carry the thrust bit with an empty impulse") }
+      $fl = Val $lsplit[$f] 'flight=(\d+)'; $flA = Val $lsplit[$f] 'flight=\d+\s+0/1/2/3 = \d+/\d+/\d+/(\d+)'
+      if ((($s - $sA) + $d) -ne ($fl - $flA))
+        { $script:ruleBad += ("twelve-era frame " + $f + ": partial-axis followers plus relocations (" + (($s - $sA) + $d) +
+                              ") is not the unaligned flight count (" + ($fl - $flA) + ")") }
+    }
+    $vs = 0; $vsA = 0; $vd = 0; $va3 = 0; $va2 = 0; $va1 = 0
+    foreach ($f in ($lvec.Keys | Sort-Object))
+    {
+      $vs += (Val $lvec[$f] 'follows the impulse = (\d+)')
+      $vsA += (Val $lvec[$f] 'follows the impulse = \d+ \(octant-aligned (\d+)\)')
+      $vd += (Val $lvec[$f] 'differs = (\d+)')
+      $va3 += (Val $lvec[$f] 'impulse axes 3/2/1 = (\d+)')
+      $va2 += (Val $lvec[$f] 'impulse axes 3/2/1 = \d+/(\d+)')
+      $va1 += (Val $lvec[$f] 'impulse axes 3/2/1 = \d+/\d+/(\d+)')
+    }
+    Want 'twelve eras' 'movers following their impulse' $vs 386
+    Want 'twelve eras' 'of those, aligned' $vsA 328
+    Want 'twelve eras' 'movers disagreeing with their impulse' $vd 278
+    Want 'twelve eras' 'impulse axes 3' $va3 562
+    Want 'twelve eras' 'impulse axes 2' $va2 74
+    Want 'twelve eras' 'impulse axes 1' $va1 28
+    Want 'twelve eras' 'unaligned = partial-axis followers' ($vs - $vsA) 58
+    Want 'twelve eras' 'unaligned = relocations' $vd 278
+    Want 'twelve eras' 'unaligned total (the two components)' (($vs - $vsA) + $vd) 336
   }
 }
 

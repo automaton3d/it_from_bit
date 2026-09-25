@@ -748,7 +748,6 @@ of the octant's axes; the harness's 3-of-3 test cannot accept such a step whatev
 twelve-era residual has (at least) two named components: **partial-axis thrusts** (366 calls, in the later
 eras -- the first three eras have none: the 20-frame log reads `aligned 372, partial 0, against 0`) and the
 relocations measured below.  The impulse is never *aimed* wrong: `against = 0` over all 2129 calls.
-
 **So what is it measuring?**  One instrument later the answer is exact.  `/D THRUST_VEC_TRACE` records the
 vector each thrust wrote, per layer and per frame (`s2bTraceThrustVec`), and the harness compares it with
 the centre displacement it measures -- a sign test on every axis the impulse touches (magnitudes differ by
@@ -767,6 +766,15 @@ unaligned ones** -- 3 of 3 at frame 12, 7 of 7 at frame 14, 11 of 11 at frame 18
 impulse in all of them.  The off-octant "flight displacement" is therefore not a transport step at all:
 it is a **relocation of the layer's centre that no impulse explains**, and the harness -- which measures
 the centre's position across frames -- counts it as a displacement of the layer.
+
+**And the split of those 336 is measured** (log `build\thrustvec_L7_72.out`, same fold): **278 of them
+(83 %) are relocations** -- displacements that do not follow the impulse the layer was given at all --
+and **58 follow a partial-axis impulse**, a step along fewer than three of the octant's axes (102 movers
+received such an impulse; 562 thrust movers got a three-axis one, 74 two axes and 28 a single axis).  So
+the off-octant bucket is, in order of size: the impulse was not the displacement (278), then the impulse
+ran along part of the octant only (58) -- and nothing else.  The first three eras have no partial-axis
+case at all (their 25 unaligned movers are 25 relocations), which is why the booking score above reads
+`aligned 372, partial 0` for the 20-frame window.
 
 Two things this settles, and one consequence:
 

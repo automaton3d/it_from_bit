@@ -738,9 +738,18 @@ WHAT THIS IS
                                follow the impulse they were given (3 of 6 at
                                frame 12, 7 of 48 at 14, 11 of 30 at 18 -- and
                                exactly the unaligned ones), so the residual is
-                               centre relocation, not transport direction
+                               centre relocation, not transport direction.  Over
+                               the twelve eras the 336 unaligned movers split
+                               into 278 relocations (the displacement does not
+                               follow the impulse at all) + 58 that follow a
+                               partial-axis impulse (102 movers got an impulse
+                               touching fewer than three axes -- 74 of two and
+                               28 of one, against 562 of three), and no mover
+                               ever disagrees with its impulse and still reads
+                               aligned
                                (build\thrustword_L7_20.out,
-                               build\thrustvec_L7_20.out)
+                               build\thrustvec_L7_20.out,
+                               build\thrustvec_L7_72.out)
     era-1 cascade (candidate) 32 flight steps, all aligned; 14 cohesion steps (7/7)
     displacement channel       not inherited: the probe log is byte-identical to
                                the promoted run over 20 frames at L=7 and

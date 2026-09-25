@@ -13,7 +13,7 @@
 # is pinned below because a pt-BR host would print the decimal separator as a comma.
 param([Parameter(Mandatory=$true)][string]$Log, [int]$Era = 6)
 [System.Threading.Thread]::CurrentThread.CurrentCulture = [System.Globalization.CultureInfo]::InvariantCulture
-$pos = @{}; $ms = @{}; $dr = @{}; $mk = @{}; $cr = @{}; $wr = @{}; $tw2 = @{}
+$pos = @{}; $ms = @{}; $dr = @{}; $mk = @{}; $cr = @{}; $wr = @{}; $tw2 = @{}; $vc = @{}
 foreach ($line in Get-Content -LiteralPath $Log) {
   if ($line -match '^#\s+frame (\d+) positions: Orbis n=(\d+) mean=\(([-\d.]+),([-\d.]+),([-\d.]+)\) \| Umbra n=(\d+) mean=\(([-\d.]+),([-\d.]+),([-\d.]+)\) \| CoM-\(centre\)=\(([-\d.]+),([-\d.]+),([-\d.]+)\)') {
     $pos[[int]$Matches[1]] = [pscustomobject]@{ oy=[double]$Matches[4]; uy=[double]$Matches[8]
@@ -36,6 +36,12 @@ foreach ($line in Get-Content -LiteralPath $Log) {
                                                f=[int]$Matches[4]; fA=[int]$Matches[5]
                                                b=[int]$Matches[6]; bA=[int]$Matches[7]
                                                n=[int]$Matches[8]; nA=[int]$Matches[9] }
+  }
+  elseif ($line -match '^#\s+frame (\d+) move-thrustvec: follows the impulse = (\d+) \(octant-aligned (\d+)\)\s+\|\s+differs = (\d+) \(octant-aligned (\d+)\)\s+\|\s+thrust bit with no impulse = (\d+)\s+\|\s+impulse axes 3/2/1 = (\d+)/(\d+)/(\d+)') {
+    $vc[[int]$Matches[1]] = [pscustomobject]@{ s=[int]$Matches[2]; sA=[int]$Matches[3]
+                                               d=[int]$Matches[4]; dA=[int]$Matches[5]
+                                               e=[int]$Matches[6]; a3=[int]$Matches[7]
+                                               a2=[int]$Matches[8]; a1=[int]$Matches[9] }
   }
   elseif ($line -match '^#\s+frame (\d+) move-writer: walk = (\d+) \((\d+)\)\s+\|\s+relay = (\d+) \((\d+)\)\s+\|\s+relay-contact = (\d+) \((\d+)\)\s+\|\s+cohesion = (\d+) \((\d+)\)\s+\|\s+dispersion = (\d+) \((\d+)\)\s+\|\s+thrust = (\d+) \((\d+)\)') {
     $wr[[int]$Matches[1]] = [pscustomobject]@{ w=[int]$Matches[2]; wA=[int]$Matches[3]
@@ -184,3 +190,26 @@ $lastFrame = ($tw2.Keys | Sort-Object | Select-Object -Last 1)
 Write-Output ("thrust bookings, scored at the decision point against the COMMITTED word (cumulative to frame {0}):" -f $lastFrame)
 Write-Output ("  calls {0} = aligned {1} + partial {2} + against {3}" -f `
   $tw2[$lastFrame].calls, $tw2[$lastFrame].bAl, $tw2[$lastFrame].bPa, $tw2[$lastFrame].bAg)
+
+# Sixth summary: the written-impulse probe (harness line `move-thrustvec`, needs THRUST_VEC_TRACE).  Of the
+# flight movers the own-axis thrust booked, those whose MEASURED centre displacement follows the vector the
+# thrust wrote and those it does not.  With the impulse's axis count this is the decomposition of the
+# unaligned population into its two components: a PARTIAL-axis impulse (fewer than three axes touched --
+# the mover can follow it exactly and still fail a 3-of-3 test) and a RELOCATION (the displacement does not
+# follow the impulse at all, so it is not the impulse).
+Write-Output ""
+if ($vc.Count -eq 0) {
+  Write-Output ("no move-thrustvec lines in " + $Log + ": the harness was built without THRUST_VEC_TRACE")
+  exit 0
+}
+$vs = 0; $vsA = 0; $vd = 0; $vdA = 0; $ve = 0; $va3 = 0; $va2 = 0; $va1 = 0
+foreach ($f in ($vc.Keys | Sort-Object)) {
+  $vs += $vc[$f].s; $vsA += $vc[$f].sA; $vd += $vc[$f].d; $vdA += $vc[$f].dA
+  $ve += $vc[$f].e; $va3 += $vc[$f].a3; $va2 += $vc[$f].a2; $va1 += $vc[$f].a1
+}
+Write-Output ("thrust movers by whether the measured displacement follows the impulse that was written:")
+Write-Output ("  follows {0,6} (octant-aligned {1,6})  |  differs {2,6} (octant-aligned {3,6})  |  thrust bit with no impulse {4,6}" -f `
+  $vs, $vsA, $vd, $vdA, $ve)
+Write-Output ("  impulse axes 3 / 2 / 1 = {0} / {1} / {2}" -f $va3, $va2, $va1)
+Write-Output ("  unaligned thrust movers {0} = {1} following a partial-axis impulse + {2} relocations (displacement not following the impulse)" -f `
+  (($vs - $vsA) + $vd), ($vs - $vsA), $vd)
