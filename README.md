@@ -121,13 +121,28 @@ obj/, obj_reference/   # one object tree per configuration (generated, ignored)
 
 ## 🔬 Research goals
 
-- compute the Poincaré cycle for `L = 8`, `L = 16` and `L = 32` (the physical universe is estimated at
-  `L = 2^269`)
-- investigate charge quantization at `L = 32`
-- plot the entropy cycle
-- and, measurably here: the finite-size behaviour of the frozen plateau and of the transport, the
-  ordering the dispersal establishes and what destroys it, and the mechanism of every displacement the
-  encounter books
+This tree is the standalone build of the paper **and** of the simulator that produces its numbers, so
+the programme's goals are made checkable here:
+
+- **reproduce the construction and every number the text quotes** from one tree: the rule set, the
+  encounter's transport, and the census of the frozen plateau.  The reference configuration and the
+  promoted one are one build switch apart -- not a fork -- and both are built from the same sources;
+- **settle the mechanism of each displacement channel**, not its statistics: the dispersal and the era-1
+  cascade are measured to the sign, and for the later eras the log reduces the residual to a single
+  question -- why a layer's centre is re-derived with no impulse behind it -- and names the probe that
+  would answer it;
+- **measure the finite-size behaviour** of the dimensionless observables: the plateau relation
+  `K = W - 8` and the eight-word roster hold at four sizes while the transport's alignment does not, and
+  the two measurements that would sharpen it -- the `L = 11` era-1 dynamics and the `L = 13` static row
+  -- are priced in the log, not run;
+- **keep every claim machine-checked**: an 18-rule lint ties the documents to the sources and to the
+  trace logs, and a golden-log regression pins the era-1 dynamics of four configurations, so a change in
+  the dynamics or a re-worded sentence fails the build.
+
+The wider programme -- the Poincaré cycle at `L = 8, 16, 32`, charge quantization at `L = 32`, the
+entropy cycle -- lives in the companion repository (`automaton3d/automaton`); this CPU build measures up
+to `L = 11`, and the paper here is the reduced variant that carries the construction rather than the
+results.  Every measurement is in the research log.
 
 ## 📊 What is measured so far
 
