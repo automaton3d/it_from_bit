@@ -192,6 +192,11 @@ https://www.researchgate.net/
 
 # ❤️ Support This Project
 
+This is an independent, unfunded project.  I have no grant, no institution and no research group behind
+it: it has been built over **more than ten years** of my own time -- first as the paper and its earlier
+repository, now as this tree -- on a desktop machine.  Contributions go to the computing resources, the
+software and the time to keep it going.
+
 If you find this research interesting and would like to help its development, you can support it in one
 of the following ways.
 
@@ -213,7 +218,8 @@ research.
 **PIX key:** *(scan the QR code above)*
 
 Any contribution, no matter how small, is greatly appreciated and directly supports the continued
-development of this project.
+development of this project.  And if a donation is not possible, citing the paper, testing the model or
+reporting what breaks it helps just as much.
 
 ---
 
